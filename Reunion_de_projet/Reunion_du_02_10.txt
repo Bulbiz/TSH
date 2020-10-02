@@ -1,0 +1,19 @@
+Nous avons au cours de cette réunion lu le sujet du projet. Nous avons écrit le fichier AUTHORS (dans lequel tu dois marquer ton numéro étudiant à la place des ???). 
+
+Quelques règles pour s'assurer du bon fonctionnement du projet : 
+
+Première règle : Toutes les fonctions seront nommées en anglais. (sur le git on peut parler français pas de problème).
+
+Deuxième règle : pas d'utilisation de la fonction system de la stdlib ainsi que de la commande tar.
+
+Troisième règle : Si la tache est trop dure, on l'a divisera au prochain sprint, il faudra la mettre dans la balise ToHard.
+
+Quatrième règle : ne pas merge soit même et faire une branche temporaire/merge request pour chaque tâche.
+
+Cinquième règle: ne pas push directement dans master, on attendra au moment des rendus 1 et 2.
+
+Sixième règle : il est bon de faire ENORMEMENT de commits (même de une ligne).
+
+Note : Fork = copie inoffensive du projet (un crash test en gros) .
+
+Note de Système : 50% max (rendu 2, 50% rendu 1 + 50% rendu 2) + 50% épreuve individuelle
