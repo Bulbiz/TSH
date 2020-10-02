@@ -2,18 +2,18 @@ Nous avons au cours de cette réunion lu le sujet du projet. Nous avons écrit l
 
 Quelques règles pour s'assurer du bon fonctionnement du projet : 
 
-Première règle : Toutes les fonctions seront nommées en anglais. (sur le git on peut parler français pas de problème).
-
-Deuxième règle : pas d'utilisation de la fonction system de la stdlib ainsi que de la commande tar.
-
-Troisième règle : Si la tache est trop dure, on l'a divisera au prochain sprint, il faudra la mettre dans la balise ToHard.
-
-Quatrième règle : ne pas merge soit même et faire une branche temporaire/merge request pour chaque tâche.
-
-Cinquième règle: ne pas push directement dans master, on attendra au moment des rendus 1 et 2.
-
-Sixième règle : il est bon de faire ENORMEMENT de commits (même de une ligne).
+-Toutes les fonctions seront nommées en anglais. (sur le git on peut parler français pas de problème).
+-pas d'utilisation de la fonction system de la stdlib ainsi que de la commande tar.
+-Si la tache est trop dure, on l'a divisera au prochain sprint, il faudra la mettre dans la balise ToHard.
+-ne pas merge soit même et faire une branche temporaire/merge request pour chaque tâche.
+-ne pas push directement dans master, on attendra au moment des rendus 1 et 2.
+-il est bon de faire ENORMEMENT de commits (même de une ligne).
 
 Note : Fork = copie inoffensive du projet (un crash test en gros) .
 
 Note de Système : 50% max (rendu 2, 50% rendu 1 + 50% rendu 2) + 50% épreuve individuelle
+
+On t'as créer un petit système pour les issues : 
+	On mettra des issues pour le sprint dans le label "Antoine's sprint choice", tu n'es pas obliger de tout faire, c'est juste une liste où tu pourras choisir tes tâches. Les tâches que tu auras prises, il faudra que tu les mettes dans le label "Antoine's to do". Si une tâche deviens trop compliqué (ça risque d'arriver souvent avec nous désolé) tu peux mettre la tâche dans "ToHard" pour qu'on puisse la redécoupé en plus petites tâches pour le prochain sprint. 
+	
+On a aussi un peu réfléchit a un ordre de priorité des fonctions à faire. On mettra les issues ce soir (vendredi) 
