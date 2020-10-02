@@ -1,6 +1,6 @@
 Nous avons au cours de cette réunion lu le sujet du projet. Nous avons écrit le fichier AUTHORS (dans lequel tu dois marquer ton numéro étudiant à la place des ???). 
 
-Quelques règles/conseils pour s'assurer du bon fonctionnement du projet : 
+Quelques petites règles/conseils pour s'assurer du bon fonctionnement du projet : 
 
 -Toutes les fonctions seront nommées en anglais. (sur le git on peut parler français pas de problème).
 -pas d'utilisation de la fonction system de la stdlib ainsi que de la commande tar.
