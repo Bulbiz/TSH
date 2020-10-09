@@ -1,0 +1,8 @@
+Résultat du sprint : Les tâches étaient beaucoup trop dures, on a redivisé tout ça en plus petite tâche.
+On s'est dit qu'il fallait faire en priorité les fonctions de base dans le tar et dans un second temps les commandes pour le shell.
+Cette semaine on va plutôt faire des fonctions basiques pour le tar du style lire un fichier dans le tar.
+Tu peux mettre en attente le ls pour le tar si tu ne l'as pas encore faite.
+tu regarderas la liste des fonctions basiques dont on a besoin dans le label "Antoine's sprint choice".
+Choisis une ou deux tâches pour cette semaine, tu peux mettre la tâche du ls en attente.
+
+ps :Chaque Vendredi, on te communiquera des nouvelles sur la direction du projet, ajoute ce que tu peux jusqu'à ce jour, tu peux aussi commenter nos merge request si tu penses que quelque chose ne va pas.
