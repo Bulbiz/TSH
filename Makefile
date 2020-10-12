@@ -9,7 +9,7 @@ TARGET=tsh
 
 OUTDIR=out
 
-SRC=
+SRC=$(wildcard src/*.c)
 OBJ=$(SRC:src/%.c=$(OUTDIR)/%.o)
 
 all: $(TARGET)
