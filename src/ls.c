@@ -23,12 +23,12 @@ int lsPath(const char *path) {
 int ls(int argc, char *argv[]) {
     int returnValue = 0;
 
-    if(argc == 0) {
+    if(argc == 1) {
         if(lsPath(".") != 0) {
             return -1;
         }
     } else {
-        for(int i = 0; i < argc; i++) {
+        for(int i = 1; i < argc; i++) {
             printf("%s:\n", argv[i]);
             if(lsPath(argv[i]) != 0) {
                 returnValue = -1;
