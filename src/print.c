@@ -8,6 +8,3 @@ void print (char * message){
         perror("Print :");
 }
 
-int main(){
-    print("aaaaaaaaaaaaaaaa\naaaaaaaaaaaa");
-}
