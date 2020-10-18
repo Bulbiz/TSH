@@ -2,7 +2,7 @@
 #include <stdlib.h> 
 #include <stdio.h>
 #include <string.h>
-#include "print.c"
+#include "print.h"
 
 #define _POSIX_C_SOURCE 200112L
 #define SIZE 20000
