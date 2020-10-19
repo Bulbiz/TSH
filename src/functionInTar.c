@@ -20,26 +20,26 @@ int openArchive (char * pathname, int flags){
     return tmp;
 }
 
-int readHeader (int fd, struct posix_header buffer){
-    int tmp = read(fd, &buffer, 512);
+int readHeader (int fd, struct posix_header * buffer){
+    int tmp = read(fd, buffer, 512);
     if(tmp < 0)
         perror("read");
     return tmp;
 }
 
-char * getContent (struct posix_header header, int fd){
+char * getContent (struct posix_header * header, int fd){
     int numberBlock = 0;
-    sscanf(header.size ,"%o", &numberBlock);
+    sscanf(header -> size ,"%o", &numberBlock);
     numberBlock = (numberBlock + 512 -1) /512;
     char * message =(char *) malloc (sizeof(char) * 512 * numberBlock);
     read (fd, message, sizeof(char) * 512 * numberBlock);
     return message;
 }
 
-void passContent (struct posix_header header, int fd){
+void passContent (struct posix_header * header, int fd){
     int numberBlock = 0;
-    sscanf(header.size ,"%o", &numberBlock);
+    sscanf(header -> size ,"%o", &numberBlock);
     numberBlock = (numberBlock + 512 -1) /512;
-    read (fd, &header, sizeof(char) * 512 * numberBlock);
+    read (fd, header, sizeof(char) * 512 * numberBlock);
 }
 
