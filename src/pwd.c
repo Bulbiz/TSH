@@ -62,9 +62,9 @@ char ** dividePathWithTar (char * path){
     res[1] = separateur + 5;
     return res;
 }
-
+/*
 int main (){
-    /*char * test = malloc (sizeof(char) * 100);
+    char * test = malloc (sizeof(char) * 100);
     
     //strcpy (test,"a/b.tar/c/toto");
     //strcpy (test,"a/b/c/toto");
@@ -73,7 +73,7 @@ int main (){
         print("This Path is in a Tar");
     else
         print("This Path is NOT in a Tar");
-    */
+    
     dividePathWithTar(strcat(getPWD(),"/aaaa/bb/c.tar/dqdsqfz"));
 }
-
+*/
