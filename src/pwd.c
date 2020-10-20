@@ -47,6 +47,13 @@ int isInTar (char * path){
     return 0;
 }
 
+char * relatifToAbsolute (char * relatifPath){
+    char * path = getPWD();
+    strcat(path,"/");
+    strcat(path,relatifPath);
+    return path;
+}
+
 /*
 int main (){
     char * test = malloc (sizeof(char) * 100);
@@ -56,7 +63,8 @@ int main (){
     if (isInTar(test) == 1)
         print("This Path is in a Tar");
     else
-        print("This Path is NOT in a Tar");
+        print("This Path is NOT in a Tar"); 
     
+    print(relatifToAbsolute("aaa/bbb/c.tar/ddd/toto"));
 }
 */
