@@ -27,7 +27,7 @@ int readHeader (int fd, struct posix_header * buffer){
     return tmp;
 }
 
-char * getContent (struct posix_header * header, int fd){
+char * getContent (int fd, struct posix_header * header){
     int numberBlock = 0;
     sscanf(header -> size ,"%o", &numberBlock);
     numberBlock = (numberBlock + 512 -1) /512;
@@ -36,7 +36,7 @@ char * getContent (struct posix_header * header, int fd){
     return message;
 }
 
-void passContent (struct posix_header * header, int fd){
+void passContent (int fd, struct posix_header * header){
     int numberBlock = 0;
     sscanf(header -> size ,"%o", &numberBlock);
     numberBlock = (numberBlock + 512 -1) /512;
