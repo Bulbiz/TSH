@@ -10,36 +10,19 @@
 #include <math.h>
 #include "tar.h"
 #include "print.h"
-
+#include "functionInTar.h"
  
- struct posix_header * searchFileInTar (char * pathName, char * archive){
+ struct posix_header * searchFileInTar (char * archive, char * pathname){
 
-    int fd = open(archive, O_RDONLY);
-    if(fd < 0)
-        print("bug sur l'ouverture");
-    struct posix_header * p = (struct posix_header *)malloc(sizeof(struct posix_header));
-    while(read(fd, p, 512) > 0){
-        if(strcmp (p -> name, pathName) == 0){
-
-            int numberBlock = 0;
-            sscanf(p -> size ,"%o", &numberBlock);
-            numberBlock = (numberBlock + 512 -1) /512;
-            char * message =(char *) malloc (sizeof(char) * 512 * numberBlock);
-            read (fd, message, sizeof(char) * 512 * numberBlock);
-            print(message);
+    int fd = openArchive (archive, O_RDONLY);
+    struct posix_header * p = malloc (512);
+    while(readHeader (fd, p) > 0){
+        if(strcmp (p -> name, pathname) == 0){
+            print(getContent (fd,p));
             return p;
         }
-        else{
-            int numberBlock = 0;
-            sscanf(p -> size ,"%o", &numberBlock);
-            numberBlock = (numberBlock + 512 -1) /512;
-            for(int i = 0; i<numberBlock ; i++){
-                int tmp1 = read (fd, p, 512);
-
-                if( tmp1 < 0)
-                    print("erreur de read");
-            }
-        }
+        else
+            passContent (fd,p);    
     }
     print("PAS TROUVER");
     return NULL;

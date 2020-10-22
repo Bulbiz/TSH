@@ -51,5 +51,4 @@ int main(int argc, char * argv[]){
     //catOnly();
     //catWithPath("toto.txt");
     return 0;
-}
-*/
+}*/
