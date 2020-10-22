@@ -12,17 +12,17 @@
 #include "print.h"
 #include "functionInTar.h"
  
- struct posix_header * searchFileInTar (char * pathname, char * archive){
+ struct posix_header * searchFileInTar (char * archive, char * pathname){
 
-    int fd = openArchive (pathname, O_RDONLY);
-    struct posix_header p;
+    int fd = openArchive (archive, O_RDONLY);
+    struct posix_header * p = malloc (512);
     while(readHeader (fd, p) > 0){
-        if(strcmp (p.name, pathname) == 0){
-            print(getContent (p,fd));
-            return &p;
+        if(strcmp (p -> name, pathname) == 0){
+            print(getContent (fd,p));
+            return p;
         }
         else
-            passContent (p,fd);    
+            passContent (fd,p);    
     }
     print("PAS TROUVER");
     return NULL;
