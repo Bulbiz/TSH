@@ -46,9 +46,9 @@ int catWithPath(char * path){
     return 0;
 }
 
-
+/*
 int main(int argc, char * argv[]){
     //catOnly();
     //catWithPath("toto.txt");
     return 0;
-}
+}*/
