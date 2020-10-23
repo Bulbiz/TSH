@@ -1,0 +1,9 @@
+Cette semaine, on a normalement la plupart des fonctions de base pour le read. Nous avons de quoi lire les headers des fonctions et de quoi récuperer le contenu des fichiers dans le tar, nous devrions donc pouvoir pour le prochain sprint faire les commandes qui ne demande que de la lecture (ls,cat, pwd , cd). 
+Pour ta fonction, si jamais tu ne sais pas comment la faire, il est normalement possible de la faire avec l'aide d'une composition de readHeader() et de passContent() que ton coéquipier a réalisé (il faudra juste include le fichier functionInTar)
+On t'as mis une tâche en bonus (et donc optionnels pour le sprint) si tu arrives à faire l'autre fonction,
+Il s'agit d'une fonction qui mettra le curseur du read à la fin du tar (on considère la fin du tar comme étant le premier header avec un nom qui est "")
+On te laisse aussi le ls dans le tar pour cette semaine.
+Nous allons nous occuper de finir le cat dans le tar, faire le cd qui devrait normalement être possible et l'un de nous 
+s'est porté volontaire pour commencer un prototype du shell pour le projet.
+Nous allons aussi essayer de faire une fonction qui vérifiera que les chemins vers un répertoire existe (pour le cd surtout) 
+Voilà en gros la réunion, tu peux lire si tu as envies le fichier Architecture.pdf pour avoir tout ce que l'on a réfléchit pour le projet ainsi que pour la suite.
