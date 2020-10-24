@@ -55,3 +55,15 @@ int getHeader(int fd, struct posix_header *header) {
     }
     return -1;
 }
+
+void passArchive(int fd) {
+    struct posix_header h;
+    int tmp = getHeader(fd, &h);
+    while(tmp == 0) {
+        tmp = getHeader(fd, &h);
+    }
+
+    if(tmp == -2) {
+        lseek(fd, -BLOCKSIZE, SEEK_CUR);
+    }
+}
