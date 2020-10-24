@@ -43,3 +43,12 @@ void passContent (int fd, struct posix_header * header){
     read (fd, header, sizeof(char) * 512 * numberBlock);
 }
 
+int getHeader(int fd, struct posix_header *header) {
+    int tmp = readHeader(fd, header);
+
+    if(tmp == BLOCKSIZE) {
+        passContent(fd, header);
+        return 0;
+    }
+    return -1;
+}
