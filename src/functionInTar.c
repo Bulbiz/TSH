@@ -47,6 +47,9 @@ int getHeader(int fd, struct posix_header *header) {
     int tmp = readHeader(fd, header);
 
     if(tmp == BLOCKSIZE) {
+        if(*header->name == '\0') {
+            return -2;
+        }
         passContent(fd, header);
         return 0;
     }
