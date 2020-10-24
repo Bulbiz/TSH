@@ -40,7 +40,7 @@ void passContent (int fd, struct posix_header * header){
     int numberBlock = 0;
     sscanf(header -> size ,"%o", &numberBlock);
     numberBlock = (numberBlock + 512 -1) /512;
-    read (fd, header, sizeof(char) * 512 * numberBlock);
+    lseek(fd, BLOCKSIZE * numberBlock, SEEK_CUR);
 }
 
 int getHeader(int fd, struct posix_header *header) {
