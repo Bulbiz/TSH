@@ -40,6 +40,30 @@ void passContent (int fd, struct posix_header * header){
     int numberBlock = 0;
     sscanf(header -> size ,"%o", &numberBlock);
     numberBlock = (numberBlock + 512 -1) /512;
-    read (fd, header, sizeof(char) * 512 * numberBlock);
+    lseek(fd, BLOCKSIZE * numberBlock, SEEK_CUR);
 }
 
+int getHeader(int fd, struct posix_header *header) {
+    int tmp = readHeader(fd, header);
+
+    if(tmp == BLOCKSIZE) {
+        if(*header->name == '\0') {
+            return -2;
+        }
+        passContent(fd, header);
+        return 0;
+    }
+    return -1;
+}
+
+void passArchive(int fd) {
+    struct posix_header * h = malloc(512);
+    int tmp = getHeader(fd, h);
+    while(tmp == 0) {
+        tmp = getHeader(fd, h);
+    }
+
+    if(tmp == -2) {
+        lseek(fd, -BLOCKSIZE, SEEK_CUR);
+    }
+}
