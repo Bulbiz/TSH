@@ -57,10 +57,10 @@ int getHeader(int fd, struct posix_header *header) {
 }
 
 void passArchive(int fd) {
-    struct posix_header h;
-    int tmp = getHeader(fd, &h);
+    struct posix_header * h = malloc(512);
+    int tmp = getHeader(fd, h);
     while(tmp == 0) {
-        tmp = getHeader(fd, &h);
+        tmp = getHeader(fd, h);
     }
 
     if(tmp == -2) {
