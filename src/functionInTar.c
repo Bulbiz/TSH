@@ -43,7 +43,7 @@ void passContent (int fd, struct posix_header * header){
     lseek(fd, BLOCKSIZE * numberBlock, SEEK_CUR);
 }
 
-int getHeader(int fd, struct posix_header *header) {
+int getHeader(int fd, struct posix_header * header) {
     int tmp = readHeader(fd, header);
 
     if(tmp == BLOCKSIZE) {
@@ -66,4 +66,15 @@ void passArchive(int fd) {
     if(tmp == -2) {
         lseek(fd, -BLOCKSIZE, SEEK_CUR);
     }
+}
+
+/*  Return 0 if the file is found with the good type, else -1 */
+int pathExist (int fd, char * path, char typeflag){
+    struct posix_header * h = malloc(512);
+    while (getHeader(fd,h) == 0){
+        printf("%s\n",h->name);
+        if(strcmp(h->name,path) == 0 && (h->typeflag) == typeflag)
+            return 0;
+    }
+    return -1;
 }
