@@ -69,9 +69,8 @@ void passArchive(int fd) {
 }
 
 /*  Return 0 if the file is found, else -1 */
-int searchFile (int fd, char * name, struct posix_header * buf){
+int searchFile (int fd,struct posix_header * buf, char * name){
     while (getHeader(fd,buf) == 0){
-        printf(buf -> name);
         if(strcmp(buf->name, name) == 0)
             return 0;
     }
