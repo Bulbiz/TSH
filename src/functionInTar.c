@@ -76,3 +76,12 @@ int searchFile (int fd,struct posix_header * buf, char * name){
     }
     return -1;
 }
+
+/* Search the repertory rep and verify that it's a repertoire */
+int pathExist (int fd, char * rep){
+    struct posix_header * h = malloc(BLOCKSIZE);
+    int search = searchFile (fd,h,rep);
+    if (search == 0 && h -> typeflag == '5')
+        return 0;
+    return -1;
+}
