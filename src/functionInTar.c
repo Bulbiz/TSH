@@ -68,12 +68,11 @@ void passArchive(int fd) {
     }
 }
 
-/*  Return 0 if the file is found with the good type, else -1 */
-int pathExist (int fd, char * path, char typeflag){
-    struct posix_header * h = malloc(BLOCKSIZE);
-    while (getHeader(fd,h) == 0){
-        printf("%s\n",h->name);
-        if(strcmp(h->name,path) == 0 && (h->typeflag) == typeflag)
+/*  Return 0 if the file is found, else -1 */
+int searchFile (int fd, char * name, struct posix_header * buf){
+    while (getHeader(fd,buf) == 0){
+        printf(buf -> name);
+        if(strcmp(buf->name, name) == 0)
             return 0;
     }
     return -1;
