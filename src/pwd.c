@@ -4,7 +4,6 @@
 #include <string.h>
 #include "print.h"
 
-#define _POSIX_C_SOURCE 200112L
 #define SIZE 20000
 
 /* Create a char * that contains the PWD */
@@ -35,10 +34,10 @@ int isTar (char * name){
     return 0;
 }
 
-/* Tell if the path is in a tar,
-   Warning ! the path will be modified so it will be unuseable after ! */
+/* Tell if the path is in a tar */
 int isInTar (char * path){
-    char * decompose = strtok(path, "/");
+    char * pathCopy = strdup(path);
+    char * decompose = strtok(pathCopy, "/");
     while (decompose != NULL){
         if (isTar(decompose) == 1)
             return 1;
