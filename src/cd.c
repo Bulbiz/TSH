@@ -35,10 +35,9 @@ int cdAux (char * path){
 }
 
 void cd (char * arg){
-    char * path = (isAbsolute(arg) == 0)? arg : relatifToAbsolute(arg);
-    char * newpath = pathWithoutPoint(path);
-    strcat(newpath,"/");
-    if(cdAux(newpath) == -1)
+    char * path = pathTreated(arg);
+    strcat(path,"/");
+    if(cdAux(path) == -1)
         print("cd : Cannot enter ! HELP!\n");
 }
 

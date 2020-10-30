@@ -128,6 +128,12 @@ char * pathWithoutPoint (char * absolute){
     return resultat;
 }
 
+
+char * pathTreated (char * path){
+    char * res = (isAbsolute(path) == 0)? path : relatifToAbsolute(path);
+    return pathWithoutPoint(res);
+}
+
 /*
 int main (){
     char * test = malloc (sizeof(char) * 100);
