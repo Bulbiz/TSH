@@ -1,5 +1,5 @@
-#ifndef PRINT_H
-#define PRINT_H
+#ifndef PWD_H
+#define PWD_H
 
 char * getPWD ();
 void pwd ();
