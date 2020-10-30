@@ -34,9 +34,15 @@ int isTar (char * name){
     return 0;
 }
 
+char * duplicate (char * str){
+    char * res = malloc (sizeof(char) * strlen(str));
+    strcpy(res,str);
+    return res;
+}
+
 /* Tell if the path is in a tar */
 int isInTar (char * path){
-    char * pathCopy = strdup(path);
+    char * pathCopy = duplicate(path);
     char * decompose = strtok(pathCopy, "/");
     while (decompose != NULL){
         if (isTar(decompose) == 1)
@@ -51,13 +57,14 @@ int isInTar (char * path){
  * the seconde is the rest (without the / just after ".tar")*/
 char ** dividePathWithTar (char * path){
     char ** res = (char ** ) malloc (sizeof(char *) * 2);
-    char * separateur = strstr (path,".tar");
+    char * pathcpy = duplicate(path);
+    char * separateur = strstr (pathcpy,".tar");
     if (separateur == NULL){
         print("Erreur Path without tar !!!");
         return NULL;
     }
     * (separateur + 4)  = '\0';
-    res[0] = path;
+    res[0] = pathcpy;
     res[1] = separateur + 5;
     return res;
 }
@@ -78,7 +85,8 @@ int numberOfSlash(char * path){
     return cmp;
 }
 
-/* Delete . and .. from absolute path*/
+/* Delete . and .. from absolute path
+Warning, if there where a / a the end of absolute, it will be deleted!*/
 char * traitementOfPath (char * absolute){
     printf("path : %s\n", absolute);
     char * resultat = malloc (sizeof(char)* strlen(absolute));
@@ -111,20 +119,18 @@ char * traitementOfPath (char * absolute){
     return resultat;
 }
 
-
+/*
 int main (){
-    /*char * test = malloc (sizeof(char) * 100);
-    
+    char * test = malloc (sizeof(char) * 100);
     //strcpy (test,"a/b.tar/c/toto");
     //strcpy (test,"a/b/c/toto");
-
     if (isInTar(test) == 1)
         print("This Path is in a Tar");
     else
         print("This Path is NOT in a Tar"); 
-    
     dividePathWithTar(strcat(getPWD(),"/aaaa/bb/c.tar/dqdsqfz"));
-    print(relatifToAbsolute("aaa/bbb/c.tar/ddd/toto"));*/
+    print(relatifToAbsolute("aaa/bbb/c.tar/ddd/toto"));
     printf("Final : %s\n",traitementOfPath(relatifToAbsolute("bonjour/detruit/../detruit/../ree/./bonsoir")));
 }
+*/
 
