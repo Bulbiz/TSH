@@ -21,7 +21,7 @@ int openArchive (char * pathname, int flags){
 }
 
 int readHeader (int fd, struct posix_header * buffer){
-    int tmp = read(fd, buffer, 512);
+    int tmp = read(fd, buffer, BLOCKSIZE);
     if(tmp < 0)
         perror("read");
     return tmp;
@@ -30,20 +30,20 @@ int readHeader (int fd, struct posix_header * buffer){
 char * getContent (int fd, struct posix_header * header){
     int numberBlock = 0;
     sscanf(header -> size ,"%o", &numberBlock);
-    numberBlock = (numberBlock + 512 -1) /512;
-    char * message =(char *) malloc (sizeof(char) * 512 * numberBlock);
-    read (fd, message, sizeof(char) * 512 * numberBlock);
+    numberBlock = (numberBlock + BLOCKSIZE -1) /BLOCKSIZE;
+    char * message =(char *) malloc (sizeof(char) * BLOCKSIZE * numberBlock);
+    read (fd, message, sizeof(char) * BLOCKSIZE * numberBlock);
     return message;
 }
 
 void passContent (int fd, struct posix_header * header){
     int numberBlock = 0;
     sscanf(header -> size ,"%o", &numberBlock);
-    numberBlock = (numberBlock + 512 -1) /512;
+    numberBlock = (numberBlock + BLOCKSIZE -1) /BLOCKSIZE;
     lseek(fd, BLOCKSIZE * numberBlock, SEEK_CUR);
 }
 
-int getHeader(int fd, struct posix_header *header) {
+int getHeader(int fd, struct posix_header * header) {
     int tmp = readHeader(fd, header);
 
     if(tmp == BLOCKSIZE) {
@@ -57,7 +57,7 @@ int getHeader(int fd, struct posix_header *header) {
 }
 
 void passArchive(int fd) {
-    struct posix_header * h = malloc(512);
+    struct posix_header * h = malloc(BLOCKSIZE);
     int tmp = getHeader(fd, h);
     while(tmp == 0) {
         tmp = getHeader(fd, h);
@@ -66,4 +66,13 @@ void passArchive(int fd) {
     if(tmp == -2) {
         lseek(fd, -BLOCKSIZE, SEEK_CUR);
     }
+}
+
+/*  Return 0 if the file is found, else -1 */
+int searchFile (int fd,struct posix_header * buf, char * name){
+    while (getHeader(fd,buf) == 0){
+        if(strcmp(buf->name, name) == 0)
+            return 0;
+    }
+    return -1;
 }
