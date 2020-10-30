@@ -46,7 +46,7 @@ void cat (char * path){
     }
 }
 
-int main(int argc, char * argv[]){
-    cat(relatifToAbsolute ("test/archive.tar/toto"));
+/*int main(int argc, char * argv[]){
+    cat(relatifToAbsolute ("test/titi"));
     return 0;
-}
+}*/
