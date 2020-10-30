@@ -77,9 +77,43 @@ int numberOfSlash(char * path){
     }
     return cmp;
 }
-/*
+
+/* Delete . and .. from absolute path*/
+char * traitementOfPath (char * absolute){
+    printf("path : %s\n", absolute);
+    char * resultat = malloc (sizeof(char)* strlen(absolute));
+    int size = numberOfSlash(absolute);
+    char * res [size];
+    int pointeur = 0;
+    char * decompose = strtok(absolute, "/");
+
+    while (decompose != NULL){
+        if(strcmp(decompose,".") == 0){
+            decompose = strtok(NULL, "/");
+            continue;
+        }else if(strcmp(decompose,"..") == 0){
+            decompose = strtok(NULL, "/");
+            pointeur --;
+            continue;
+        }else {
+            res[pointeur ++] = decompose;
+            decompose = strtok (NULL,"/");
+        }
+    }
+
+    printf("Pointeur = %d\n\n",pointeur);
+    for (int i = 0; i< pointeur ; i ++){
+        printf("Resultat : %s\n", res[i]);
+        strcat(resultat,"/");
+        strcat(resultat,res[i]);
+    }
+
+    return resultat;
+}
+
+
 int main (){
-    char * test = malloc (sizeof(char) * 100);
+    /*char * test = malloc (sizeof(char) * 100);
     
     //strcpy (test,"a/b.tar/c/toto");
     //strcpy (test,"a/b/c/toto");
@@ -90,6 +124,7 @@ int main (){
         print("This Path is NOT in a Tar"); 
     
     dividePathWithTar(strcat(getPWD(),"/aaaa/bb/c.tar/dqdsqfz"));
-    print(relatifToAbsolute("aaa/bbb/c.tar/ddd/toto"));
+    print(relatifToAbsolute("aaa/bbb/c.tar/ddd/toto"));*/
+    printf("Final : %s\n",traitementOfPath(relatifToAbsolute("bonjour/detruit/../detruit/../ree/./bonsoir")));
 }
-*/
+
