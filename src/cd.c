@@ -41,12 +41,12 @@ void cd (char * arg){
         print("cd : Cannot enter ! HELP!\n");
 }
 
-
+/*
 int main (){
     printf("Avant : %s\n",getenv("PWD"));
     cd("archive.tar/rep/");
     printf("Après : %s\n",getenv("PWD"));
     cd(duplicate("/home/pholasa/Bureau/L3/Système d'exploitation/projet/shellfortarball/archive.tar/"));
     printf("Après2 : %s\n",getenv("PWD"));
-}
+}*/
 
