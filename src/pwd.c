@@ -91,37 +91,40 @@ int numberOfSlash(char * path){
     return cmp;
 }
 
-/* Delete . and .. from absolute path
-Warning, if there where a / a the end of absolute, it will be deleted!
-Might have to concatane a "/" at the end */
-char * traitementOfPath (char * absolute){
-    printf("path : %s\n", absolute);
-    char * resultat = malloc (sizeof(char)* (strlen(absolute)+1));
-    int size = numberOfSlash(absolute);
-    char * res [size];
-    int pointeur = 0;
+/*Auxilary function :Return res completed without . or .. */
+void removePointFromPath (char ** res, int * pointeur, char * absolute){
     char * decompose = strtok(absolute, "/");
-
+    (* pointeur) = 0;
     while (decompose != NULL){
         if(strcmp(decompose,".") == 0){
             decompose = strtok(NULL, "/");
             continue;
         }else if(strcmp(decompose,"..") == 0){
             decompose = strtok(NULL, "/");
-            pointeur --;
+            (*pointeur) --;
             continue;
-        }else {
-            res[pointeur ++] = decompose;
+        } else {
+            res[(*pointeur) ++] = decompose;
             decompose = strtok (NULL,"/");
         }
     }
+}
 
-    printf("Pointeur = %d\n\n",pointeur);
+/* Delete . and .. from absolute path
+Warning, if there where a / a the end of absolute, it will be deleted!
+Might have to concatane a "/" at the end */
+char * pathWithoutPoint (char * absolute){
+    char * resultat = malloc (sizeof(char)* (strlen(absolute)+1));
+    char * res [numberOfSlash(absolute)];
+    int pointeur;
+
+    removePointFromPath(res,&pointeur,absolute);
+
     for (int i = 0; i< pointeur ; i ++){
-        printf("Resultat : %s\n", res[i]);
         strcat(resultat,"/");
         strcat(resultat,res[i]);
     }
+
     return resultat;
 }
 
@@ -136,7 +139,7 @@ int main (){
         print("This Path is NOT in a Tar"); 
     dividePathWithTar(strcat(getPWD(),"/aaaa/bb/c.tar/dqdsqfz"));
     print(relatifToAbsolute("aaa/bbb/c.tar/ddd/toto"));
-    printf("Final : %s\n",traitementOfPath(relatifToAbsolute("bonjour/detruit/../detruit/../ree/./bonsoir")));
+    printf("Final : %s\n",pathWithoutPoint(relatifToAbsolute("bonjour/detruit/../detruit/../ree/./bonsoir")));
 }
 */
 
