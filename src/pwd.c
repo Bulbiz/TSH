@@ -69,6 +69,14 @@ char * relatifToAbsolute (char * relatifPath){
     return path;
 }
 
+int numberOfSlash(char * path){
+    int cmp = 0;
+    for(char * c = path; *c != '\0'; c ++){
+        if (*c == '/')
+            cmp ++;
+    }
+    return cmp;
+}
 /*
 int main (){
     char * test = malloc (sizeof(char) * 100);
