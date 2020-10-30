@@ -20,6 +20,17 @@ void pwd (){
     print(path);
     free(path);
 }
+int isAbsolute (char * path){
+    if (path[0] == '/')
+        return 0;
+    return -1;
+}
+
+char * duplicate (char * str){
+    char * res = malloc (sizeof(char) * strlen(str));
+    strcpy(res,str);
+    return res;
+}
 
 /* Tell if a file is a tar, auxiliary function */
 int isTar (char * name){
@@ -34,11 +45,6 @@ int isTar (char * name){
     return 0;
 }
 
-char * duplicate (char * str){
-    char * res = malloc (sizeof(char) * strlen(str));
-    strcpy(res,str);
-    return res;
-}
 
 /* Tell if the path is in a tar */
 int isInTar (char * path){
@@ -86,10 +92,11 @@ int numberOfSlash(char * path){
 }
 
 /* Delete . and .. from absolute path
-Warning, if there where a / a the end of absolute, it will be deleted!*/
+Warning, if there where a / a the end of absolute, it will be deleted!
+Might have to concatane a "/" at the end */
 char * traitementOfPath (char * absolute){
     printf("path : %s\n", absolute);
-    char * resultat = malloc (sizeof(char)* strlen(absolute));
+    char * resultat = malloc (sizeof(char)* (strlen(absolute)+1));
     int size = numberOfSlash(absolute);
     char * res [size];
     int pointeur = 0;
@@ -115,7 +122,6 @@ char * traitementOfPath (char * absolute){
         strcat(resultat,"/");
         strcat(resultat,res[i]);
     }
-
     return resultat;
 }
 

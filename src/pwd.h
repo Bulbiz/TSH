@@ -8,5 +8,5 @@ int isInTar (char * path);
 char ** dividePathWithTar (char * path);
 char * relatifToAbsolute (char * relatifPath);
 int isAbsolute (char * path);
-
+char * traitementOfPath (char * absolute);
 #endif
