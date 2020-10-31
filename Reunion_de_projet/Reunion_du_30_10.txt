@@ -1,0 +1,5 @@
+Cette semaine, On a fini d'implémenter le cd et le cat dans le tar, on a aussi fait un squelette du shell pour qu'on puisse travailler dessus plus tard. On a un pwd.h pour pouvoir réutiliser les fonctions dedans mais on va bientôt déplacer ces fonctions dans functionInTar pour mieux organiser notre code. On a donc une fonction pathTreated (char * path) qui te retourne tout le chemin sans les "." et ".." . On a donc fini toutes les fonctions de lecture, on va passer maintenant à l'implémentation de fonction de base d'écriture pour le tar pour simplifier nos fonctions futurs.
+
+Cette semaine, tu dois finir le ls dans le tar pour le prochain Sprint, et si tu as le temps, on te laisse quelques fonctions à faire. On a été un peu en retard pour la réunion, désolé.
+
+
