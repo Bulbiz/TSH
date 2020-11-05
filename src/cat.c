@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <math.h>
 #include "tar.h"
-#include "print.h"
 #include "pwd.h"
 #include "functionInTar.h"
 

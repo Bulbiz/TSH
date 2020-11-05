@@ -2,7 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "print.h"
+#include "tar.h"
+#include "functionInTar.h"
 
 #define TRUE 1
 #define LIMIT 20000
