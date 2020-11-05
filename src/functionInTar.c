@@ -101,12 +101,12 @@ int check_checksum(struct posix_header *hd) {
 /* ******************************************************/
 
 struct posix_header createBloc0 (){
-    struct posix_header h;
-    memset(&h,0,BLOCKSIZE);
-    return h;
+    struct posix_header * h = malloc (BLOCKSIZE);
+    memset(h,0,BLOCKSIZE);
+    return *h;
 }
 
-struct posix_header createHeader (char name [100], char mode[8],char size[12],char typeflag){
+struct posix_header createHeader (char * name, char * mode,char * size,char typeflag){
     struct posix_header h = createBloc0();
     
     sprintf(h.name,"%s",name);
@@ -116,11 +116,15 @@ struct posix_header createHeader (char name [100], char mode[8],char size[12],ch
     sprintf(h.magic,TMAGIC);
     sprintf(h.version,TVERSION);
     set_checksum(&h);
+
+    if(!check_checksum(&h))
+        perror("checksum :");
+
     return h;
 }
 
-struct posix_header createHeaderDefault (char name [100],char size[12],char typeflag){
-    createHeader(name,"0000700",size,typeflag);
+struct posix_header createHeaderDefault (char * name,char * size,char typeflag){
+    return createHeader(name,"0000700",size,typeflag);
 }
 
 char fileType (mode_t mode){
@@ -135,11 +139,16 @@ char fileType (mode_t mode){
     }
 }
 
+void sizeFormat (char * buf,off_t size){
+    sprintf(buf,"%ld",size);
+}
+
 struct posix_header createHeaderFromFile (int fd, char * newName){  
     struct stat buf;
     fstat(fd,&buf);
-    printf("Mode : %d\nSize : %ld\n",buf.st_mode,buf.st_size);
-    return createBloc0();
+    char size [12];
+    sizeFormat(size,buf.st_size);
+    return createHeaderDefault(newName,size,fileType(buf.st_mode));
 }
 
 int main (){
@@ -148,7 +157,6 @@ int main (){
     searchFile(fd,&h,"rep/");
     printf("Mode: %s\n",h.mode);*/
     int fd = open("toto",O_RDONLY);
-    struct stat buf;
-    fstat(fd,&buf);
-    printf("%s\n",convertMode(buf.st_mode));
+    struct posix_header h = createHeaderFromFile(fd,"aaaAAAAAAAAA");
+    printf("Name : %s\n\nSize : %s",h.name,h.size);
 }
