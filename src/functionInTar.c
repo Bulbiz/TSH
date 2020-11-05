@@ -77,12 +77,12 @@ int searchFile (int fd,struct posix_header * buf, char * name){
     return -1;
 }
 
-char * getFileContentForTar (int fd){
+char * getFileContentForTar (int fd, int * size){
     struct stat buf;
     fstat(fd,&buf);
-    int size = ((buf.st_size + BLOCKSIZE -1) /BLOCKSIZE)* BLOCKSIZE;
-    char * content = malloc (sizeof(char) * size);
-    memset(content,0,size);
+    *size = ((buf.st_size + BLOCKSIZE -1) /BLOCKSIZE)* BLOCKSIZE;
+    char * content = malloc (*size);
+    memset(content,0,*size);
     if (read(fd,content,buf.st_size) == -1)
         perror("GetFileContent: ");
     return content;
