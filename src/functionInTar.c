@@ -108,7 +108,7 @@ struct posix_header createBloc0 (){
 }
 
 char fileType (mode_t mode){
-    switch (mode & S_IFMT)
+    switch (mode & S_IFMT) /* S_IFMT is the mask to have the filetype */
     {
         case S_IFBLK : return BLKTYPE;break; /* block special */
         case S_IFCHR : return CHRTYPE;break; /* character special */
