@@ -203,3 +203,25 @@ char * pathTreated (char * path){
     char * res = (isAbsolute(path) == 0)? path : relatifToAbsolute(path);
     return pathWithoutPoint(res);
 }
+
+//return the size of the archive until the file path
+size_t getSizeAfterFile (char * path, char * archive){
+    int fd = openArchive (archive, O_RDONLY);
+    struct posix_header * buffer = malloc (BLOCKSIZE);
+    size_t size = 0;
+    while(readHeader (fd, buffer) > 0){
+        if(strcmp (buffer -> name, path) == 0){
+            return size;
+        }
+        else{
+            readHeader (fd, buffer);
+            int numberBlock = 0;
+            sscanf(buffer -> size ,"%o", &numberBlock);
+            numberBlock = (numberBlock + 512 -1) /512;
+            size += numberBlock * BLOCKSIZE;
+            passContent (fd, buffer);
+        }    
+    }
+    print("fichier introuvable\n");
+    return -1;
+}

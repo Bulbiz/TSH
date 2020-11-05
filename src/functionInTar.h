@@ -20,4 +20,6 @@ char * pathWithoutPoint (char * absolute);
 char * duplicate (char * str);
 char * pathTreated (char * path);
 
+size_t getSizeAfterFile (char * path, char * archive);
+
 #endif
