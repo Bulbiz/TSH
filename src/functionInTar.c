@@ -77,6 +77,8 @@ int searchFile (int fd,struct posix_header * buf, char * name){
     return -1;
 }
 
+/**** Fonction récupérer depuis le TP1 de système ****/
+
 void set_checksum(struct posix_header *hd) {
   memset(hd->chksum,' ',8);
   unsigned int sum = 0;
@@ -95,4 +97,18 @@ int check_checksum(struct posix_header *hd) {
   for (int i=0; i < BLOCKSIZE; i++) { sum += p[i]; }
   for (int i=0;i<8;i++) { sum += ' ' - hd->chksum[i]; }
   return (checksum == sum);
+}
+/* ******************************************************/
+
+struct posix_header createHeader (char name [100], char mode[8],char size[12],char typeflag){
+    struct posix_header h;
+    memset(&h,0,BLOCKSIZE);
+    strcpy(h.name,name);
+    strcpy(h.mode,mode);
+    strcpy(h.size,size);
+    h.typeflag = typeflag;
+    strcpy(h.magic,TMAGIC);
+    strcpy(h.version,TVERSION);
+    set_checksum(&h);
+    return h;
 }
