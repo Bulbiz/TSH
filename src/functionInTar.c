@@ -118,7 +118,7 @@ char fileType (mode_t mode){
         default : return REGTYPE; /* regular file */
     }
 }
-
+//FIXME : change the default mode 0000700
 struct posix_header createHeader (char * name, struct stat information){
     struct posix_header h = createBloc0();
     
