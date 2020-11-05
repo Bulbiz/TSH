@@ -9,6 +9,9 @@ int getHeader(int fd, struct posix_header *header);
 void passArchive(int fd);
 int searchFile (int fd,struct posix_header * buf, char * name);
 
+struct posix_header createBloc0();
+struct posix_header createHeaderFromFile (int fd, char * newName);
+
 char * getPWD ();
 void pwd ();
 int isTar (char * name);

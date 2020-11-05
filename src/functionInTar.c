@@ -3,11 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <math.h>
+#include <time.h>
 #include "tar.h"
 
 #define BLOCKSIZE 512
@@ -80,6 +81,74 @@ int searchFile (int fd,struct posix_header * buf, char * name){
     }
     return -1;
 }
+
+/**** Fonction récupérer depuis le TP1 de système ****/
+
+void set_checksum(struct posix_header *hd) {
+  memset(hd->chksum,' ',8);
+  unsigned int sum = 0;
+  char *p = (char *)hd;
+  for (int i=0; i < BLOCKSIZE; i++) { sum += p[i]; }
+  sprintf(hd->chksum,"%06o",sum);
+}
+
+/* Check that the checksum of a header is correct */
+
+int check_checksum(struct posix_header *hd) {
+  unsigned int checksum;
+  sscanf(hd->chksum,"%o ", &checksum);
+  unsigned int sum = 0;
+  char *p = (char *)hd;
+  for (int i=0; i < BLOCKSIZE; i++) { sum += p[i]; }
+  for (int i=0;i<8;i++) { sum += ' ' - hd->chksum[i]; }
+  return (checksum == sum);
+}
+/* ******************************************************/
+
+struct posix_header createBloc0 (){
+    struct posix_header * h = malloc (BLOCKSIZE);
+    memset(h,0,BLOCKSIZE);
+    return *h;
+}
+
+char fileType (mode_t mode){
+    switch (mode & S_IFMT) /* S_IFMT is the mask to have the filetype */
+    {
+        case S_IFBLK : return BLKTYPE;break; /* block special */
+        case S_IFCHR : return CHRTYPE;break; /* character special */
+        case S_IFIFO : return FIFOTYPE;break; /* FIFO special */
+        case S_IFDIR : return DIRTYPE;break; /* directory */
+        case S_IFLNK : return LNKTYPE;break; /* link */
+        default : return REGTYPE; /* regular file */
+    }
+}
+//FIXME : change the default mode 0000700
+struct posix_header createHeader (char * name, struct stat information){
+    struct posix_header h = createBloc0();
+    
+    sprintf(h.name,"%s",name);
+    sprintf(h.mode,"0000700");
+    sprintf(h.uid,"%d", information.st_uid);
+    sprintf(h.gid,"%d", information.st_gid);
+    sprintf(h.size,"%ld",information.st_size);
+    sprintf(h.mtime,"%ld",time(NULL));
+    h.typeflag = fileType(information.st_mode);
+    printf(h.magic,TMAGIC);
+    sprintf(h.version,TVERSION);
+    set_checksum(&h);
+
+    if(!check_checksum(&h))
+        perror("checksum :");
+
+    return h;
+}
+
+struct posix_header createHeaderFromFile (int fd, char * newName){  
+    struct stat information;
+    fstat(fd,&information);
+    return createHeader(newName,information);
+}
+
 
 #define SIZE 20000
 
@@ -203,3 +272,4 @@ char * pathTreated (char * path){
     char * res = (isAbsolute(path) == 0)? path : relatifToAbsolute(path);
     return pathWithoutPoint(res);
 }
+

@@ -8,7 +8,7 @@
 /* Print the values of environment variable PWD */
 void pwd (){
     char * path = getPWD();
-    strcat(path,"\n\0");
+    strcat(path,"\n");
     print(path);
     free(path);
 }
