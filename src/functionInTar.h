@@ -23,6 +23,7 @@ char * pathWithoutPoint (char * absolute);
 char * duplicate (char * str);
 char * pathTreated (char * path);
 
+int cursorFile(char * path, int fd);
 size_t getSizeAfterFile (char * path, int fd);
 char * getContentUntilPathFile(char * path, int fd);
 #endif

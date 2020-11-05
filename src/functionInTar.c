@@ -287,25 +287,35 @@ char * pathTreated (char * path){
     return pathWithoutPoint(res);
 }
 
-//return the size of the archive until the file path
+int cursorFile(char * path, int fd){
+    struct posix_header * buffer = malloc (BLOCKSIZE);
+    while(readHeader (fd, buffer) > 0){
+        if(strcmp (buffer -> name, path) == 0){
+            return fd;
+        }
+        else
+            passContent (fd, buffer);
+    }
+    return -1;
+}
+
+//return the size of the archive from the file path to the end
 size_t getSizeAfterFile (char * path, int fd){
     struct posix_header * buffer = malloc (BLOCKSIZE);
     size_t size = 0;
+    fd = cursorFile(path, fd);
+    if(fd < 0)
+        perror("Fichier introuvable");
+    
     while(readHeader (fd, buffer) > 0){
-        if(strcmp (buffer -> name, path) == 0){
-            return size;
-        }
-        else{
-            readHeader (fd, buffer);
-            int numberBlock = 0;
-            sscanf(buffer -> size ,"%o", &numberBlock);
-            numberBlock = (numberBlock + 512 -1) /512;
-            size += numberBlock * BLOCKSIZE;
-            passContent (fd, buffer);
-        }    
+        readHeader (fd, buffer);
+        int numberBlock = 0;
+        sscanf(buffer -> size ,"%o", &numberBlock);
+        numberBlock = (numberBlock + 512 -1) /512;
+        size += numberBlock * BLOCKSIZE;
+        passContent (fd, buffer);   
     }
-    print("fichier introuvable\n");
-    return -1;
+    return size;
 }
 
 char * getContentUntilPathFile(char * path, int fd){
@@ -313,7 +323,8 @@ char * getContentUntilPathFile(char * path, int fd){
     if (size == -1)
         perror("Fichier introuvable");
     char * res = malloc (sizeof(char) * size);
-    if(read (fd,res,size)<0)
+    fd = cursorFile(path, fd);
+    if(read (fd,res,size) < 0)
         perror("read");
     return res;
 }
