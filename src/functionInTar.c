@@ -205,8 +205,7 @@ char * pathTreated (char * path){
 }
 
 //return the size of the archive until the file path
-size_t getSizeAfterFile (char * path, char * archive){
-    int fd = openArchive (archive, O_RDONLY);
+size_t getSizeAfterFile (char * path, int fd){
     struct posix_header * buffer = malloc (BLOCKSIZE);
     size_t size = 0;
     while(readHeader (fd, buffer) > 0){
@@ -224,4 +223,14 @@ size_t getSizeAfterFile (char * path, char * archive){
     }
     print("fichier introuvable\n");
     return -1;
+}
+
+char * getContentUntilPathFile(char * path, int fd){
+    size_t size = getSizeAfterFile (path, fd);
+    if (size == -1)
+        perror("Fichier introuvable");
+    char * res = malloc (sizeof(char) * size);
+    if(read (fd,res,size)<0)
+        perror("read");
+    return res;
 }
