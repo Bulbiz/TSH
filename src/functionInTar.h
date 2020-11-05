@@ -8,7 +8,7 @@ void passContent (int fd, struct posix_header * header);
 int getHeader(int fd, struct posix_header *header);
 void passArchive(int fd);
 int searchFile (int fd,struct posix_header * buf, char * name);
-/*Function from TP1 Systeme*/
-int check_checksum(struct posix_header *hd);
-void set_checksum(struct posix_header *hd);
+struct posix_header createBloc0();
+struct posix_header createHeaderFromFile (int fd, char * newName);
+
 #endif
