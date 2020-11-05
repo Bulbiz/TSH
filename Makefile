@@ -1,7 +1,7 @@
 .PHONY: clean mrproper
 
 CC=gcc
-CFLAGS=-g -Wall -std=c11
+CFLAGS=-g -Wall
 LDFLAGS=
 LDLIBS=
 
