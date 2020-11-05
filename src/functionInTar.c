@@ -100,9 +100,15 @@ int check_checksum(struct posix_header *hd) {
 }
 /* ******************************************************/
 
-struct posix_header createHeader (char name [100], char mode[8],char size[12],char typeflag){
+struct posix_header createBloc0 (){
     struct posix_header h;
     memset(&h,0,BLOCKSIZE);
+    return h;
+}
+
+struct posix_header createHeader (char name [100], char mode[8],char size[12],char typeflag){
+    struct posix_header h = createBloc0();
+    
     strcpy(h.name,name);
     strcpy(h.mode,mode);
     strcpy(h.size,size);
@@ -112,3 +118,4 @@ struct posix_header createHeader (char name [100], char mode[8],char size[12],ch
     set_checksum(&h);
     return h;
 }
+
