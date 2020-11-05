@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <math.h>
+#include <time.h>
 #include "tar.h"
 #include "print.h"
 
@@ -106,27 +107,6 @@ struct posix_header createBloc0 (){
     return *h;
 }
 
-struct posix_header createHeader (char * name, char * mode,char * size,char typeflag){
-    struct posix_header h = createBloc0();
-    
-    sprintf(h.name,"%s",name);
-    sprintf(h.mode,"%s",mode);
-    sprintf(h.size,"%s",size);
-    h.typeflag = typeflag;
-    sprintf(h.magic,TMAGIC);
-    sprintf(h.version,TVERSION);
-    set_checksum(&h);
-
-    if(!check_checksum(&h))
-        perror("checksum :");
-
-    return h;
-}
-
-struct posix_header createHeaderDefault (char * name,char * size,char typeflag){
-    return createHeader(name,"0000700",size,typeflag);
-}
-
 char fileType (mode_t mode){
     switch (mode & S_IFMT)
     {
@@ -139,16 +119,30 @@ char fileType (mode_t mode){
     }
 }
 
-void sizeFormat (char * buf,off_t size){
-    sprintf(buf,"%ld",size);
+struct posix_header createHeader (char * name, struct stat information){
+    struct posix_header h = createBloc0();
+    
+    sprintf(h.name,"%s",name);
+    sprintf(h.mode,"0000700");
+    sprintf(h.uid,"%d", information.st_uid);
+    sprintf(h.gid,"%d", information.st_gid);
+    sprintf(h.size,"%ld",information.st_size);
+    sprintf(h.mtime,"%ld",time(NULL));
+    h.typeflag = fileType(information.st_mode);
+    printf(h.magic,TMAGIC);
+    sprintf(h.version,TVERSION);
+    set_checksum(&h);
+
+    if(!check_checksum(&h))
+        perror("checksum :");
+
+    return h;
 }
 
 struct posix_header createHeaderFromFile (int fd, char * newName){  
-    struct stat buf;
-    fstat(fd,&buf);
-    char size [12];
-    sizeFormat(size,buf.st_size);
-    return createHeaderDefault(newName,size,fileType(buf.st_mode));
+    struct stat information;
+    fstat(fd,&information);
+    return createHeader(newName,information);
 }
 
 int main (){
@@ -158,5 +152,5 @@ int main (){
     printf("Mode: %s\n",h.mode);*/
     int fd = open("toto",O_RDONLY);
     struct posix_header h = createHeaderFromFile(fd,"aaaAAAAAAAAA");
-    printf("Name : %s\n\nSize : %s",h.name,h.size);
+    printf("Name : %s\nSize : %s\nTime : %s\nUid : %s\n",h.name,h.size,h.mtime,h.uid);
 }
