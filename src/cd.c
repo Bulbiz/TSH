@@ -5,10 +5,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
-#include "print.h"
 #include "tar.h"
 #include "functionInTar.h"
-#include "pwd.h"
 
 int setPWD (char * path, int fd){
     setenv("PWD",path,1);
