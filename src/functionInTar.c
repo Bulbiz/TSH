@@ -82,6 +82,20 @@ int searchFile (int fd,struct posix_header * buf, char * name){
     return -1;
 }
 
+
+
+char * getFileContentForTar (int fd, int * size){
+    struct stat buf;
+    fstat(fd,&buf);
+    *size = ((buf.st_size + BLOCKSIZE -1) /BLOCKSIZE)* BLOCKSIZE;
+    char * content = malloc (*size);
+    memset(content,0,*size);
+    if (read(fd,content,buf.st_size) == -1)
+        perror("GetFileContent: ");
+    return content;
+}
+
+
 /**** Fonction récupérer depuis le TP1 de système ****/
 
 void set_checksum(struct posix_header *hd) {
