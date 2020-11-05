@@ -84,18 +84,6 @@ int searchFile (int fd,struct posix_header * buf, char * name){
 
 
 
-char * getFileContentForTar (int fd, int * size){
-    struct stat buf;
-    fstat(fd,&buf);
-    *size = ((buf.st_size + BLOCKSIZE -1) /BLOCKSIZE)* BLOCKSIZE;
-    char * content = malloc (*size);
-    memset(content,0,*size);
-    if (read(fd,content,buf.st_size) == -1)
-        perror("GetFileContent: ");
-    return content;
-}
-
-
 /**** Fonction récupérer depuis le TP1 de système ****/
 
 void set_checksum(struct posix_header *hd) {
@@ -161,6 +149,17 @@ struct posix_header createHeaderFromFile (int fd, char * newName){
     struct stat information;
     fstat(fd,&information);
     return createHeader(newName,information);
+}
+
+char * getFileContentForTar (int fd, int * size){
+    struct stat buf;
+    fstat(fd,&buf);
+    *size = ((buf.st_size + BLOCKSIZE -1) /BLOCKSIZE)* BLOCKSIZE;
+    char * content = malloc (*size);
+    memset(content,0,*size);
+    if (read(fd,content,buf.st_size) == -1)
+        perror("GetFileContent: ");
+    return content;
 }
 
 
