@@ -109,13 +109,28 @@ struct posix_header createBloc0 (){
 struct posix_header createHeader (char name [100], char mode[8],char size[12],char typeflag){
     struct posix_header h = createBloc0();
     
-    strcpy(h.name,name);
-    strcpy(h.mode,mode);
-    strcpy(h.size,size);
+    sprintf(h.name,"%s",name);
+    sprintf(h.mode,"%s",mode);
+    sprintf(h.size,"%s",size);
     h.typeflag = typeflag;
-    strcpy(h.magic,TMAGIC);
-    strcpy(h.version,TVERSION);
+    sprintf(h.magic,TMAGIC);
+    sprintf(h.version,TVERSION);
     set_checksum(&h);
     return h;
 }
 
+char fileType (mode_t mode){
+    return 'A';
+}
+
+struct posix_header createHeaderFromFile (int fd, char * newName){  
+    struct stat buf;
+    fstat(fd,&buf);
+    printf("Mode : %d\nSize : %ld\n",buf.st_mode,buf.st_size);
+    return createBloc0();
+}
+
+int main (){
+    int fd = open("toto",O_RDONLY);
+    createHeaderFromFile(fd,"aaa");
+}
