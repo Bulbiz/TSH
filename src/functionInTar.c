@@ -76,3 +76,13 @@ int searchFile (int fd,struct posix_header * buf, char * name){
     }
     return -1;
 }
+
+char * getFileContent (int fd){
+    struct stat buf; 
+    fstat(fd,&buf);
+
+    char * content = malloc (sizeof(char) * buf.st_size);
+    if (read(fd,content,buf.st_size) == -1)
+        perror("GetFileContent: ");
+    return content;
+}
