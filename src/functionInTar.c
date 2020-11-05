@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <math.h>
@@ -120,7 +120,17 @@ struct posix_header createHeader (char name [100], char mode[8],char size[12],ch
 }
 
 char fileType (mode_t mode){
-    return 'A';
+
+    switch (mode & S_IFMT)
+    {
+        case S_IFBLK : return BLKTYPE;break; /* block special */
+        case S_IFCHR : return CHRTYPE;break; /* character special */
+        case S_IFIFO: return FIFOTYPE;break; /* FIFO special */
+        case S_IFDIR: return DIRTYPE;break; /* directory */
+        case S_IFLNK: return LNKTYPE;break; /* link */
+        default : return REGTYPE; /* regular file */
+    }
+
 }
 
 struct posix_header createHeaderFromFile (int fd, char * newName){  
