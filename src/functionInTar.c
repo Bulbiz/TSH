@@ -119,18 +119,20 @@ struct posix_header createHeader (char name [100], char mode[8],char size[12],ch
     return h;
 }
 
-char fileType (mode_t mode){
+struct posix_header createHeaderDefault (char name [100],char size[12],char typeflag){
+    createHeader(name,"0000700",size,typeflag);
+}
 
+char fileType (mode_t mode){
     switch (mode & S_IFMT)
     {
         case S_IFBLK : return BLKTYPE;break; /* block special */
         case S_IFCHR : return CHRTYPE;break; /* character special */
-        case S_IFIFO: return FIFOTYPE;break; /* FIFO special */
-        case S_IFDIR: return DIRTYPE;break; /* directory */
-        case S_IFLNK: return LNKTYPE;break; /* link */
+        case S_IFIFO : return FIFOTYPE;break; /* FIFO special */
+        case S_IFDIR : return DIRTYPE;break; /* directory */
+        case S_IFLNK : return LNKTYPE;break; /* link */
         default : return REGTYPE; /* regular file */
     }
-
 }
 
 struct posix_header createHeaderFromFile (int fd, char * newName){  
@@ -141,6 +143,12 @@ struct posix_header createHeaderFromFile (int fd, char * newName){
 }
 
 int main (){
+    /*int fd = openArchive("archive.tar",O_RDONLY);
+    struct posix_header h;
+    searchFile(fd,&h,"rep/");
+    printf("Mode: %s\n",h.mode);*/
     int fd = open("toto",O_RDONLY);
-    createHeaderFromFile(fd,"aaa");
+    struct stat buf;
+    fstat(fd,&buf);
+    printf("%s\n",convertMode(buf.st_mode));
 }
