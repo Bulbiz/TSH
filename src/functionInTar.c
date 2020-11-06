@@ -317,15 +317,36 @@ char * pathTreated (char * path){
     return pathWithoutPoint(res);
 }
 
-/*
-int main (){
-    int archive = openArchive("archive.tar",O_RDWR);
-    int file = open("toto",O_RDONLY);
-    addFileToTar(archive,file,"titi");
-    printTar(archive);
+//à tester
+//return the size of the archive from the file path to the end
+size_t getSizeAfterFile (char * path, int fd){
+    struct posix_header * buffer = malloc (BLOCKSIZE);
+    size_t size = 0;
+    if(searchFile (fd, buffer, path) == -1)   //place the cursor on the FilePath
+        return -1;
+    passContent (fd, buffer);
 
-    replaceCurseurToStart(file);
-    addFileToTar(archive,file,"fifou");
-    printTar(archive);
-    
-}*/
+    while(getHeader(fd, buffer) == 0){        //start counting
+        int numberBlock = 0;
+        sscanf(buffer -> size ,"%o", &numberBlock);
+        numberBlock = (numberBlock + 512 -1) /512;
+        size += numberBlock * BLOCKSIZE + (BLOCKSIZE);  //size content + posix header
+    }
+    return size;
+}
+
+//à tester
+char * getContentUntilPathFile(char * path, int fd, size_t * size){
+    *size = getSizeAfterFile (path, fd);
+    lseek(fd, 0, SEEK_SET);
+    if (size == -1)
+        perror("Fichier introuvable");
+    char * res = malloc (sizeof(char) * (*size));
+    struct posix_header * buffer = malloc (BLOCKSIZE);
+    searchFile (fd, buffer, path);   //place the cursor on the FilePath
+    passContent (fd, buffer);
+    if(read (fd,res,*size) < 0)
+        perror("read");
+    free(buffer);
+    return res;
+}
