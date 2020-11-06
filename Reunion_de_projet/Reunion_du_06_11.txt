@@ -1,0 +1,8 @@
+Le premier rendu a été terrible, il se trouve que la prof n'a pas vu l'architecture.pdf et donc n'a pas compris notre implémentation. Mais on ne désespère pas. On a tiré la sonnette d'alarme et on va commencer à accélérer un peu la cadence suite au retour de la prof à partir du prochain sprint xD.
+
+Du coup cette semaine, on a réussi à créer un posix header à la main depuis un stat et on a réussi à ajouter un fichier dans le tar à partir d'un autre fichier. On a également des fonctions auxiliaires permettant de facilité l'implémentation de rm (getContentUntilPathFile et getSizeAfterFile).
+
+Pour le prochain sprint, on va commencer à implémenter le shell pour pouvoir tester nos fonctions, on va aussi implémenter rm (rmdir pas prioritaire encore). De ton côté, essaie de finir le ls et les fonctions auxiliaires (Fonction qui vérifie qu’il n’y a pas de fichier dans un certain repertoire + Créer un fichier a partir d'un contenu et du chemin), et si tu as le temps essaie d'implémenter mkdir, tu peux t'inspirer de la fonction de creation du posix header.
+
+Bonne chance pour la suite et pour info tous les autres groupes se sont fait détruire aussi donc pas besoin de trop paniquer je suppose.
+A Vendredi prochain !
