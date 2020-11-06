@@ -287,6 +287,7 @@ char * pathTreated (char * path){
     return pathWithoutPoint(res);
 }
 
+//à tester
 //return the size of the archive from the file path to the end
 size_t getSizeAfterFile (char * path, int fd){
     struct posix_header * buffer = malloc (BLOCKSIZE);
@@ -304,16 +305,17 @@ size_t getSizeAfterFile (char * path, int fd){
     return size;
 }
 
-char * getContentUntilPathFile(char * path, int fd){
-    size_t size = getSizeAfterFile (path, fd);
+//à tester
+char * getContentUntilPathFile(char * path, int fd, size_t * size){
+    *size = getSizeAfterFile (path, fd);
     lseek(fd, 0, SEEK_SET);
     if (size == -1)
         perror("Fichier introuvable");
-    char * res = malloc (sizeof(char) * size);
+    char * res = malloc (sizeof(char) * (*size));
     struct posix_header * buffer = malloc (BLOCKSIZE);
     searchFile (fd, buffer, path);   //place the cursor on the FilePath
     passContent (fd, buffer);
-    if(read (fd,res,size) < 0)
+    if(read (fd,res,*size) < 0)
         perror("read");
     free(buffer);
     return res;
