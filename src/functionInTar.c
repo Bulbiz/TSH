@@ -73,6 +73,10 @@ void passArchive(int fd) {
     }
 }
 
+void replaceCurseurToStart (int fd){
+    lseek(fd,0,SEEK_SET);
+}
+
 /*  Return 0 if the file is found, else -1 */
 int searchFile (int fd,struct posix_header * buf, char * name){
     while (getHeader(fd,buf) == 0){
@@ -82,7 +86,17 @@ int searchFile (int fd,struct posix_header * buf, char * name){
     return -1;
 }
 
-
+/* Fonction de test ! n'intervient pas dans le projet !*/
+void printTar (int fd){
+    printf("Lancement du print\n");
+    replaceCurseurToStart(fd);
+    struct posix_header * h = malloc (BLOCKSIZE);
+    while (getHeader(fd,h) == 0){
+        printf("File : %s; Size : %s; FileType : %c;GUD : %s; UID : %s\n",h -> name,h->size, h->typeflag,h -> gid, h -> uid);
+    }
+    replaceCurseurToStart(fd);
+    printf("Fin du print\n");
+}
 
 /**** Fonction récupérer depuis le TP1 de système ****/
 
@@ -107,10 +121,10 @@ int check_checksum(struct posix_header *hd) {
 }
 /* ******************************************************/
 
-struct posix_header createBloc0 (){
+struct posix_header * createBloc0 (){
     struct posix_header * h = malloc (BLOCKSIZE);
     memset(h,0,BLOCKSIZE);
-    return *h;
+    return h;
 }
 
 char fileType (mode_t mode){
@@ -125,27 +139,27 @@ char fileType (mode_t mode){
     }
 }
 //FIXME : change the default mode 0000700
-struct posix_header createHeader (char * name, struct stat information){
-    struct posix_header h = createBloc0();
+struct posix_header * createHeader (char * name, struct stat information){
+    struct posix_header *  h = createBloc0();
     
-    sprintf(h.name,"%s",name);
-    sprintf(h.mode,"0000700");
-    sprintf(h.uid,"%d", information.st_uid);
-    sprintf(h.gid,"%d", information.st_gid);
-    sprintf(h.size,"%ld",information.st_size);
-    sprintf(h.mtime,"%ld",time(NULL));
-    h.typeflag = fileType(information.st_mode);
-    printf(h.magic,TMAGIC);
-    sprintf(h.version,TVERSION);
-    set_checksum(&h);
+    strcpy(h -> name, name);
+    sprintf(h -> mode,"0000700");
+    sprintf(h -> uid,"%d", information.st_uid);
+    sprintf(h -> gid,"%d", information.st_gid);
+    sprintf(h -> size,"%011lo",information.st_size);
+    sprintf(h -> mtime,"%ld",time(NULL));
+    h -> typeflag = fileType(information.st_mode);
+    sprintf(h -> magic,TMAGIC);
+    sprintf(h -> version,TVERSION);
+    set_checksum(h);
 
-    if(!check_checksum(&h))
-        perror("checksum :");
+    if(!check_checksum(h))
+        perror("Checksum :");
 
     return h;
 }
 
-struct posix_header createHeaderFromFile (int fd, char * newName){  
+struct posix_header * createHeaderFromFile (int fd, char * newName){  
     struct stat information;
     fstat(fd,&information);
     return createHeader(newName,information);
@@ -157,11 +171,28 @@ char * getFileContentForTar (int fd, int * size){
     *size = ((buf.st_size + BLOCKSIZE -1) /BLOCKSIZE)* BLOCKSIZE;
     char * content = malloc (*size);
     memset(content,0,*size);
+
     if (read(fd,content,buf.st_size) == -1)
         perror("GetFileContent: ");
     return content;
 }
 
+//FIXME: Verifier si le chemin est possible et qu'il n'y a pas déja le fichier!
+int addFileToTar (int archive, int file,char * nametar){
+    passArchive(archive);
+    int size;
+    struct posix_header * headerfile = createHeaderFromFile(file,nametar);
+    char * contentfile = getFileContentForTar(file,&size);
+
+    if(write(archive,headerfile,BLOCKSIZE) < 0)
+        perror("addFileToTar");
+    if(write(archive,contentfile,size) < 0)
+        perror("addFileToTar");
+
+    free(headerfile);
+    free(contentfile);
+    return 0;
+}
 
 #define SIZE 20000
 
@@ -286,3 +317,15 @@ char * pathTreated (char * path){
     return pathWithoutPoint(res);
 }
 
+
+int main (){
+    int archive = openArchive("archive.tar",O_RDWR);
+    int file = open("toto",O_RDONLY);
+    addFileToTar(archive,file,"titi");
+    printTar(archive);
+
+    replaceCurseurToStart(file);
+    addFileToTar(archive,file,"fifou");
+    printTar(archive);
+    
+}
