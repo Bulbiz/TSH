@@ -317,7 +317,7 @@ char * pathTreated (char * path){
     return pathWithoutPoint(res);
 }
 
-
+/*
 int main (){
     int archive = openArchive("archive.tar",O_RDWR);
     int file = open("toto",O_RDONLY);
@@ -328,4 +328,4 @@ int main (){
     addFileToTar(archive,file,"fifou");
     printTar(archive);
     
-}
+}*/
