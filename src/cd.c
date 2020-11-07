@@ -8,10 +8,11 @@
 #include "tar.h"
 #include "functionInTar.h"
 
-int setPWD (char * path, int fd){
-    setenv("PWD",path,1);
-    close(fd);
-    return 0;
+int setPWD (char * path){
+    int set = setenv("PWD",path,1);
+    free(path);
+    return set;
+
 }
 
 int cdAux (char * path){
@@ -19,13 +20,18 @@ int cdAux (char * path){
     int fd = openArchive(traitedPath[0],O_RDONLY);
     if(fd < 0) {return -1;}
 
-    if(strcmp(traitedPath[1],"") == 0)
-        return setPWD (path,fd);
+    if(strcmp(traitedPath[1],"") == 0){
+        close(fd);
+        return setPWD (path);
+    }
     
     struct posix_header * buf = malloc (BLOCKSIZE);
     if ((searchFile(fd,buf,traitedPath[1]) == 0) && (buf -> typeflag = '5')){
-        return setPWD (path,fd);
+        free(buf);
+        close(fd);
+        return setPWD (path);
     } else {
+        free(buf);
         close(fd);
         return -1;
     }

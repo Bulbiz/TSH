@@ -248,10 +248,10 @@ int isInTar (char * path){
     char * decompose = strtok(pathCopy, "/");
     while (decompose != NULL){
         if (isTar(decompose) == 1)
-            return 1;
+            return 0;
         decompose = strtok (NULL,"/");
     }
-    return 0;
+    return -1;
 }
 
 /* Divide the path in two, 
@@ -335,8 +335,11 @@ char * pathTreated (char * path){
 size_t getSizeAfterFile (char * path, int fd){
     struct posix_header * buffer = malloc (BLOCKSIZE);
     size_t size = 0;
-    if(searchFile (fd, buffer, path) == -1)   //place the cursor on the FilePath
+    if(searchFile (fd, buffer, path) == -1){   //place the cursor on the FilePath
+        free(buffer);
         return -1;
+    }
+    
     passContent (fd, buffer);
 
     while(getHeader(fd, buffer) == 0){        //start counting
@@ -345,6 +348,7 @@ size_t getSizeAfterFile (char * path, int fd){
         numberBlock = (numberBlock + 512 -1) /512;
         size += numberBlock * BLOCKSIZE + (BLOCKSIZE);  //size content + posix header
     }
+    free(buffer);
     return size;
 }
 
