@@ -18,6 +18,10 @@ void print (char * message){
         perror("Print :");
 }
 
+void replaceCurseurToStart (int fd){
+    lseek(fd,0,SEEK_SET);
+}
+
 int openArchive (char * pathname, int flags){
     int tmp = open(pathname, flags);
     if(tmp < 0)
@@ -62,6 +66,7 @@ int getHeader(int fd, struct posix_header * header) {
 }
 
 void passArchive(int fd) {
+    replaceCurseurToStart (fd);
     struct posix_header * h = malloc(BLOCKSIZE);
     int tmp = getHeader(fd, h);
     while(tmp == 0) {
@@ -73,12 +78,10 @@ void passArchive(int fd) {
     }
 }
 
-void replaceCurseurToStart (int fd){
-    lseek(fd,0,SEEK_SET);
-}
 
 /*  Return 0 if the file is found, else -1 */
 int searchFile (int fd,struct posix_header * buf, char * name){
+    replaceCurseurToStart (fd);
     while (getHeader(fd,buf) == 0){
         if(strcmp(buf->name, name) == 0)
             return 0;
