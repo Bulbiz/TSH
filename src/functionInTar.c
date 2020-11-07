@@ -178,13 +178,13 @@ char * getFileContentForTar (int fd, int * size){
 }
 
 void addFileToTar (int archive, struct posix_header * headerfile, char * contentfile, int size){
+    passArchive(archive);
     if(write(archive,headerfile,BLOCKSIZE) < 0 || write(archive,contentfile,size) < 0)
         perror("addFileToTar");
 }
 
 //FIXME: Verify that the name isn't already here and if the path is valid !
 int copyFileToTar (int archive, int file,char * nametar){
-    passArchive(archive);
     int size;
     struct posix_header * headerfile = createHeaderFromFile(file,nametar);
     char * contentfile = getFileContentForTar(file,&size);
