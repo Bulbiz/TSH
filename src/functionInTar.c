@@ -184,7 +184,7 @@ void addFileToTar (int archive, struct posix_header * headerfile, char * content
 }
 
 //FIXME: Verify that the name isn't already here and if the path is valid !
-int copyFileToTar (int archive, int file,char * nametar){
+void copyFileToTar (int archive, int file,char * nametar){
     int size;
     struct posix_header * headerfile = createHeaderFromFile(file,nametar);
     char * contentfile = getFileContentForTar(file,&size);
@@ -193,7 +193,6 @@ int copyFileToTar (int archive, int file,char * nametar){
 
     free(headerfile);
     free(contentfile);
-    return 0;
 }
 
 #define SIZE 20000

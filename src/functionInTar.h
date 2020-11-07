@@ -7,7 +7,10 @@ char * getContent (int fd, struct posix_header * header);
 void passContent (int fd, struct posix_header * header);
 int getHeader(int fd, struct posix_header *header);
 void passArchive(int fd);
+
 int searchFile (int fd,struct posix_header * buf, char * name);
+void copyFileToTar (int archive, int file,char * nametar);
+void addFileToTar (int archive, struct posix_header * headerfile, char * contentfile, int size);
 
 struct posix_header createBloc0();
 struct posix_header createHeaderFromFile (int fd, char * newName);
