@@ -138,12 +138,17 @@ char fileType (mode_t mode){
         default : return REGTYPE; /* regular file */
     }
 }
+
 //FIXME : change the default mode 0000700
+char * convertModeToChar (mode_t mode){
+    return "0000700";
+}
+
 struct posix_header * createHeader (char * name, struct stat information){
     struct posix_header *  h = createBloc0();
     
     strcpy(h -> name, name);
-    sprintf(h -> mode,"0000700");
+    sprintf(h -> mode,"%s",convertModeToChar(information.st_mode));
     sprintf(h -> uid,"%d", information.st_uid);
     sprintf(h -> gid,"%d", information.st_gid);
     sprintf(h -> size,"%011lo",information.st_size);
@@ -183,7 +188,10 @@ void addFileToTar (int archive, struct posix_header * headerfile, char * content
         perror("addFileToTar");
 }
 
-//FIXME: Verify that the name isn't already here and if the path is valid !
+/*
+Warning : archive have to be openned with O_RDWR or it will not succed!
+FIXME: Verify that the name isn't already here and if the path is valid !
+*/
 void copyFileToTar (int archive, int file,char * nametar){
     int size;
     struct posix_header * headerfile = createHeaderFromFile(file,nametar);
