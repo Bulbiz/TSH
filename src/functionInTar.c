@@ -177,17 +177,19 @@ char * getFileContentForTar (int fd, int * size){
     return content;
 }
 
-//FIXME: Verifier si le chemin est possible et qu'il n'y a pas déja le fichier!
-int addFileToTar (int archive, int file,char * nametar){
+void addFileToTar (int archive, struct posix_header * headerfile, char * contentfile, int size){
+    if(write(archive,headerfile,BLOCKSIZE) < 0 || write(archive,contentfile,size) < 0)
+        perror("addFileToTar");
+}
+
+//FIXME: Verify that the name isn't already here and if the path is valid !
+int copyFileToTar (int archive, int file,char * nametar){
     passArchive(archive);
     int size;
     struct posix_header * headerfile = createHeaderFromFile(file,nametar);
     char * contentfile = getFileContentForTar(file,&size);
 
-    if(write(archive,headerfile,BLOCKSIZE) < 0)
-        perror("addFileToTar");
-    if(write(archive,contentfile,size) < 0)
-        perror("addFileToTar");
+    addFileToTar(archive,headerfile,contentfile,size);
 
     free(headerfile);
     free(contentfile);
@@ -339,7 +341,7 @@ size_t getSizeAfterFile (char * path, int fd){
 char * getContentUntilPathFile(char * path, int fd, size_t * size){
     *size = getSizeAfterFile (path, fd);
     lseek(fd, 0, SEEK_SET);
-    if (size == -1)
+    if (*size == -1)
         perror("Fichier introuvable");
     char * res = malloc (sizeof(char) * (*size));
     struct posix_header * buffer = malloc (BLOCKSIZE);
