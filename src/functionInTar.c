@@ -141,12 +141,17 @@ char fileType (mode_t mode){
         default : return REGTYPE; /* regular file */
     }
 }
+
 //FIXME : change the default mode 0000700
+char * convertModeToChar (mode_t mode){
+    return "0000700";
+}
+
 struct posix_header * createHeader (char * name, struct stat information){
     struct posix_header *  h = createBloc0();
     
     strcpy(h -> name, name);
-    sprintf(h -> mode,"0000700");
+    sprintf(h -> mode,"%s",convertModeToChar(information.st_mode));
     sprintf(h -> uid,"%d", information.st_uid);
     sprintf(h -> gid,"%d", information.st_gid);
     sprintf(h -> size,"%011lo",information.st_size);
@@ -181,21 +186,25 @@ char * getFileContentForTar (int fd, int * size){
     return content;
 }
 
-//FIXME: Verifier si le chemin est possible et qu'il n'y a pas déja le fichier!
-int addFileToTar (int archive, int file,char * nametar){
+void addFileToTar (int archive, struct posix_header * headerfile, char * contentfile, int size){
     passArchive(archive);
+    if(write(archive,headerfile,BLOCKSIZE) < 0 || write(archive,contentfile,size) < 0)
+        perror("addFileToTar");
+}
+
+/*
+Warning : archive have to be openned with O_RDWR or it will not succed!
+FIXME: Verify that the name isn't already here and if the path is valid !
+*/
+void copyFileToTar (int archive, int file,char * nametar){
     int size;
     struct posix_header * headerfile = createHeaderFromFile(file,nametar);
     char * contentfile = getFileContentForTar(file,&size);
 
-    if(write(archive,headerfile,BLOCKSIZE) < 0)
-        perror("addFileToTar");
-    if(write(archive,contentfile,size) < 0)
-        perror("addFileToTar");
+    addFileToTar(archive,headerfile,contentfile,size);
 
     free(headerfile);
     free(contentfile);
-    return 0;
 }
 
 #define SIZE 20000
@@ -343,7 +352,7 @@ size_t getSizeAfterFile (char * path, int fd){
 char * getContentUntilPathFile(char * path, int fd, size_t * size){
     *size = getSizeAfterFile (path, fd);
     lseek(fd, 0, SEEK_SET);
-    if (size == -1)
+    if (*size == -1)
         perror("Fichier introuvable");
     char * res = malloc (sizeof(char) * (*size));
     struct posix_header * buffer = malloc (BLOCKSIZE);
