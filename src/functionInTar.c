@@ -169,6 +169,7 @@ struct posix_header * createHeaderFromFile (int fd, char * newName){
 }
 
 char * getFileContentForTar (int fd, int * size){
+    replaceCurseurToStart (fd);
     struct stat buf;
     fstat(fd,&buf);
     *size = ((buf.st_size + BLOCKSIZE -1) /BLOCKSIZE)* BLOCKSIZE;
