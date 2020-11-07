@@ -23,6 +23,12 @@ int catInTar(char * archive, char * path){
         else
             passContent (fd,p);    
     }
+
+    free(path);
+    free(archive);
+    free(p);
+    close(fd);
+
     print("fichier introuvable\n");
     return -1;
 }
@@ -37,7 +43,7 @@ void catOutsideTar(char * path){
 }
 
 void cat (char * path){
-    if(isInTar(path) == 1){
+    if(isInTar(path) == 0){
         char ** pathInTar = (char **) dividePathWithTar (path);
         catInTar(pathInTar[0], pathInTar[1]);
     }else{
