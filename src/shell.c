@@ -11,10 +11,14 @@
 
 char buffer [LIMIT];
 
+/* Get the user input, clean the buffer every time a new input is entered */
 void userInput (){
-    for(int i=0; i<LIMIT; i++)
-        buffer[i] = '\0';
+    memset(buffer,'\0',LIMIT);
     read(STDIN_FILENO, buffer, LIMIT);
+}
+
+char ** inputCutter () {
+
 }
 
 //main function that executes the shell
