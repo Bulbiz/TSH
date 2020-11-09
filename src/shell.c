@@ -75,7 +75,31 @@ int numberOfArgument (char * command){
     }
     return cmp;
 }
+void replaceSpace (char * command){
+    for (int i=0; command[i] != '\0'; i++)
+        if(command[i] == ' ')
+            command[i] = '\0';
+}
+/* the last argument is NULL */
+char ** getArgument (char * command){
+    int pointer = 0;
+    int i = 0;
+    int nbOfArg = numberOfArgument (command);
+    char ** argv = malloc (sizeof(char *) * (nbOfArg + 1));
 
+    while(command[i]!= '\0'){
+        if (command[i] == ' ')
+            i += jumpSpace(command + i);
+        else{
+            argv[pointer++] = (command + i);
+            i += jumpArgument(command + i);
+        }
+    }
+
+    replaceSpace (command);
+    argv[nbOfArg] = NULL;
+    return argv;
+}
 /* FIXME : it seem like there is a small bug in the affichage ? not sure tho ... */
 void executeCommandExterne (char ** argv){
     int child = fork ();
@@ -129,7 +153,12 @@ void shell(){
 
 
 
-int main (int argc, char ** argv){
-    
+int main (){
+    userInput ();
+    char ** argv = getArgument (buffer);
+    int i = 0;
+    while (argv[i]!= NULL){
+        printf("Argument : %s\n",argv[i++]);
+    }
     return 0;
 }
