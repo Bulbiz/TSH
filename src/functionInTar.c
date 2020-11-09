@@ -10,13 +10,9 @@
 #include <math.h>
 #include <time.h>
 #include "tar.h"
+#include "pathTreatement.h"
 
 #define BLOCKSIZE 512
-
-void print (char * message){
-    if (write (STDIN_FILENO,message,strlen(message)) == -1)
-        perror("Print :");
-}
 
 void replaceCurseurToStart (int fd){
     lseek(fd,0,SEEK_SET);

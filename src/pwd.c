@@ -5,6 +5,7 @@
 #include "tar.h"
 #include "functionInTar.h"
 #include "pathTreatement.h"
+
 /* Print the values of environment variable PWD */
 void pwd (){
     char * path = getPWD();

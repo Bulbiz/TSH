@@ -1,6 +1,7 @@
 #ifndef PATHTREATMENT_H
 #define PATHTREATMENT_H
 
+void print (char * message);
 char * getPWD ();
 void pwd ();
 int isTar (char * name);

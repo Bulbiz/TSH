@@ -1,9 +1,14 @@
 #include <string.h>
 #include <stdlib.h>
-#include "tar.h"
-#include "functionInTar.h"
+#include <unistd.h>
+#include <stdio.h>
+
 #define SIZE 20000
 
+void print (char * message){
+    if (write (STDIN_FILENO,message,strlen(message)) == -1)
+        perror("Print :");
+}
 /* Create a char * that contains the PWD */
 char * getPWD (){
     char * path = (char *) malloc (sizeof(char) * SIZE);
