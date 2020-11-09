@@ -2,6 +2,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
 #include "tar.h"
 #include "functionInTar.h"
 
@@ -24,7 +28,7 @@ int numberOfCommand (){
             cmp++;
     return cmp + 1;
 }
-
+/* cut the buffer with '|' */
 char ** inputCutter (int * size) {
     *size = numberOfCommand();
     char ** command = (char **) malloc (sizeof(char *) * (*size));
@@ -39,6 +43,25 @@ char ** inputCutter (int * size) {
     
     command[0] = buffer;
     return command;
+}
+
+
+char ** getArgument (char * command){
+    return NULL;
+}
+
+void executeCommandExterne (char ** argv){
+    int child = fork ();
+
+    switch (child){
+        case -1 : perror ("Command execution :"); break;
+        case 0 ://child 
+            execvp (argv[1],argv+1);
+            break;
+        default ://father
+            waitpid (-1,NULL,WNOHANG);
+        break;
+    }
 }
 
 //main function that executes the shell
@@ -78,11 +101,8 @@ void shell(){
 
 
 
-int main (void){
-    userInput ();
-    int size = 0;
-    char ** test = inputCutter (&size);
-    for(int i=0; i<size; i++)
-        print(test[i]);
+int main (int argc, char ** argv){
+    executeCommandExterne(argv);
+    printf("J'ai atteint la fin !");
     return 0;
 }
