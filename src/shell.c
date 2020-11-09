@@ -17,8 +17,28 @@ void userInput (){
     read(STDIN_FILENO, buffer, LIMIT);
 }
 
-char ** inputCutter () {
+int numberOfCommand (){
+    int cmp = 0;
+    for(int i=0; i<LIMIT; i++)
+        if(buffer[i] == '|')
+            cmp++;
+    return cmp + 1;
+}
 
+char ** inputCutter (int * size) {
+    *size = numberOfCommand();
+    char ** command = (char **) malloc (sizeof(char *) * (*size));
+    int pointer = 1;
+
+    for(int i=0; i<LIMIT; i++){
+        if(buffer[i] == '|'){
+            command[pointer++] = (buffer + i + 1);
+            buffer[i] = '\0';
+        }
+    }
+    
+    command[0] = buffer;
+    return command;
 }
 
 //main function that executes the shell
@@ -60,10 +80,9 @@ void shell(){
 
 int main (void){
     userInput ();
-    print(buffer);
-    userInput ();
-    print(buffer);
-    userInput ();
-    print(buffer);
+    int size = 0;
+    char ** test = inputCutter (&size);
+    for(int i=0; i<size; i++)
+        print(test[i]);
     return 0;
 }
