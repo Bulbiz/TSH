@@ -35,7 +35,7 @@ void shell(){
         }else if(strcmp (command,"cat") == 0){
             
         }else if(strcmp (command,"exit") == 0){
-
+            exit(0);
         }else{
             print("commande inconnue");
         }
