@@ -11,6 +11,7 @@
 #include "tar.h"
 #include "pwd.h"
 #include "functionInTar.h"
+#include "pathTreatement.h"
 
 int catInTar(char * archive, char * path){
     int fd = openArchive (archive, O_RDONLY);

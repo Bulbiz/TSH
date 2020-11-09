@@ -7,6 +7,7 @@
 #include <string.h>
 #include "tar.h"
 #include "functionInTar.h"
+#include "pathTreatement.h"
 
 int setPWD (char * path){
     int set = setenv("PWD",path,1);
