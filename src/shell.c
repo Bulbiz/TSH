@@ -8,11 +8,19 @@
 #define TRUE 1
 #define LIMIT 20000
 
+
+char buffer [LIMIT];
+
+void userInput (){
+    for(int i=0; i<LIMIT; i++)
+        buffer[i] = '\0';
+    read(STDIN_FILENO, buffer, LIMIT);
+}
+
 //main function that executes the shell
 void shell(){
-    char * buffer = (char *) malloc(sizeof(char)*LIMIT);
     while(TRUE){
-        read(STDIN_FILENO, buffer, LIMIT);  //we need a function who separate the option
+        userInput ();  //we need a function who separate the option
         char * command = "";
         char * options = "";
 
@@ -46,7 +54,12 @@ void shell(){
 
 
 
-/*int main (void){
-    shell();
+int main (void){
+    userInput ();
+    print(buffer);
+    userInput ();
+    print(buffer);
+    userInput ();
+    print(buffer);
     return 0;
-}*/
+}
