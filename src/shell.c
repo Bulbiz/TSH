@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/wait.h>
-
+#include <ctype.h>
 #include "tar.h"
 #include "functionInTar.h"
 
@@ -45,18 +45,46 @@ char ** inputCutter (int * size) {
     return command;
 }
 
-
-char ** getArgument (char * command){
-    return NULL;
+/* Auxilary function */
+int jumpArgument (char * command){
+    int i = 0;
+    while (command[i] != ' ' && command[i] != '\0'){
+        i++;
+    }
+    return i;
+}
+/* Auxilary function */
+int jumpSpace (char * command){
+    int i = 0;
+    while (command[i] == ' '){
+        i++;
+    }
+    return i;
+}
+/* Count the number of word/argument */
+int numberOfArgument (char * command){
+    int cmp = 0;
+    int i = 0;
+    while(command[i]!= '\0'){
+        if (command[i] == ' ')
+            i += jumpSpace(command + i);
+        else{
+            cmp ++;
+            i += jumpArgument(command + i);
+        }
+    }
+    return cmp;
 }
 
+/* FIXME : it seem like there is a small bug in the affichage ? not sure tho ... */
 void executeCommandExterne (char ** argv){
     int child = fork ();
 
     switch (child){
-        case -1 : perror ("Command execution :"); break;
+        case -1 : perror ("Command execution"); break;
         case 0 ://child 
-            execvp (argv[1],argv+1);
+            if( execvp (argv[0],argv) == -1)
+                perror ("Execution failure");
             break;
         default ://father
             waitpid (-1,NULL,WNOHANG);
@@ -102,7 +130,6 @@ void shell(){
 
 
 int main (int argc, char ** argv){
-    executeCommandExterne(argv);
-    printf("J'ai atteint la fin !");
+    
     return 0;
 }
