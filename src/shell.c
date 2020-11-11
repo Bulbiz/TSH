@@ -18,7 +18,13 @@ char buffer [LIMIT];
 /* Get the user input, clean the buffer every time a new input is entered */
 void userInput (){
     memset(buffer,'\0',LIMIT);
-    read(STDIN_FILENO, buffer, LIMIT);
+    int size = read(STDIN_FILENO, buffer, LIMIT);
+    if(size < 0){
+        perror("User Input:");
+    }else{
+        buffer[size - 1] = '\0'; // the last character (size -1) is a \n which is not wanted 
+    }
+        
 }
 
 int numberOfCommand (){
@@ -28,6 +34,7 @@ int numberOfCommand (){
             cmp++;
     return cmp + 1;
 }
+
 /* cut the buffer with '|' */
 char ** inputCutter (int * size) {
     *size = numberOfCommand();
@@ -53,6 +60,7 @@ int jumpArgument (char * command){
     }
     return i;
 }
+
 /* Auxilary function */
 int jumpSpace (char * command){
     int i = 0;
@@ -61,6 +69,7 @@ int jumpSpace (char * command){
     }
     return i;
 }
+
 /* Count the number of word/argument */
 int numberOfArgument (char * command){
     int cmp = 0;
@@ -75,11 +84,13 @@ int numberOfArgument (char * command){
     }
     return cmp;
 }
+
 void replaceSpace (char * command){
     for (int i=0; command[i] != '\0'; i++)
-        if(command[i] == ' ')
+        if(command[i] == ' ' )
             command[i] = '\0';
 }
+
 /* the last argument is NULL */
 char ** getArgument (char * command){
     int pointer = 0;
@@ -100,6 +111,7 @@ char ** getArgument (char * command){
     argv[nbOfArg] = NULL;
     return argv;
 }
+
 /* FIXME : it seem like there is a small bug in the affichage ? not sure tho ... */
 void executeCommandExterne (char ** argv){
     int child = fork ();
@@ -116,35 +128,59 @@ void executeCommandExterne (char ** argv){
     }
 }
 
-//main function that executes the shell
+/*main function that executes the shell 
+BUG A FIX : "ls" ne marche pas mais "ls -l" marche, suspicions : il y a un \n caché à la fin d'un read !!! 
+*/
 void shell(){
     while(TRUE){
-        userInput ();  //we need a function who separate the option
-        char * command = "";
-        char * options = "";
+        userInput ();
+        char ** argv = getArgument(buffer);
+        //char * message = malloc (sizeof(char)* LIMIT);
+        //sprintf(message,"Argument : |%s|",argv[0]);
+        //print(message);
 
-        if(strcmp (command,"cd") == 0){
+        if(strcmp (argv[0],"cd") == 0){
 
-        }else if(strcmp (command,"pwd") == 0){
+            print("JE LANCE CD !!! \n");
 
-        }else if(strcmp (command,"mkdir") == 0){
+        }else if(strcmp (argv[0],"pwd") == 0){
 
-        }else if(strcmp (command,"rmdir") == 0){
-            
-        }else if(strcmp (command,"mv") == 0){
-            
-        }else if(strcmp (command,"cp") == 0){
-            
-        }else if(strcmp (command,"rm") == 0){
-            
-        }else if(strcmp (command,"ls") == 0){
-            
-        }else if(strcmp (command,"cat") == 0){
-            
-        }else if(strcmp (command,"exit") == 0){
-            exit(0);
+            print("JE LANCE PWD !!! \n");
+
+        }else if(strcmp (argv[0],"mkdir") == 0){
+
+            print("JE LANCE MKDIR!!! \n");
+
+        }else if(strcmp (argv[0],"rmdir") == 0){
+
+            print("JE LANCE RMDIR !!! \n");
+
+        }else if(strcmp (argv[0],"mv") == 0){
+
+            print("JE LANCE MV !!! \n");
+
+        }else if(strcmp (argv[0],"cp") == 0){
+
+            print("JE LANCE CP !!! \n");
+
+        }else if(strcmp (argv[0],"rm") == 0){
+
+            print("JE LANCE RM !!! \n");
+
+        }else if(strcmp (argv[0],"ls") == 0){
+
+            print("JE LANCE LS !!! \n");
+
+        }else if(strcmp (argv[0],"cat") == 0){
+
+            print("JE LANCE CAT !!! \n");
+
+        }else if(strcmp (argv[0],"exit") == 0){
+
+            print("JE LANCE EXIT !!! \n");
+
         }else{
-            print("commande inconnue");
+            print("commande inconnue\n");
         }
     }
 }
@@ -154,11 +190,6 @@ void shell(){
 
 
 int main (){
-    userInput ();
-    char ** argv = getArgument (buffer);
-    int i = 0;
-    while (argv[i]!= NULL){
-        printf("Argument : %s\n",argv[i++]);
-    }
+    shell();
     return 0;
 }
