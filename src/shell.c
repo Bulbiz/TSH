@@ -17,14 +17,13 @@ char buffer [LIMIT];
 
 /* Get the user input, clean the buffer every time a new input is entered */
 void userInput (){
-    memset(buffer,'\0',LIMIT);
+    memset(buffer,'\0',LIMIT); 
     int size = read(STDIN_FILENO, buffer, LIMIT);
     if(size < 0){
         perror("User Input:");
     }else{
         buffer[size - 1] = '\0'; // the last character (size -1) is a \n which is not wanted 
     }
-        
 }
 
 int numberOfCommand (){
@@ -180,7 +179,9 @@ void shell(){
             print("JE LANCE EXIT !!! \n");
 
         }else{
+
             print("commande inconnue\n");
+            
         }
     }
 }
