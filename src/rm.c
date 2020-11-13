@@ -12,6 +12,7 @@
 #include "pwd.h"
 #include "functionInTar.h"
 
+//FIXME : manque la vérification si le path est un fichier ou pas
 int rmInTar(char * archive, char * path){
     int fd = openArchive (archive, O_RDONLY);
     size_t size = getSizeAfterFile (path, fd);
@@ -37,7 +38,7 @@ int rmInTar(char * archive, char * path){
     free(buf);
     free(tmp0);
     close(fd);
-    return -1;
+    return 0;
 }
 
 /*void catOutsideTar(char * path){
