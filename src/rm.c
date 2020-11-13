@@ -14,30 +14,38 @@
 
 //FIXME : manque la vérification si le path est un fichier ou pas
 int rmInTar(char * archive, char * path){
-    int fd = openArchive (archive, O_RDONLY);
+    int fd = openArchive (archive, O_RDWR);
+
     size_t size = getSizeAfterFile (path, fd);
+    printf("Size : %ld", size);
+    
+    replaceCurseurToStart (fd);
+
     struct posix_header * buf = malloc (512);
     size_t fileSize = searchFileSize (fd, buf, path);
+    printf("FileSize : %ld", fileSize);
+
     replaceCurseurToStart (fd);
 
     char * contentAfterFile = (char *) malloc (sizeof(char)* size);
     contentAfterFile = getContentUntilPathFile(path, fd, size);
-
+    printf("Content after file : %s ", contentAfterFile);
+    
     searchFile(fd, buf, path);
-    char * tmp0 = (char *) malloc (sizeof(char)* size + (fileSize));
+    lseek(fd, -BLOCKSIZE, SEEK_CUR);
+    char * tmp0 = (char *) malloc (sizeof(char)* (size + fileSize));
     memset(tmp0, 0, size + fileSize);
     write(fd, tmp0, size + fileSize);
 
-    replaceCurseurToStart (fd);
-    searchFile(fd, buf, path);
+    passArchive(fd);
     write (fd, contentAfterFile, size);
     
-    free(path);
+    /*free(path);
     free(archive);
     free(contentAfterFile);
     free(buf);
     free(tmp0);
-    close(fd);
+    close(fd);*/
     return 0;
 }
 
@@ -59,6 +67,7 @@ void cat (char * path){
     }
 }*/
 
-/*int main(int argc, char * argv[]){
+int main(int argc, char * argv[]){
+    rmInTar("archive.tar","rep/rep2/toto");
     return 0;
-}*/
+}
