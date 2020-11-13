@@ -27,5 +27,5 @@ char * duplicate (char * str);
 char * pathTreated (char * path);
 
 size_t getSizeAfterFile (char * path, int fd);
-char * getContentUntilPathFile(char * path, int fd, size_t *size);
+char * getContentUntilPathFile(char * path, int fd, size_t size);
 #endif
