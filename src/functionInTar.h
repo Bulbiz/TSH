@@ -1,6 +1,7 @@
 #ifndef FUNCTIONINTAR_H
 #define FUNCTIONINTAR_H
 void print (char * message);
+void replaceCurseurToStart (fd);
 int openArchive (char * pathname, int flags);
 int readHeader (int fd, struct posix_header * buffer);
 char * getContent (int fd, struct posix_header * header);
@@ -9,6 +10,7 @@ int getHeader(int fd, struct posix_header *header);
 void passArchive(int fd);
 
 int searchFile (int fd,struct posix_header * buf, char * name);
+int searchFileSize (int fd,struct posix_header * buf, char * name);
 void copyFileToTar (int archive, int file,char * nametar);
 void addFileToTar (int archive, struct posix_header * headerfile, char * contentfile, int size);
 

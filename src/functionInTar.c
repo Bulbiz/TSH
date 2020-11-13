@@ -89,6 +89,23 @@ int searchFile (int fd,struct posix_header * buf, char * name){
     return -1;
 }
 
+/*  Return size if the file is found, else -1 */
+int searchFileSize (int fd,struct posix_header * buf, char * name){
+    size_t size = 0;
+    replaceCurseurToStart (fd);
+    while (getHeader(fd,buf) == 0){
+        if(strcmp(buf->name, name) == 0){
+            int numberBlock = 0;
+            sscanf(buf -> size ,"%o", &numberBlock);
+            numberBlock = (numberBlock + 512 -1) /512;
+            size = numberBlock * BLOCKSIZE + (BLOCKSIZE); 
+            return size;
+        }
+    }
+    return -1;
+}
+
+
 /* Fonction de test ! n'intervient pas dans le projet !*/
 void printTar (int fd){
     printf("Lancement du print\n");
