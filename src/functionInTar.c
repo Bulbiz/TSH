@@ -74,16 +74,41 @@ void passArchive(int fd) {
     }
 }
 
+int getFileSizeFromHeader (struct posix_header * buf){
+    int numberBlock = 0;
+    sscanf(buf -> size ,"%o", &numberBlock);
+    numberBlock = (numberBlock + 512 -1) /512;
+    return numberBlock * BLOCKSIZE;
+}
 
 /*  Return 0 if the file is found, else -1 */
 int searchFile (int fd,struct posix_header * buf, char * name){
     replaceCurseurToStart (fd);
     while (getHeader(fd,buf) == 0){
-        if(strcmp(buf->name, name) == 0)
+        if(strcmp(buf->name, name) == 0){
+            lseek(fd,-getFileSizeFromHeader(buf),SEEK_CUR);
             return 0;
+        }
     }
     return -1;
 }
+
+/*  Return size if the file is found, else -1 */
+int searchFileSize (int fd,struct posix_header * buf, char * name){
+    size_t size = 0;
+    replaceCurseurToStart (fd);
+    while (getHeader(fd,buf) == 0){
+        if(strcmp(buf->name, name) == 0){
+            int numberBlock = 0;
+            sscanf(buf -> size ,"%o", &numberBlock);
+            numberBlock = (numberBlock + 512 -1) /512;
+            size = numberBlock * BLOCKSIZE + (BLOCKSIZE); 
+            return size;
+        }
+    }
+    return -1;
+}
+
 
 /* Fonction de test ! n'intervient pas dans le projet !*/
 void printTar (int fd){
@@ -206,6 +231,7 @@ void copyFileToTar (int archive, int file,char * nametar){
 //à tester
 //return the size of the archive from the file path to the end
 size_t getSizeAfterFile (char * path, int fd){
+    replaceCurseurToStart(fd);
     struct posix_header * buffer = malloc (BLOCKSIZE);
     size_t size = 0;
     if(searchFile (fd, buffer, path) == -1){   //place the cursor on the FilePath
@@ -226,16 +252,17 @@ size_t getSizeAfterFile (char * path, int fd){
 }
 
 //à tester
-char * getContentUntilPathFile(char * path, int fd, size_t * size){
-    *size = getSizeAfterFile (path, fd);
-    lseek(fd, 0, SEEK_SET);
-    if (*size == -1)
+char * getContentUntilPathFile(char * path, int fd, size_t size){
+    replaceCurseurToStart (fd);
+    if (size == -1)
         perror("Fichier introuvable");
-    char * res = malloc (sizeof(char) * (*size));
+
+    char * res = malloc (sizeof(char) * (size));
     struct posix_header * buffer = malloc (BLOCKSIZE);
     searchFile (fd, buffer, path);   //place the cursor on the FilePath
     passContent (fd, buffer);
-    if(read (fd,res,*size) < 0)
+
+    if(read (fd,res,size) < 0)
         perror("read");
     free(buffer);
     return res;
