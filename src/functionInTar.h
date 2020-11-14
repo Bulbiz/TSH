@@ -15,20 +15,10 @@ int searchFile (int fd,struct posix_header * buf, char * name);
 int searchFileSize (int fd,struct posix_header * buf, char * name);
 void copyFileToTar (int archive, int file,char * nametar);
 void addFileToTar (int archive, struct posix_header * headerfile, char * contentfile, int size);
+void copyFileToTar (int archive, int file,char * nametar);
 
 struct posix_header createBloc0();
 struct posix_header createHeaderFromFile (int fd, char * newName);
-
-char * getPWD ();
-void pwd ();
-int isTar (char * name);
-int isInTar (char * path);
-char ** dividePathWithTar (char * path);
-char * relatifToAbsolute (char * relatifPath);
-int isAbsolute (char * path);
-char * pathWithoutPoint (char * absolute);
-char * duplicate (char * str);
-char * pathTreated (char * path);
 
 size_t getSizeAfterFile (char * path, int fd);
 char * getContentUntilPathFile(char * path, int fd, size_t size);

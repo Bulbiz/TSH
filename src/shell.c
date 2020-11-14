@@ -8,7 +8,7 @@
 #include <ctype.h>
 #include "tar.h"
 #include "functionInTar.h"
-
+#include "pathTreatement.h"
 #define TRUE 1
 #define LIMIT 20000
 
