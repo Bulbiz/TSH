@@ -1,0 +1,8 @@
+Reunion du 14/11
+
+Cette semaine, on a implémenter un semblant de Shell (il peut récuperer une commande de l'utilisateur et dire quelle commande est a éxécuter, il découpe même la commande en argument, seulement pour l'instant il n'execute pas vraiment les commandes, ça c'est encore a ajouter).
+On a aussi implémenter une première version de rm qui peut supprimer un fichier dans le tar, cependant il ne fait pour l'instant aucune vérification donc il peut supprimer n'importe quels fichier ou dossiers peut importe les droits.
+Ensuite on a aussi redéplacer a nouveau (effectivement c'est la troisième fois xD) des fonctions de traitement du path dans un nouveau fichier.
+Cette semaine, on a décidé de tester et débugger toutes les fonctionnalités que l'on as déja, d'essayer de lier les commandes aux shell, on va essayer d'implémenter rmdir, faire les conditions pour le rm et implémenter mkdir.
+Pour cette semaine, on te laisse faire ls et les fonctions que l'on t'as laisser la dernière fois si tu peux, si jamais les tâches sont trop dur, n'oublie pas que tu peux mettre l'issue dans Too hard pour que l'on sache qu'ils sont difficiles et on se chargera de les rediviser.
+
