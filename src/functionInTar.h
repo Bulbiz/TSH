@@ -1,6 +1,8 @@
 #ifndef FUNCTIONINTAR_H
 #define FUNCTIONINTAR_H
 void print (char * message);
+void printTar (int fd);
+
 void replaceCurseurToStart (int fd);
 int openArchive (char * pathname, int flags);
 int readHeader (int fd, struct posix_header * buffer);
