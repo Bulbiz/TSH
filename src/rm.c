@@ -16,58 +16,39 @@
 int rmInTar(char * archive, char * path){
     int fd = openArchive (archive, O_RDWR);
 
+    /* Obtenir la taille du contenu de l'archive APRES le fichier */
     size_t size = getSizeAfterFile (path, fd);
-    printf("Size : %ld", size);
-    
-    replaceCurseurToStart (fd);
 
+    /* Obtenir la taille du fichier a supprimer (header + contenu) */
     struct posix_header * buf = malloc (512);
     size_t fileSize = searchFileSize (fd, buf, path);
-    printf("FileSize : %ld", fileSize);
 
-    replaceCurseurToStart (fd);
-
+    /* Sauvegarder le contenu de l'archive qui est APRES le fichier */
     char * contentAfterFile = (char *) malloc (sizeof(char)* size);
     contentAfterFile = getContentUntilPathFile(path, fd, size);
-    printf("Content after file : %s ", contentAfterFile);
     
+    /* Placer le curseur juste devant le fichier a supprimer */
     searchFile(fd, buf, path);
-    lseek(fd, -BLOCKSIZE, SEEK_CUR);
+    lseek(fd, -BLOCKSIZE, SEEK_CUR); 
+
+    /* Supprimer TOUT le contenu du tar à partir de fichier*/
     char * tmp0 = (char *) malloc (sizeof(char)* (size + fileSize));
     memset(tmp0, 0, size + fileSize);
     write(fd, tmp0, size + fileSize);
 
+    /* Réecrire le contenu sauvegarder a l'endroit du fichier */
     passArchive(fd);
     write (fd, contentAfterFile, size);
     
-    /*free(path);
-    free(archive);
+    /* Free ce qui soit être free */
     free(contentAfterFile);
     free(buf);
     free(tmp0);
-    close(fd);*/
+    close(fd);
     return 0;
 }
 
-/*void catOutsideTar(char * path){
-    int pid = fork();
-    switch(pid){
-        case -1 : perror ("cat");break;
-        case 0 : execlp("cat", "cat", path, NULL); break;
-        default : break;
-    }    
-}
-
-void cat (char * path){
-    if(isInTar(path) == 0){
-        char ** pathInTar = (char **) dividePathWithTar (path);
-        catInTar(pathInTar[0], pathInTar[1]);
-    }else{
-        catOutsideTar(path);
-    }
-}*/
-
 int main(int argc, char * argv[]){
-    rmInTar("archive.tar","rep/rep2/toto");
+    rmInTar("archive.tar","rep/toto");
     return 0;
 }
