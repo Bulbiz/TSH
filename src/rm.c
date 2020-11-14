@@ -12,52 +12,43 @@
 #include "pwd.h"
 #include "functionInTar.h"
 
+//FIXME : manque la vérification si le path est un fichier ou pas
 int rmInTar(char * archive, char * path){
-    int fd = openArchive (archive, O_RDONLY);
+    int fd = openArchive (archive, O_RDWR);
+
+    /* Obtenir la taille du contenu de l'archive APRES le fichier */
     size_t size = getSizeAfterFile (path, fd);
+
+    /* Obtenir la taille du fichier a supprimer (header + contenu) */
     struct posix_header * buf = malloc (512);
     size_t fileSize = searchFileSize (fd, buf, path);
-    replaceCurseurToStart (fd);
 
+    /* Sauvegarder le contenu de l'archive qui est APRES le fichier */
     char * contentAfterFile = (char *) malloc (sizeof(char)* size);
     contentAfterFile = getContentUntilPathFile(path, fd, size);
-
+    
+    /* Placer le curseur juste devant le fichier a supprimer */
     searchFile(fd, buf, path);
-    char * tmp0 = (char *) malloc (sizeof(char)* size + (fileSize));
+    lseek(fd, -BLOCKSIZE, SEEK_CUR); 
+
+    /* Supprimer TOUT le contenu du tar à partir de fichier*/
+    char * tmp0 = (char *) malloc (sizeof(char)* (size + fileSize));
     memset(tmp0, 0, size + fileSize);
     write(fd, tmp0, size + fileSize);
 
-    replaceCurseurToStart (fd);
-    searchFile(fd, buf, path);
+    /* Réecrire le contenu sauvegarder a l'endroit du fichier */
+    passArchive(fd);
     write (fd, contentAfterFile, size);
     
-    free(path);
-    free(archive);
+    /* Free ce qui soit être free */
     free(contentAfterFile);
     free(buf);
     free(tmp0);
     close(fd);
-    return -1;
-}
-
-/*void catOutsideTar(char * path){
-    int pid = fork();
-    switch(pid){
-        case -1 : perror ("cat");break;
-        case 0 : execlp("cat", "cat", path, NULL); break;
-        default : break;
-    }    
-}
-
-void cat (char * path){
-    if(isInTar(path) == 0){
-        char ** pathInTar = (char **) dividePathWithTar (path);
-        catInTar(pathInTar[0], pathInTar[1]);
-    }else{
-        catOutsideTar(path);
-    }
-}*/
-
-/*int main(int argc, char * argv[]){
     return 0;
-}*/
+}
+
+int main(int argc, char * argv[]){
+    rmInTar("archive.tar","rep/toto");
+    return 0;
+}
