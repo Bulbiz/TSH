@@ -89,7 +89,6 @@ int getFileSizeFromHeader (struct posix_header * buf){
 int searchFile (int fd,struct posix_header * buf, char * name){
     replaceCurseurToStart (fd);
     while (getHeader(fd,buf) == 0){
-        printf("Name : %s",buf -> name);
         if(strcmp(buf->name, name) == 0){
             lseek(fd,-getFileSizeFromHeader(buf),SEEK_CUR);
             return 0;
