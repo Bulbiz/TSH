@@ -43,9 +43,10 @@ void cd (char * arg){
     strcat(path,"/");
     if (isInTar(path) == 0){
         if(cdAux(path) == -1)
-            perror("CD in tar");
+            print("CD : Déplacement échoué\n");
     }else{
-        chdir(path);
+        if(chdir(path) < 0)
+            perror("CD");
         getcwd(cwd,SIZE);
     }
 }
