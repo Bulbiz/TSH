@@ -9,6 +9,17 @@
 #include "tar.h"
 #include "functionInTar.h"
 #include "pathTreatement.h"
+
+#include "cat.h"
+#include "cd.h"
+#include "cp.h"
+#include "ls.h"
+#include "mkdir.h"
+#include "mv.h"
+#include "pwd.h"
+#include "rm.h"
+#include "rmdir.h"
+
 #define TRUE 1
 #define LIMIT 20000
 
