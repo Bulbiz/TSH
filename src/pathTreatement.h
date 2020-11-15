@@ -1,6 +1,10 @@
 #ifndef PATHTREATMENT_H
 #define PATHTREATMENT_H
 
+#define SIZE 20000
+
+char * cwd;
+
 void print (char * message);
 char * getPWD ();
 void pwd ();

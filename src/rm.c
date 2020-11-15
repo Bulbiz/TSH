@@ -48,8 +48,8 @@ int rmInTar(char * archive, char * path){
     close(fd);
     return 0;
 }
-
+/*
 int main(int argc, char * argv[]){
     rmInTar("archive.tar","rep/toto");
     return 0;
-}
+}*/

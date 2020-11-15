@@ -5,14 +5,18 @@
 
 #define SIZE 20000
 
+/* current working directory */
+char * cwd;
+
 void print (char * message){
     if (write (STDIN_FILENO,message,strlen(message)) == -1)
         perror("Print :");
 }
+
 /* Create a char * that contains the PWD */
 char * getPWD (){
     char * path = (char *) malloc (sizeof(char) * SIZE);
-    strcpy(path,getenv("PWD"));
+    strcpy(path,cwd);
     return path;
 }
 
