@@ -10,10 +10,9 @@
 #include "pathTreatement.h"
 
 int setPWD (char * path){
-    int set = setenv("PWD",path,1);
+    strcpy(cwd,path);
     free(path);
-    return set;
-
+    return 0;
 }
 
 int cdAux (char * path){
@@ -42,8 +41,14 @@ int cdAux (char * path){
 void cd (char * arg){
     char * path = pathTreated(arg);
     strcat(path,"/");
-    if(cdAux(path) == -1)
-        print("cd : Cannot enter ! HELP!\n");
+    if (isInTar(path) == 0){
+        if(cdAux(path) == -1)
+            print("CD : Déplacement échoué\n");
+    }else{
+        if(chdir(path) < 0)
+            perror("CD");
+        getcwd(cwd,SIZE);
+    }
 }
 
 /*

@@ -28,6 +28,7 @@ char buffer [LIMIT];
 
 /* Get the user input, clean the buffer every time a new input is entered */
 void userInput (){
+    print("Votre commande $");
     memset(buffer,'\0',LIMIT); 
     int size = read(STDIN_FILENO, buffer, LIMIT);
     if(size < 0){
@@ -122,6 +123,14 @@ char ** getArgument (char * command){
     return argv;
 }
 
+int getArgc (char ** argv){
+    int i = 0;
+    while (argv[i] != NULL){
+        i++;
+    }
+    return i;
+}
+
 /* FIXME : it seem like there is a small bug in the affichage ? not sure tho ... */
 void executeCommandExterne (char ** argv){
     int child = fork ();
@@ -145,17 +154,15 @@ void shell(){
     while(TRUE){
         userInput ();
         char ** argv = getArgument(buffer);
-        //char * message = malloc (sizeof(char)* LIMIT);
-        //sprintf(message,"Argument : |%s|",argv[0]);
-        //print(message);
 
         if(strcmp (argv[0],"cd") == 0){
-
-            print("JE LANCE CD !!! \n");
+            if (getArgc(argv) > 2)
+                print("Trop d'argument !\n");
+            cd(argv[1]);
 
         }else if(strcmp (argv[0],"pwd") == 0){
 
-            print("JE LANCE PWD !!! \n");
+            pwd();
 
         }else if(strcmp (argv[0],"mkdir") == 0){
 
@@ -187,11 +194,11 @@ void shell(){
 
         }else if(strcmp (argv[0],"exit") == 0){
 
-            print("JE LANCE EXIT !!! \n");
+            exit(0);
 
         }else{
 
-            print("commande inconnue\n");
+            executeCommandExterne(argv);
             
         }
     }
@@ -202,6 +209,8 @@ void shell(){
 
 
 int main (){
+    cwd = malloc (SIZE);
+    getcwd(cwd,SIZE);
     shell();
     return 0;
 }

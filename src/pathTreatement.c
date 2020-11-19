@@ -5,14 +5,18 @@
 
 #define SIZE 20000
 
+/* current working directory */
+char * cwd;
+
 void print (char * message){
     if (write (STDIN_FILENO,message,strlen(message)) == -1)
         perror("Print :");
 }
+
 /* Create a char * that contains the PWD */
 char * getPWD (){
     char * path = (char *) malloc (sizeof(char) * SIZE);
-    strcpy(path,getenv("PWD"));
+    strcpy(path,cwd);
     return path;
 }
 
@@ -23,35 +27,14 @@ int isAbsolute (char * path){
 }
 
 char * duplicate (char * str){
-    char * res = malloc (sizeof(char) * strlen(str));
+    char * res = malloc (sizeof(char) * (strlen(str)+1));
     strcpy(res,str);
     return res;
 }
 
-/* Tell if a file is a tar, auxiliary function */
-int isTar (char * name){
-    int length = strlen(name);
-    if (length <= 4)
-        return 0;
-
-    //Get the extention of the name
-    char * extention = & name [length-4];
-    if (strcmp(extention,".tar") == 0)
-        return 1;
-    return 0;
-}
-
-
 /* Tell if the path is in a tar */
 int isInTar (char * path){
-    char * pathCopy = duplicate(path);
-    char * decompose = strtok(pathCopy, "/");
-    while (decompose != NULL){
-        if (isTar(decompose) == 1)
-            return 0;
-        decompose = strtok (NULL,"/");
-    }
-    return -1;
+    return (strstr(path,".tar/") != NULL) ? 0 : -1;
 }
 
 /* Divide the path in two, 
@@ -110,7 +93,8 @@ void removePointFromPath (char ** res, int * pointeur, char * absolute){
 Warning, if there where a / a the end of absolute, it will be deleted!
 Might have to concatane a "/" at the end */
 char * pathWithoutPoint (char * absolute){
-    char * resultat = malloc (sizeof(char)* (strlen(absolute)+1));
+    char * resultat = malloc (sizeof(char)* (strlen(absolute) + 2));
+    strcpy(resultat,"\0");
     char * res [numberOfSlash(absolute)];
     int pointeur;
 
