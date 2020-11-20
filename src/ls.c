@@ -14,9 +14,8 @@
 #include "functionInTar.h"
 #include "pathTreatement.h"
 
-
+//if in repertory, 0 else -1
 int isInRepertory (char * repertory, char * filename){
-    //printf("%d\n",strncmp(repertory,filename,strlen(repertory)));
     return (
         strlen (repertory) < strlen(filename) && 
         strncmp(repertory,filename,strlen(repertory)) == 0 && 

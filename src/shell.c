@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
+
 #include "tar.h"
 #include "functionInTar.h"
 #include "pathTreatement.h"
@@ -181,7 +182,10 @@ void shell(){
 
         }else if(strcmp (argv[0],"rm") == 0){
 
-            print("JE LANCE RM !!! \n");
+            if(isInTar(argv[1]) == 0)
+                rm (argv[1]);
+            else
+                executeCommandExterne(argv);
 
         }else if(strcmp (argv[0],"ls") == 0){
 

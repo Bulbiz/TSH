@@ -13,11 +13,10 @@
 #include "pwd.h"
 #include "functionInTar.h"
 
-//FIXME : manque la vérification si le path est un fichier ou pas
 int rmInTar(char * archive, char * path){
     int fd = openArchive (archive, O_RDWR);
     struct posix_header * buf = malloc (512);
-    getHeader(fd, buf);
+    searchFile(fd, buf, path);
     if(buf->typeflag == '0'){
         /* Obtenir la taille du contenu de l'archive APRES le fichier */
         size_t size = getSizeAfterFile (path, fd);
@@ -52,7 +51,13 @@ int rmInTar(char * archive, char * path){
         perror("impossible de supprimer, ce n'est pas un fichier");
         return -1;
     }
+
 }
+void rm (char * path){
+    char ** pathInTar = (char **) dividePathWithTar (path);
+    rmInTar(pathInTar[0], pathInTar[1]);
+}
+
 
 /*int main(int argc, char * argv[]){
     rmInTar("archive.tar","rep/toto");
