@@ -142,7 +142,7 @@ void executeCommandExterne (char ** argv){
                 perror ("Execution failure");
             break;
         default ://father
-            waitpid (-1,NULL,WNOHANG);
+            wait(NULL);
         break;
     }
 }
@@ -189,7 +189,10 @@ void shell(){
 
         }else if(strcmp (argv[0],"cat") == 0){
 
-            print("JE LANCE CAT !!! \n");
+            if(isInTar(argv[1]) == 0)
+                cat (argv[1]);
+            else
+                executeCommandExterne(argv);
 
         }else if(strcmp (argv[0],"exit") == 0){
 
