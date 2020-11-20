@@ -1,7 +1,6 @@
 #ifndef LS_H
 #define LS_H
 
-int lsPath(const char *path);
-int ls(int argc, char *argv[]);
+void ls(char ** argv);
 
 #endif

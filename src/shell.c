@@ -148,7 +148,6 @@ void executeCommandExterne (char ** argv){
 }
 
 /*main function that executes the shell 
-BUG A FIX : "ls" ne marche pas mais "ls -l" marche, suspicions : il y a un \n caché à la fin d'un read !!! 
 */
 void shell(){
     while(TRUE){
@@ -186,7 +185,7 @@ void shell(){
 
         }else if(strcmp (argv[0],"ls") == 0){
 
-            print("JE LANCE LS !!! \n");
+            ls(argv);
 
         }else if(strcmp (argv[0],"cat") == 0){
 

@@ -34,7 +34,7 @@ char * duplicate (char * str){
 
 /* Tell if the path is in a tar */
 int isInTar (char * path){
-    return (strstr(path,".tar/") != NULL) ? 0 : -1;
+    return (strstr(path,".tar") != NULL) ? 0 : -1;
 }
 
 /* Divide the path in two, 
@@ -44,13 +44,14 @@ char ** dividePathWithTar (char * path){
     char ** res = (char ** ) malloc (sizeof(char *) * 2);
     char * pathcpy = duplicate(path);
     char * separateur = strstr (pathcpy,".tar");
+
     if (separateur == NULL){
         print("Erreur Path without tar !!!");
         return NULL;
     }
     * (separateur + 4)  = '\0';
     res[0] = pathcpy;
-    res[1] = separateur + 5;
+    res[1] = (strlen(path) == strlen(res[0])) ? separateur + 4 : separateur + 5;
     return res;
 }
 

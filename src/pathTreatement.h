@@ -12,6 +12,7 @@ int isTar (char * name);
 int isInTar (char * path);
 char ** dividePathWithTar (char * path);
 char * relatifToAbsolute (char * relatifPath);
+int numberOfSlash(char * path);
 int isAbsolute (char * path);
 char * pathWithoutPoint (char * absolute);
 char * duplicate (char * str);
