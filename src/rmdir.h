@@ -3,5 +3,6 @@
 
 int fileInFolderInTar (char * archive, char * path);
 int rmdirInTar(char * archive, char * path);
+void myRmdir (char * path);
 
 #endif

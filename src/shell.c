@@ -170,7 +170,10 @@ void shell(){
 
         }else if(strcmp (argv[0],"rmdir") == 0){
 
-            print("JE LANCE RMDIR !!! \n");
+            if(isInTar(argv[1]) == 0)
+                myRmdir (argv[1]);
+            else
+                executeCommandExterne(argv);
 
         }else if(strcmp (argv[0],"mv") == 0){
 
