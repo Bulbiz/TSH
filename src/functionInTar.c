@@ -267,3 +267,14 @@ char * getContentUntilPathFile(char * path, int fd, size_t size){
     free(buffer);
     return res;
 }
+
+//if in repertory, 0 else -1
+int isInRepertory (char * repertory, char * filename){
+    return (
+        strlen (repertory) < strlen(filename) && 
+        strncmp(repertory,filename,strlen(repertory)) == 0 && 
+
+        (numberOfSlash (filename) == numberOfSlash(repertory)  || 
+        (numberOfSlash (filename) == numberOfSlash(repertory) + 1 && filename[strlen(filename) - 1] == '/'))) ? 0 : -1;
+
+}

@@ -23,4 +23,6 @@ struct posix_header createHeaderFromFile (int fd, char * newName);
 
 size_t getSizeAfterFile (char * path, int fd);
 char * getContentUntilPathFile(char * path, int fd, size_t size);
+int isInRepertory (char * repertory, char * filename);
+
 #endif
