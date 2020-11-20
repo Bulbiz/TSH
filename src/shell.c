@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
+
 #include "tar.h"
 #include "functionInTar.h"
 #include "pathTreatement.h"
@@ -142,7 +143,7 @@ void executeCommandExterne (char ** argv){
                 perror ("Execution failure");
             break;
         default ://father
-            waitpid (-1,NULL,WNOHANG);
+            wait(NULL);
         break;
     }
 }
@@ -169,7 +170,10 @@ void shell(){
 
         }else if(strcmp (argv[0],"rmdir") == 0){
 
-            print("JE LANCE RMDIR !!! \n");
+            if(isInTar(argv[1]) == 0)
+                myRmdir (argv[1]);
+            else
+                executeCommandExterne(argv);
 
         }else if(strcmp (argv[0],"mv") == 0){
 
@@ -181,7 +185,10 @@ void shell(){
 
         }else if(strcmp (argv[0],"rm") == 0){
 
-            print("JE LANCE RM !!! \n");
+            if(isInTar(argv[1]) == 0)
+                rm (argv[1]);
+            else
+                executeCommandExterne(argv);
 
         }else if(strcmp (argv[0],"ls") == 0){
 
@@ -189,7 +196,10 @@ void shell(){
 
         }else if(strcmp (argv[0],"cat") == 0){
 
-            print("JE LANCE CAT !!! \n");
+            if(isInTar(argv[1]) == 0)
+                cat (argv[1]);
+            else
+                executeCommandExterne(argv);
 
         }else if(strcmp (argv[0],"exit") == 0){
 

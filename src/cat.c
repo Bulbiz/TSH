@@ -34,22 +34,9 @@ int catInTar(char * archive, char * path){
     return -1;
 }
 
-void catOutsideTar(char * path){
-    int pid = fork();
-    switch(pid){
-        case -1 : perror ("cat");break;
-        case 0 : execlp("cat", "cat", path, NULL); break;
-        default : break;
-    }    
-}
-
 void cat (char * path){
-    if(isInTar(path) == 0){
-        char ** pathInTar = (char **) dividePathWithTar (path);
-        catInTar(pathInTar[0], pathInTar[1]);
-    }else{
-        catOutsideTar(path);
-    }
+    char ** pathInTar = (char **) dividePathWithTar (path);
+    catInTar(pathInTar[0], pathInTar[1]);
 }
 
 /*int main(int argc, char * argv[]){

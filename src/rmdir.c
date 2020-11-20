@@ -26,16 +26,15 @@ int fileInFolderInTar (char * archive, char * path){
     return -1;
 }   
 
-//FIXME : manque la vérification si le path est un dossier ou pas
+//return 0 if the command succes, else -1
 int rmdirInTar(char * archive, char * path){
-    if(fileInFolderInTar(archive, path) == -1){
-        int fd = openArchive (archive, O_RDWR);
-
+    int fd = openArchive(archive, O_RDWR);
+    struct posix_header * buf = malloc (512);
+    if(searchFile(fd, buf, path) == 0 && buf->typeflag == '5' && fileInRepertory(fd, path) == -1){
         /* Obtenir la taille du contenu de l'archive APRES le fichier */
         size_t size = getSizeAfterFile (path, fd);
 
         /* Obtenir la taille du fichier a supprimer (header + contenu) */
-        struct posix_header * buf = malloc (512);
         size_t fileSize = searchFileSize (fd, buf, path);
 
         /* Sauvegarder le contenu de l'archive qui est APRES le fichier */
@@ -62,7 +61,13 @@ int rmdirInTar(char * archive, char * path){
         close(fd);
         return 0;
     }else{
-        print("action impossible, il reste des fichiers dans le dossier");
+        perror("impossible de supprimer le répertoire");
         return -1;
     }
 }
+
+void myRmdir (char * path){
+    char ** pathInTar = (char **) dividePathWithTar (path);
+    rmdirInTar(pathInTar[0], pathInTar[1]);
+}
+

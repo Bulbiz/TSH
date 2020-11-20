@@ -14,17 +14,6 @@
 #include "functionInTar.h"
 #include "pathTreatement.h"
 
-
-int isInRepertory (char * repertory, char * filename){
-    //printf("%d\n",strncmp(repertory,filename,strlen(repertory)));
-    return (
-        strlen (repertory) < strlen(filename) && 
-        strncmp(repertory,filename,strlen(repertory)) == 0 && 
-
-        (numberOfSlash (filename) == numberOfSlash(repertory)  || 
-        (numberOfSlash (filename) == numberOfSlash(repertory) + 1 && filename[strlen(filename) - 1] == '/'))) ? 0 : -1;
-
-}
 /* FIXME : pour l'instant on va le faire que sur un argument, il faudra modifier pour plusieur argument */
 void ls (char ** argv) {
     
