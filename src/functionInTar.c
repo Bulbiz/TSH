@@ -276,5 +276,16 @@ int isInRepertory (char * repertory, char * filename){
 
         (numberOfSlash (filename) == numberOfSlash(repertory)  || 
         (numberOfSlash (filename) == numberOfSlash(repertory) + 1 && filename[strlen(filename) - 1] == '/'))) ? 0 : -1;
-
+}
+//return 0 if a file is in the repertory in the archive, else, return -1
+int fileInRepertory(int fd, char * repertory){
+    struct posix_header * buf = malloc(BLOCKSIZE);
+    while(getHeader(fd,buf) == 0 ){
+        if (isInRepertory(repertory, buf -> name) == 0){
+            free(buf);
+            return 0; 
+        }
+    }
+    free(buf);
+    return -1;
 }
