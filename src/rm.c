@@ -16,37 +16,42 @@
 //FIXME : manque la vérification si le path est un fichier ou pas
 int rmInTar(char * archive, char * path){
     int fd = openArchive (archive, O_RDWR);
-
-    /* Obtenir la taille du contenu de l'archive APRES le fichier */
-    size_t size = getSizeAfterFile (path, fd);
-
-    /* Obtenir la taille du fichier a supprimer (header + contenu) */
     struct posix_header * buf = malloc (512);
-    size_t fileSize = searchFileSize (fd, buf, path);
+    getHeader(fd, buf);
+    if(buf->typeflag == '0'){
+        /* Obtenir la taille du contenu de l'archive APRES le fichier */
+        size_t size = getSizeAfterFile (path, fd);
 
-    /* Sauvegarder le contenu de l'archive qui est APRES le fichier */
-    char * contentAfterFile = (char *) malloc (sizeof(char)* size);
-    contentAfterFile = getContentUntilPathFile(path, fd, size);
-    
-    /* Placer le curseur juste devant le fichier a supprimer */
-    searchFile(fd, buf, path);
-    lseek(fd, -BLOCKSIZE, SEEK_CUR); 
+        /* Obtenir la taille du fichier a supprimer (header + contenu) */
+        size_t fileSize = searchFileSize (fd, buf, path);
 
-    /* Supprimer TOUT le contenu du tar à partir de fichier*/
-    char * tmp0 = (char *) malloc (sizeof(char)* (size + fileSize));
-    memset(tmp0, 0, size + fileSize);
-    write(fd, tmp0, size + fileSize);
+        /* Sauvegarder le contenu de l'archive qui est APRES le fichier */
+        char * contentAfterFile = (char *) malloc (sizeof(char)* size);
+        contentAfterFile = getContentUntilPathFile(path, fd, size);
+        
+        /* Placer le curseur juste devant le fichier a supprimer */
+        searchFile(fd, buf, path);
+        lseek(fd, -BLOCKSIZE, SEEK_CUR); 
 
-    /* Réecrire le contenu sauvegarder a l'endroit du fichier */
-    passArchive(fd);
-    write (fd, contentAfterFile, size);
-    
-    /* Free ce qui soit être free */
-    free(contentAfterFile);
-    free(buf);
-    free(tmp0);
-    close(fd);
-    return 0;
+        /* Supprimer TOUT le contenu du tar à partir de fichier*/
+        char * tmp0 = (char *) malloc (sizeof(char)* (size + fileSize));
+        memset(tmp0, 0, size + fileSize);
+        write(fd, tmp0, size + fileSize);
+
+        /* Réecrire le contenu sauvegarder a l'endroit du fichier */
+        passArchive(fd);
+        write (fd, contentAfterFile, size);
+        
+        /* Free ce qui soit être free */
+        free(contentAfterFile);
+        free(buf);
+        free(tmp0);
+        close(fd);
+        return 0;
+    }else{
+        perror("impossible de supprimer, ce n'est pas un fichier");
+        return -1;
+    }
 }
 
 /*int main(int argc, char * argv[]){
