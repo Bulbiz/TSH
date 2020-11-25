@@ -188,6 +188,25 @@ struct posix_header * createHeader (char * name, struct stat information){
     return h;
 }
 
+struct posix_header * createHeaderFolder (char * name){
+    struct posix_header *  h = createBloc0();
+    
+    strcpy(h -> name, name);
+    sprintf(h -> mode,"%s","0000700");
+    long unsigned int sizeFolder = 0;
+    sprintf(h -> size,"%011lo", sizeFolder);
+    sprintf(h -> mtime,"%ld",time(NULL));
+    h -> typeflag = '5';
+    sprintf(h -> magic,TMAGIC);
+    sprintf(h -> version,TVERSION);
+    set_checksum(h);
+
+    if(!check_checksum(h))
+        perror("Checksum :");
+
+    return h;
+}
+
 struct posix_header * createHeaderFromFile (int fd, char * newName){  
     struct stat information;
     fstat(fd,&information);

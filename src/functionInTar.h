@@ -19,6 +19,7 @@ void addFileToTar (int archive, struct posix_header * headerfile, char * content
 void copyFileToTar (int archive, int file,char * nametar);
 
 struct posix_header createBloc0();
+struct posix_header * createHeaderFolder (char * name);
 struct posix_header createHeaderFromFile (int fd, char * newName);
 
 size_t getSizeAfterFile (char * path, int fd);
