@@ -13,10 +13,12 @@
 #include "pwd.h"
 #include "functionInTar.h"
 
-//FIXME : à completer
 int mkdirInTar(char * archive, char * path){
-
-
+    int fd = openArchive(archive, O_RDWR);
+    passArchive(fd);
+    struct posix_header * headerFolder = createHeaderFolder (path);
+    write(fd, headerFolder, BLOCKSIZE);
+    free(headerFolder);
     return 0;
 }
 
