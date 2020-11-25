@@ -18,7 +18,9 @@ int mkdirInTar(char * archive, char * path){
     passArchive(fd);
     struct posix_header * headerFolder = createHeaderFolder (path);
     write(fd, headerFolder, BLOCKSIZE);
+    
     free(headerFolder);
+    close(fd);
     return 0;
 }
 
