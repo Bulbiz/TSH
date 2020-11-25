@@ -181,7 +181,20 @@ void shell(){
 
         }else if(strcmp (argv[0],"cp") == 0){
 
-            print("JE LANCE CP !!! \n");
+            if (getArgc(argv) > 3 && getArgc(argv) < 3)
+                print("Trop d'arguments ou pas assez d'arguments!\n");
+
+            int pathName = isInTar(argv[1]);
+            int destination = isInTar(argv[2]);
+
+            if(pathName == 0 && destination == 0)
+                cp1(argv[1], argv[2]);
+            else if (pathName == 0 && destination == -1)
+                cp2(argv[1], argv[2]);
+            else if (pathName == -1 && destination == 0) 
+                cp3(argv[1], argv[2]);
+            else
+                executeCommandExterne(argv);
 
         }else if(strcmp (argv[0],"rm") == 0){
 
