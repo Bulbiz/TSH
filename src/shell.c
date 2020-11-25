@@ -166,7 +166,10 @@ void shell(){
 
         }else if(strcmp (argv[0],"mkdir") == 0){
 
-            print("JE LANCE MKDIR!!! \n");
+            if(isInTar(argv[1]) == 0)
+                myMkdir (argv[1]);
+            else
+                executeCommandExterne(argv);
 
         }else if(strcmp (argv[0],"rmdir") == 0){
 
