@@ -14,14 +14,38 @@
 #include "functionInTar.h"
 
 int cpTarInTar(char * archive, char * path, char * destination){
+    int fd = openArchive (archive, O_RDWR);
+    struct posix_header * copyHeader = malloc (BLOCKSIZE);
+    if(searchFile (fd, copyHeader, path) == -1)
+        perror("fichier inexistant");
+    
+    memset(copyHeader -> name, 0, 100);
+    memcpy(copyHeader -> name, destination, (strlen(destination)));
+    set_checksum(copyHeader);
+    if(!check_checksum(copyHeader))
+        perror("Checksum :");
+    char * copyContent = malloc (sizeof(char) * (atoi(copyHeader -> size)));
+    read (fd, copyContent, (atoi(copyHeader -> size)));
+    passArchive(fd);
+
+    write(fd, copyHeader, BLOCKSIZE);
+    write(fd, copyContent, atoi(copyHeader -> size));
+
+    free(copyHeader);
+    free(copyContent);
+    close(fd);
     return 0;
 }
 
 int cpTarInOutsideTar(char * archive, char * path, char * destination){
+    //int fd = openArchive (archive, O_RDWR);
+
     return 0;
 }
 
 int cpOutsideTarInTar(char * archive, char * path, char * destination){
+    //int fd = openArchive (archive, O_RDWR);
+
     return 0;
 }
 

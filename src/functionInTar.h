@@ -12,6 +12,9 @@ void passContent (int fd, struct posix_header * header);
 int getHeader(int fd, struct posix_header *header);
 void passArchive(int fd);
 
+void set_checksum(struct posix_header *hd);
+int check_checksum(struct posix_header *hd);
+
 int searchFile (int fd,struct posix_header * buf, char * name);
 int searchFileSize (int fd,struct posix_header * buf, char * name);
 void copyFileToTar (int archive, int file,char * nametar);
