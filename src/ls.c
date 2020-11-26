@@ -15,70 +15,25 @@
 #include "pathTreatement.h"
 
 /* FIXME : pour l'instant on va le faire que sur un argument, il faudra modifier pour plusieur argument */
-void ls (char ** argv) {
+void ls (char * path) {
     
-    char * path = pathTreated(argv[1]);
-    if (isInTar(path) == 0){
-
-        char ** division = dividePathWithTar (path);
-        int fdArchive = openArchive(division[0],O_RDONLY);
-        struct posix_header * buf = malloc (BLOCKSIZE);
+    char ** division = dividePathWithTar (path);
+    int fdArchive = openArchive(division[0],O_RDONLY);
+    struct posix_header * buf = malloc (BLOCKSIZE);
         
-        char repertoire [sizeof(char) * (strlen(division[1]) + 1)];
-        strcpy (repertoire,division[1]);
+    char repertoire [sizeof(char) * (strlen(division[1]) + 1)];
+    strcpy (repertoire,division[1]);
 
-        if (strlen(division[1]) > 0)
-            strcat (repertoire,"/");
+    if (strlen(division[1]) > 0)
+        strcat (repertoire,"/");
 
-        replaceCurseurToStart (fdArchive);
-        while(getHeader(fdArchive,buf) == 0 ){
-            if (isInRepertory(repertoire,buf -> name) == 0){
-                print(buf -> name + strlen(repertoire)); 
-                print("   ");
-            }
+    replaceCurseurToStart (fdArchive);
+    while(getHeader(fdArchive,buf) == 0 ){
+        if (isInRepertory(repertoire,buf -> name) == 0){
+            print(buf -> name + strlen(repertoire)); 
+            print("   ");
         }
     }
+    
     print("\n");
 }
-/*
-int ls (char * archive, char * path){
-
-}
-*/
-/*
-int lsPath(const char *path) {
-    DIR *d = opendir(path);
-    if(!d) {
-        perror("opendir");
-        return -1;
-    }
-
-    struct dirent *dir;
-    while((dir = readdir(d))) {
-        printf("%s\n", dir->d_name);
-    }
-    closedir(d);
-
-    return 0;
-}
-
-int ls(int argc, char *argv[]) {
-    int returnValue = 0;
-
-    if(argc == 1) {
-        if(lsPath(".") != 0) {
-            return -1;
-        }
-    } else {
-        for(int i = 1; i < argc; i++) {
-            printf("%s:\n", argv[i]);
-            if(lsPath(argv[i]) != 0) {
-                returnValue = -1;
-            }
-            printf("\n");
-        }
-    }
-
-    return returnValue;
-}
-*/
