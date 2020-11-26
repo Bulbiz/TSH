@@ -44,8 +44,9 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
 }
 
 int cpOutsideTarInTar(char * archive, char * path, char * destination){
-    //int fd = openArchive (archive, O_RDWR);
-
+    int fd = openArchive (archive, O_RDWR);
+    int fdFile = open(path, O_RDONLY);
+    copyFileToTar (fd, fdFile, destination);
     return 0;
 }
 
@@ -57,12 +58,10 @@ void cp1 (char * path, char * destination){
 
 void cp2 (char * path, char * destination){
     char ** pathInTar = (char **) dividePathWithTar (path);
-    char ** destinationInTar = (char **) dividePathWithTar (destination);
-    cpTarInOutsideTar(pathInTar[0], pathInTar[1], destinationInTar[1]);
+    cpTarInOutsideTar(pathInTar[0], pathInTar[1], destination);
 }
 
 void cp3 (char * path, char * destination){
-    char ** pathInTar = (char **) dividePathWithTar (path);
     char ** destinationInTar = (char **) dividePathWithTar (destination);
-    cpOutsideTarInTar(destinationInTar[0], pathInTar[1], destinationInTar[1]);
+    cpOutsideTarInTar(destinationInTar[0], path, destinationInTar[1]);
 }
