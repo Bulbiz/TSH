@@ -16,14 +16,19 @@
 int cpTarInTar(char * archive, char * path, char * destination){
     int fd = openArchive (archive, O_RDWR);
     struct posix_header * copyHeader = malloc (BLOCKSIZE);
-    if(searchFile (fd, copyHeader, path) == -1)
+    if(searchFile (fd, copyHeader, path) == -1){
         perror("fichier inexistant");
+        return -1;
+    }
     
     memset(copyHeader -> name, 0, 100);
     memcpy(copyHeader -> name, destination, (strlen(destination)));
     set_checksum(copyHeader);
-    if(!check_checksum(copyHeader))
+    if(!check_checksum(copyHeader)){
         perror("Checksum :");
+        return -1;
+    }
+
     char * copyContent = malloc (sizeof(char) * (atoi(copyHeader -> size)));
     read (fd, copyContent, (atoi(copyHeader -> size)));
     passArchive(fd);
@@ -38,8 +43,29 @@ int cpTarInTar(char * archive, char * path, char * destination){
 }
 
 int cpTarInOutsideTar(char * archive, char * path, char * destination){
-    //int fd = openArchive (archive, O_RDWR);
+    int fd = openArchive (archive, O_RDONLY);
 
+    struct posix_header * copyHeader = malloc (BLOCKSIZE);
+    if(searchFile (fd, copyHeader, path) == -1){
+        perror("fichier inexistant");
+        return -1;
+    }
+
+    char * copyContent = malloc (sizeof(char) * (atoi(copyHeader -> size)));
+
+    read (fd, copyContent, (atoi(copyHeader -> size)));
+
+    int fdFile = open(destination, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+    
+    if(write(fdFile, copyContent, strlen(copyContent))<0){
+        perror("erreur sur l'écriture");
+        return -1;
+    }
+
+    free(copyHeader);
+    free(copyContent);
+    close(fd);
+    close(fdFile);
     return 0;
 }
 
@@ -47,6 +73,8 @@ int cpOutsideTarInTar(char * archive, char * path, char * destination){
     int fd = openArchive (archive, O_RDWR);
     int fdFile = open(path, O_RDONLY);
     copyFileToTar (fd, fdFile, destination);
+    close(fd);
+    close(fdFile);
     return 0;
 }
 
