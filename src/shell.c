@@ -127,14 +127,6 @@ char ** getArgument (char * command){
     return argv;
 }
 
-int getArgc (char ** argv){
-    int i = 0;
-    while (argv[i] != NULL){
-        i++;
-    }
-    return i;
-}
-
 /*main function that executes the shell 
 */
 void shell(){
@@ -169,7 +161,7 @@ void shell(){
 
         }else if(strcmp (argv[0],"mv") == 0){
 
-            print("JE LANCE MV !!! \n");
+            mv(argv);
 
         }else if(strcmp (argv[0],"cp") == 0){
 	

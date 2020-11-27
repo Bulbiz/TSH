@@ -310,6 +310,15 @@ int fileInRepertory(int fd, char * repertory){
     return -1;
 }
 
+
+int getArgc (char ** argv){
+    int i = 0;
+    while (argv[i] != NULL){
+        i++;
+    }
+    return i;
+}
+
 void executeCommandExterne (char ** argv){
     int child = fork ();
 
