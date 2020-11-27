@@ -108,7 +108,7 @@ char ** getArgument (char * command){
     int pointer = 0;
     int i = 0;
     int nbOfArg = numberOfArgument (command);
-    char ** argv = malloc (sizeof(char *) * (nbOfArg + 1));
+    char ** argv = malloc (sizeof(char *) * (nbOfArg + 2)); // There is a place to add one argument if wanted 
 
     while(command[i]!= '\0'){
         if (command[i] == ' ')
@@ -120,7 +120,10 @@ char ** getArgument (char * command){
     }
 
     replaceSpace (command);
+
     argv[nbOfArg] = NULL;
+    argv[nbOfArg + 1] = NULL;
+
     return argv;
 }
 
@@ -210,7 +213,11 @@ void shell(){
 
         }else if(strcmp (argv[0],"ls") == 0){
 
-            ls(argv);
+            argv[1] = getArgc(argv) == 1 ? pathTreated(getPWD()) : pathTreated(argv[1]);
+            if (isInTar(argv[1]) == 0)
+                ls(argv[1]);
+            else
+                executeCommandExterne(argv);
 
         }else if(strcmp (argv[0],"cat") == 0){
 
