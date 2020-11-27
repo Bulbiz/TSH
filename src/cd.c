@@ -38,8 +38,7 @@ int cdAux (char * path){
 
 }
 
-void cd (char * arg){
-    char * path = pathTreated(arg);
+void cd (char * path){
     strcat(path,"/");
     if (isInTar(path) == 0){
         if(cdAux(path) == -1)

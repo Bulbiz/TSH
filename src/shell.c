@@ -127,12 +127,21 @@ char ** getArgument (char * command){
     return argv;
 }
 
+char ** transformPathOfArgv (char ** argv){
+    for (int i = 1; i< getArgc(argv); i++){
+        if(argv[i][0] != '-')
+            argv[i] = pathTreated(argv[i]);
+    }
+    return argv;
+}
+
 /*main function that executes the shell 
 */
 void shell(){
     while(TRUE){
         userInput ();
-        char ** argv = getArgument(buffer);
+        char ** argv = transformPathOfArgv(getArgument(buffer));
+
         if (getArgc(argv) == 0)
             continue;
 
@@ -176,7 +185,7 @@ void shell(){
 
         }else if(strcmp (argv[0],"ls") == 0){
 
-            argv[1] = getArgc(argv) == 1 ? pathTreated(getPWD()) : pathTreated(argv[1]);
+            argv[1] = getArgc(argv) == 1 ? pathTreated(getPWD()) : argv[1];
             if (isInTar(argv[1]) == 0)
                 ls(argv[1]);
             else
