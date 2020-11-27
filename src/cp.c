@@ -93,3 +93,21 @@ void cp3 (char * path, char * destination){
     char ** destinationInTar = (char **) dividePathWithTar (destination);
     cpOutsideTarInTar(destinationInTar[0], path, destinationInTar[1]);
 }
+
+
+void cp (char ** argv){
+    if (getArgc(argv) > 3 && getArgc(argv) < 3)
+                print("Trop d'arguments ou pas assez d'arguments!\n");
+                
+    int pathName = isInTar(argv[1]);
+    int destination = isInTar(argv[2]);
+
+    if(pathName == 0 && destination == 0)
+        cp1(argv[1], argv[2]);
+    else if (pathName == 0 && destination == -1)
+        cp2(argv[1], argv[2]);
+    else if (pathName == -1 && destination == 0) 
+        cp3(argv[1], argv[2]);
+    else
+        executeCommandExterne(argv);
+}

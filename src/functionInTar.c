@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <math.h>
@@ -307,4 +308,19 @@ int fileInRepertory(int fd, char * repertory){
     }
     free(buf);
     return -1;
+}
+
+void executeCommandExterne (char ** argv){
+    int child = fork ();
+
+    switch (child){
+        case -1 : perror ("Command execution"); break;
+        case 0 ://child 
+            if( execvp (argv[0],argv) == -1)
+                perror ("Execution failure");
+            break;
+        default ://father
+            wait(NULL);
+        break;
+    }
 }

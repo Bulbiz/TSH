@@ -135,22 +135,6 @@ int getArgc (char ** argv){
     return i;
 }
 
-/* FIXME : it seem like there is a small bug in the affichage ? not sure tho ... */
-void executeCommandExterne (char ** argv){
-    int child = fork ();
-
-    switch (child){
-        case -1 : perror ("Command execution"); break;
-        case 0 ://child 
-            if( execvp (argv[0],argv) == -1)
-                perror ("Execution failure");
-            break;
-        default ://father
-            wait(NULL);
-        break;
-    }
-}
-
 /*main function that executes the shell 
 */
 void shell(){
@@ -188,21 +172,8 @@ void shell(){
             print("JE LANCE MV !!! \n");
 
         }else if(strcmp (argv[0],"cp") == 0){
-
-            if (getArgc(argv) > 3 && getArgc(argv) < 3)
-                print("Trop d'arguments ou pas assez d'arguments!\n");
-                
-            int pathName = isInTar(argv[1]);
-            int destination = isInTar(argv[2]);
-
-            if(pathName == 0 && destination == 0)
-                cp1(argv[1], argv[2]);
-            else if (pathName == 0 && destination == -1)
-                cp2(argv[1], argv[2]);
-            else if (pathName == -1 && destination == 0) 
-                cp3(argv[1], argv[2]);
-            else
-                executeCommandExterne(argv);
+	
+            cp(argv);
 
         }else if(strcmp (argv[0],"rm") == 0){
 
