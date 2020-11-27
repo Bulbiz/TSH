@@ -154,6 +154,8 @@ void shell(){
     while(TRUE){
         userInput ();
         char ** argv = getArgument(buffer);
+        if (getArgc(argv) == 0)
+            continue;
 
         if(strcmp (argv[0],"cd") == 0){
             if (getArgc(argv) > 2)
