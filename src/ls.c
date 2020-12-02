@@ -16,42 +16,67 @@
 #include "functionInTar.h"
 #include "pathTreatement.h"
 
-void printLongFormat (int repertoryLegth,struct posix_header * header){
-    char format [1000];
-    memset(format,'\0',100);
-    format[0] = (header -> typeflag == '5')? 'd' : '-';
+void printLongFormat (int repertoryLength,struct posix_header * header){
+    char regular = (header -> typeflag == '5')? 'd' : '-';
 
+    /******* Calculate the string representation for the permission ************/
+    char strpermission [10];
+    memset(strpermission,'\0',10);
     char * permission [] = {"---","--x","-w-","-wx","r--","r-x","rw-","rwx"};
-    int userPermission = (header -> mode)[4] - '0';
-    int groupPermission = (header -> mode)[5] - '0';
-    int otherPermission = (header -> mode)[6] - '0';
-    strcat(format,permission[userPermission]);
-    strcat(format,permission[groupPermission]);
-    strcat(format,permission[otherPermission]);
+    int userPerm = (header -> mode)[4] - '0';
+    int groupPerm= (header -> mode)[5] - '0';
+    int otherPerm = (header -> mode)[6] - '0';
+    sprintf(strpermission,"%s%s%s",permission[userPerm],permission[groupPerm],permission[otherPerm]);
 
-    strcat(format," ");
+    /********** Calculate the user name (if not found, just place the id) *******/
+    char struser [50];
+    memset(struser,'\0',50);
     if(getpwuid(atoi(header -> uid)) != NULL)
-        strcat(format, getpwuid(atoi(header -> uid)) -> pw_name);
+        strcat(struser, getpwuid(atoi(header -> uid)) -> pw_name);
     else
-        strcat(format,header -> uid);
-    
-    strcat(format," ");
+        strcat(struser,header -> uid);
+
+    /********** Calculate the group name (if not found, just place the id) *******/
+    char strgrp [50];
+    memset(strgrp,'\0',50);
     if(getgrgid(atoi(header -> gid)) != NULL)
-        strcat(format,getgrgid(atoi(header -> gid)) -> gr_name );
+        strcat(strgrp,getgrgid(atoi(header -> gid)) -> gr_name );
     else
-        strcat(format,header -> gid);
+        strcat(strgrp,header -> gid);
 
-    strcat(format," ");
-    strcat(format,header -> size);
-
+    /********** Calculate the string representation for the modified time *******/
     char time [20];
     time_t modifiedtime = atoi(header -> mtime);
     strftime(time, sizeof(time), " %b. %d %H:%M ", localtime(&modifiedtime));
-    strcat(format,time);
 
-    strcat(format,header -> name + repertoryLegth);
-    printf("-l : %s\n",format);
+    char format [1000];
+    sprintf(format, "%c%s %s %s %s %s %s\n",regular,strpermission,struser,strgrp,header -> size,time, header -> name + repertoryLength);
+    print(format);
 }
+
+/* FIXME : pour l'instant on va le faire que sur un argument, il faudra modifier pour plusieur argument */
+void lsLong (char * path) {
+    
+    char ** division = dividePathWithTar (path);
+    int fdArchive = openArchive(division[0],O_RDONLY);
+    struct posix_header * buf = malloc (BLOCKSIZE);
+        
+    char repertoire [sizeof(char) * (strlen(division[1]) + 1)];
+    strcpy (repertoire,division[1]);
+
+    if (strlen(division[1]) > 0)
+        strcat (repertoire,"/");
+
+    replaceCurseurToStart (fdArchive);
+    while(getHeader(fdArchive,buf) == 0 ){
+        if (isInRepertory(repertoire,buf -> name) == 0){
+            printLongFormat (strlen(repertoire),buf);
+        }
+    }
+    
+    print("\n");
+}
+
 
 /* FIXME : pour l'instant on va le faire que sur un argument, il faudra modifier pour plusieur argument */
 void ls (char * path) {
@@ -70,7 +95,6 @@ void ls (char * path) {
     while(getHeader(fdArchive,buf) == 0 ){
         if (isInRepertory(repertoire,buf -> name) == 0){
             print(buf -> name + strlen(repertoire));
-            //printLongFormat (strlen(repertoire),buf);
             print("   ");
 
         }
