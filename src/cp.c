@@ -78,18 +78,38 @@ int cpOutsideTarInTar(char * archive, char * path, char * destination){
     return 0;
 }
 
-void cp1 (char * path, char * destination){
+int cp1 (char * path, char * destination){
     char ** pathInTar = (char **) dividePathWithTar (path);
     char ** destinationInTar = (char **) dividePathWithTar (destination);
-    cpTarInTar(pathInTar[0], pathInTar[1], destinationInTar[1]);
+    return cpTarInTar(pathInTar[0], pathInTar[1], destinationInTar[1]);
 }
 
-void cp2 (char * path, char * destination){
+int cp2 (char * path, char * destination){
     char ** pathInTar = (char **) dividePathWithTar (path);
-    cpTarInOutsideTar(pathInTar[0], pathInTar[1], destination);
+    return cpTarInOutsideTar(pathInTar[0], pathInTar[1], destination);
 }
 
-void cp3 (char * path, char * destination){
+int cp3 (char * path, char * destination){
     char ** destinationInTar = (char **) dividePathWithTar (destination);
-    cpOutsideTarInTar(destinationInTar[0], path, destinationInTar[1]);
+    return cpOutsideTarInTar(destinationInTar[0], path, destinationInTar[1]);
+}
+
+
+int cp (char ** argv){
+    if (getArgc(argv) > 3 && getArgc(argv) < 3)
+        print("Trop d'arguments ou pas assez d'arguments!\n");
+                
+    int pathName = isInTar(argv[1]);
+    int destination = isInTar(argv[2]);
+
+    if(pathName == 0 && destination == 0)
+        return cp1(argv[1], argv[2]);
+    else if (pathName == 0 && destination == -1)
+        return cp2(argv[1], argv[2]);
+    else if (pathName == -1 && destination == 0) 
+        return cp3(argv[1], argv[2]);
+    else{
+        executeCommandExterne(argv);
+        return 0;
+    }
 }

@@ -127,28 +127,12 @@ char ** getArgument (char * command){
     return argv;
 }
 
-int getArgc (char ** argv){
-    int i = 0;
-    while (argv[i] != NULL){
-        i++;
+char ** transformPathOfArgv (char ** argv){
+    for (int i = 1; i< getArgc(argv); i++){
+        if(argv[i][0] != '-')
+            argv[i] = pathTreated(argv[i]);
     }
-    return i;
-}
-
-/* FIXME : it seem like there is a small bug in the affichage ? not sure tho ... */
-void executeCommandExterne (char ** argv){
-    int child = fork ();
-
-    switch (child){
-        case -1 : perror ("Command execution"); break;
-        case 0 ://child 
-            if( execvp (argv[0],argv) == -1)
-                perror ("Execution failure");
-            break;
-        default ://father
-            wait(NULL);
-        break;
-    }
+    return argv;
 }
 
 /*main function that executes the shell 
@@ -156,7 +140,8 @@ void executeCommandExterne (char ** argv){
 void shell(){
     while(TRUE){
         userInput ();
-        char ** argv = getArgument(buffer);
+        char ** argv = transformPathOfArgv(getArgument(buffer));
+
         if (getArgc(argv) == 0)
             continue;
 
@@ -185,24 +170,11 @@ void shell(){
 
         }else if(strcmp (argv[0],"mv") == 0){
 
-            print("JE LANCE MV !!! \n");
+            mv(argv);
 
         }else if(strcmp (argv[0],"cp") == 0){
-
-            if (getArgc(argv) > 3 && getArgc(argv) < 3)
-                print("Trop d'arguments ou pas assez d'arguments!\n");
-                
-            int pathName = isInTar(argv[1]);
-            int destination = isInTar(argv[2]);
-
-            if(pathName == 0 && destination == 0)
-                cp1(argv[1], argv[2]);
-            else if (pathName == 0 && destination == -1)
-                cp2(argv[1], argv[2]);
-            else if (pathName == -1 && destination == 0) 
-                cp3(argv[1], argv[2]);
-            else
-                executeCommandExterne(argv);
+	
+            cp(argv);
 
         }else if(strcmp (argv[0],"rm") == 0){
 
@@ -213,7 +185,7 @@ void shell(){
 
         }else if(strcmp (argv[0],"ls") == 0){
 
-            argv[1] = getArgc(argv) == 1 ? pathTreated(getPWD()) : pathTreated(argv[1]);
+            argv[1] = getArgc(argv) == 1 ? pathTreated(getPWD()) : argv[1];
             if (isInTar(argv[1]) == 0)
                 ls(argv[1]);
             else
