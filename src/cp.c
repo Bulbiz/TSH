@@ -37,12 +37,14 @@ int cpTarInTar(char * archive, char * path, char * destination){
         return -1;
     }
 
-    char * copyContent = malloc (sizeof(char) * (atoi(copyHeader -> size)));
-    read (fd, copyContent, (atoi(copyHeader -> size)));
+    int filesize;
+    sscanf(copyHeader -> size, "%o" , &filesize);
+    char * copyContent = malloc (sizeof(char) * filesize);
+    read (fd, copyContent, filesize);
     passArchive(fd);
 
     write(fd, copyHeader, BLOCKSIZE);
-    write(fd, copyContent, atoi(copyHeader -> size));
+    write(fd, copyContent, filesize);
 
     free(copyHeader);
     free(copyContent);
@@ -59,9 +61,12 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
         return -1;
     }
 
-    char * copyContent = malloc (sizeof(char) * (atoi(copyHeader -> size)));
+    int filesize;
+    sscanf(copyHeader -> size, "%o" , &filesize);
 
-    read (fd, copyContent, (atoi(copyHeader -> size)));
+    char * copyContent = malloc (sizeof(char) * filesize);
+
+    read (fd, copyContent, filesize);
 
     int fdFile = open(destination, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     
@@ -110,9 +115,9 @@ int cp (char ** argv){
     int pathName = isInTar(argv[1]);
     int destination = isInTar(argv[2]);
 
-    if(isARepertory(argv[2]) == 0){
+    /*if(isARepertory(argv[2]) == 0){
         sprintf(argv[2],"%s/%s", argv[2], argv[1] + fileName (argv[1]));
-    }
+    }*/
 
     if(pathName == 0 && destination == 0)
         return cp1(argv[1], argv[2]);
