@@ -135,6 +135,16 @@ char ** transformPathOfArgv (char ** argv){
     return argv;
 }
 
+int hasOption (char * option, char ** argv ){
+    int i = 0;
+    while(argv[i] != NULL){
+        if(strcmp(argv[i], option) == 0)
+            return 0;
+        i++; 
+    }
+    return -1;
+}
+
 /*main function that executes the shell 
 */
 void shell(){
