@@ -117,7 +117,7 @@ int cp (char ** argv){
 
     if(isARepertory(argv[2]) == 0){
         char * buf = malloc ( sizeof(char) * (strlen(argv[2]) + strlen(argv[1] + fileName (argv[1]))));
-        sprintf(buf,"%s/%s", argv[2], argv[1] + fileName (argv[1]));
+        sprintf(buf,"%s%s", argv[2], argv[1] + fileName (argv[1]) + 1);
         argv[2] = buf;
     }
 
