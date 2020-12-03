@@ -17,6 +17,9 @@ int check_checksum(struct posix_header *hd);
 
 int searchFile (int fd,struct posix_header * buf, char * name);
 int searchFileSize (int fd,struct posix_header * buf, char * name);
+int isARepertoryInTar (char * destination);
+int isARepertoryOutsideTar (char * destination);
+int isARepertory (char * destination);
 void copyFileToTar (int archive, int file,char * nametar);
 void addFileToTar (int archive, struct posix_header * headerfile, char * contentfile, int size);
 void copyFileToTar (int archive, int file,char * nametar);
