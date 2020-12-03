@@ -110,6 +110,40 @@ int searchFileSize (int fd,struct posix_header * buf, char * name){
     return -1;
 }
 
+int isARepertoryInTar (char * destination){
+    int fd = openArchive(destination, O_RDONLY);
+    struct posix_header * buf = malloc (BLOCKSIZE);
+    searchFile (fd, buf, destination);
+    if(buf -> typeflag == '5'){
+        free(buf);
+        close(fd);
+        return 0;
+    }else{
+        free(buf);
+        close(fd);
+        return -1;
+    }
+}
+
+int isARepertoryOutsideTar (char * destination){
+    struct stat *statbuf = malloc (sizeof(statbuf));
+    stat(destination, statbuf);
+    if (statbuf -> st_mode == '5'){
+        free(statbuf);
+        return 0;
+    }else{
+        free(statbuf);
+        return -1;
+    }
+}
+
+int isARepertory (char * destination){
+    if(isInTar(destination))
+        return isARepertoryInTar(destination);
+    else
+        return isARepertoryOutsideTar (destination);
+    
+}
 
 /* Fonction de test ! n'intervient pas dans le projet !*/
 void printTar (int fd){
