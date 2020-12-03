@@ -326,8 +326,10 @@ void executeCommandExterne (char ** argv){
     switch (child){
         case -1 : perror ("Command execution"); break;
         case 0 ://child 
-            if( execvp (argv[0],argv) == -1)
+            if( execvp (argv[0],argv) == -1){
                 perror ("Execution failure");
+                exit(0);
+            }   
             break;
         default ://father
             wait(NULL);

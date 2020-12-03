@@ -203,10 +203,10 @@ void shell(){
 
         }else if(strcmp (argv[0],"cat") == 0){
 
-            if(isInTar(argv[1]) == 0)
-                cat (argv[1]);
-            else
+            if(getArgc (argv) == 1 || isInTar(argv[1]) == -1)                 //cat without argument or not in tar
                 executeCommandExterne(argv);
+            else
+                cat (argv[1]);
 
         }else if(strcmp (argv[0],"exit") == 0){
 
