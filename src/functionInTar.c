@@ -164,9 +164,10 @@ char fileType (mode_t mode){
     }
 }
 
-//FIXME : change the default mode 0000700
 char * convertModeToChar (mode_t mode){
-    return "0000700";
+    char * buf = malloc (sizeof(char) * 12);
+    sprintf(buf,"%011o",(~S_IFMT & mode));
+    return buf + 4;
 }
 
 struct posix_header * createHeader (char * name, struct stat information){
