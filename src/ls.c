@@ -80,16 +80,15 @@ void lsLong (char * path) {
 
 /* FIXME : pour l'instant on va le faire que sur un argument, il faudra modifier pour plusieur argument */
 void ls (char * path) {
-    
+    if(path[strlen(path) - 1] != '/')
+        strcat(path,"/");
+
     char ** division = dividePathWithTar (path);
     int fdArchive = openArchive(division[0],O_RDONLY);
     struct posix_header * buf = malloc (BLOCKSIZE);
         
     char repertoire [sizeof(char) * (strlen(division[1]) + 1)];
     strcpy (repertoire,division[1]);
-
-    if (strlen(division[1]) > 0)
-        strcat (repertoire,"/");
 
     replaceCurseurToStart (fdArchive);
     while(getHeader(fdArchive,buf) == 0 ){
