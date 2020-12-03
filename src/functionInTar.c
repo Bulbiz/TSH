@@ -111,9 +111,10 @@ int searchFileSize (int fd,struct posix_header * buf, char * name){
 }
 
 int isARepertoryInTar (char * destination){
-    int fd = openArchive(destination, O_RDONLY);
+    char ** division = dividePathWithTar(duplicate(destination));
+    int fd = openArchive(division[0], O_RDONLY);
     struct posix_header * buf = malloc (BLOCKSIZE);
-    searchFile (fd, buf, destination);
+    searchFile (fd, buf, division[1]);
     if(buf -> typeflag == '5'){
         free(buf);
         close(fd);
@@ -138,7 +139,7 @@ int isARepertoryOutsideTar (char * destination){
 }
 
 int isARepertory (char * destination){
-    if(isInTar(destination))
+    if(isInTar(destination) == 0)
         return isARepertoryInTar(destination);
     else
         return isARepertoryOutsideTar (destination);
