@@ -13,6 +13,14 @@
 #include "pwd.h"
 #include "functionInTar.h"
 
+//give the number for the name after the last '/'
+int fileName (char * pathName){
+    int i = strlen(pathName) -2;
+    while(pathName[i] != '/')
+        i--;
+    return i;
+}
+
 int cpTarInTar(char * archive, char * path, char * destination){
     int fd = openArchive (archive, O_RDWR);
     struct posix_header * copyHeader = malloc (BLOCKSIZE);
@@ -98,9 +106,13 @@ int cp3 (char * path, char * destination){
 int cp (char ** argv){
     if (getArgc(argv) > 3 && getArgc(argv) < 3)
         print("Trop d'arguments ou pas assez d'arguments!\n");
-                
+
     int pathName = isInTar(argv[1]);
     int destination = isInTar(argv[2]);
+
+    if(isARepertory(argv[2]) == 0){
+        sprintf(argv[2],"%s/%s", argv[2], argv[1] + fileName (argv[1]));
+    }
 
     if(pathName == 0 && destination == 0)
         return cp1(argv[1], argv[2]);
