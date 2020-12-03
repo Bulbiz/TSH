@@ -115,9 +115,12 @@ int cp (char ** argv){
     int pathName = isInTar(argv[1]);
     int destination = isInTar(argv[2]);
 
-    /*if(isARepertory(argv[2]) == 0){
+    char * buf = malloc ( sizeof(char) * (strlen(argv[2]) + strlen(argv[1] + fileName (argv[1]))));
+    argv[2] = buf;
+
+    if(isARepertory(argv[2]) == 0){
         sprintf(argv[2],"%s/%s", argv[2], argv[1] + fileName (argv[1]));
-    }*/
+    }
 
     if(pathName == 0 && destination == 0)
         return cp1(argv[1], argv[2]);
