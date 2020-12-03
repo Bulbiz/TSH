@@ -39,7 +39,9 @@ int cdAux (char * path){
 }
 
 void cd (char * path){
-    strcat(path,"/");
+    if(path[strlen(path) - 1] != '/')
+        strcat(path,"/");
+        
     if (isInTar(path) == 0){
         if(cdAux(path) == -1)
             print("CD : Déplacement échoué\n");

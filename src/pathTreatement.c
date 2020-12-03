@@ -90,12 +90,11 @@ void removePointFromPath (char ** res, int * pointeur, char * absolute){
     }
 }
 
-/* Delete . and .. from absolute path
-Warning, if there where a / a the end of absolute, it will be deleted!
-Might have to concatane a "/" at the end */
+/* Delete . and .. from absolute path */
 char * pathWithoutPoint (char * absolute){
+    char * end = absolute[strlen(absolute) - 1] == '/' ? "/" : "";
     char * resultat = malloc (sizeof(char)* (strlen(absolute) + 2));
-    strcpy(resultat,"\0");
+    memset(resultat, '\0', strlen(absolute) + 2);
     char * res [numberOfSlash(absolute)];
     int pointeur;
 
@@ -105,7 +104,7 @@ char * pathWithoutPoint (char * absolute){
         strcat(resultat,"/");
         strcat(resultat,res[i]);
     }
-
+    strcat(resultat,end);
     return resultat;
 }
 
