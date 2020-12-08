@@ -185,3 +185,20 @@ int cpTarInTarOptionR(char * archive, char * path, char * destination){
     close(fd);
     return 0;
 }
+
+int cpTarInOutsideTarOptionR(char * archive, char * path, char * destination){
+    int fd = openArchive (archive, O_RDWR);
+    int archiveSize = numberFileInArchive(fd);
+    char ** tabContent = nameOfAllFileInDirectory(fd, path, archiveSize);
+    for (int i = 0; i < archiveSize; i++){
+        if(tabContent[i] == NULL){
+            return 0;
+        }else{
+            cpTarInOutsideTar(archive, tabContent[i], destination);
+        }
+    }
+    free(tabContent);
+    close(fd);
+    return 0;
+}
+

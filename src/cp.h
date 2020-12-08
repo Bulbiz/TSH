@@ -12,5 +12,6 @@ int cp(char ** argv);
 
 char ** nameOfAllFileInDirectory (int fd, char * path, int archiveSize);
 int cpTarInTarOptionR(char * archive, char * path, char * destination);
+int cpTarInOutsideTarOptionR(char * archive, char * path, char * destination);
 
 #endif
