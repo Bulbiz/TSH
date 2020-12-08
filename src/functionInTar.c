@@ -127,22 +127,25 @@ int isARepertoryInTar (char * destination){
 }
 
 int isARepertoryOutsideTar (char * destination){
-    struct stat *statbuf = malloc (sizeof(statbuf));
-    stat(destination, statbuf);
-    if (statbuf -> st_mode == '5'){
-        free(statbuf);
+    struct stat statbuf;
+    stat(destination, &statbuf);
+    if (statbuf.st_mode == '5'){
+        print("CCCCCCCCCCCCCCCCCCCC\n");
         return 0;
     }else{
-        free(statbuf);
+        print("DDDDDDDDDDDDDDDDD\n");
         return -1;
     }
 }
 
 int isARepertory (char * destination){
-    if(isInTar(destination) == 0)
+    if(isInTar(destination) == 0){
+        print("AAAAAAAAAAAAA\n");
         return isARepertoryInTar(destination);
-    else
+    }else{
+        print("BBBBBBBBBBBBB\n");
         return isARepertoryOutsideTar (destination);
+    }
     
 }
 

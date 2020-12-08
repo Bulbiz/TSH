@@ -33,6 +33,10 @@ void mvRepertoire (char ** argv){
 
 void mv (char ** argv){
     if (getArgc(argv) != 3)
-        print("Trop d'arguments ou pas assez d'arguments!\n");  
-    mvFile(argv);  
+        print("Trop d'arguments ou pas assez d'arguments!\n");
+    
+    if (isARepertory(argv[1]) == 0)
+        mvRepertoire (argv);
+    else
+        mvFile(argv);  
 }
