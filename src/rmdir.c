@@ -66,8 +66,8 @@ int rmdirInTar(char * archive, char * path){
     }
 }
 
-void myRmdir (char * path){
+int myRmdir (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
-    rmdirInTar(pathInTar[0], pathInTar[1]);
+    return rmdirInTar(pathInTar[0], pathInTar[1]);
 }
 
