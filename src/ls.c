@@ -79,7 +79,7 @@ void lsLong (char * path) {
 
 
 /* FIXME : pour l'instant on va le faire que sur un argument, il faudra modifier pour plusieur argument */
-void ls (char * path) {
+void ls_aux (char * path) {
     if(path[strlen(path) - 1] != '/')
         strcat(path,"/");
 
@@ -100,4 +100,12 @@ void ls (char * path) {
     }
     
     print("\n");
+}
+
+void ls (char ** argv) {
+    argv[1] = getArgc(argv) == 1 ? pathTreated(getPWD()) : argv[1];
+    if (isInTar(argv[1]) == 0)
+        ls_aux(argv[1]);
+    else
+        executeCommandExterne(argv);
 }

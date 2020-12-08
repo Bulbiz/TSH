@@ -19,14 +19,14 @@
 
 void mvFile (char ** argv) {
     if(cp (argv) == 0)
-        rm(argv[1]);
+        rm(argv);
     else
         print("Echec du move, je n'ai pas réussi à déplacer le fichier\n");  
 }
 
 void mvRepertoire (char ** argv){
     if(rmdir(argv[0]) == 0)
-        myMkdir(argv[1]);
+        myMkdir(argv);
     else
         print("Echec du move, je n'ai pas réussi à déplacer le répertoire\n");
 }

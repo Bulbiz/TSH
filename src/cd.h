@@ -2,7 +2,8 @@
 #define CD_H
 
 int setPWD (char * path);
-int cdAux (char * path);
-void cd (char * arg);
+int cdInTar (char * path);
+void cd_aux (char * path);
+void cd (char ** argv);
 
 #endif
