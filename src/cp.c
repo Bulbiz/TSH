@@ -22,13 +22,17 @@ int fileName (char * pathName){
 }
 
 int cpTarInTar(char * archive, char * path, char * destination){
+    if (isARepertory(path) == 0){
+         perror("utilisez l'option -r pour les dossiers");
+        return -1;
+    }
     int fd = openArchive (archive, O_RDWR);
     struct posix_header * copyHeader = malloc (BLOCKSIZE);
     if(searchFile (fd, copyHeader, path) == -1){
         perror("fichier inexistant");
         return -1;
     }
-    
+  
     memset(copyHeader -> name, 0, 100);
     memcpy(copyHeader -> name, destination, (strlen(destination)));
     set_checksum(copyHeader);
@@ -53,6 +57,11 @@ int cpTarInTar(char * archive, char * path, char * destination){
 }
 
 int cpTarInOutsideTar(char * archive, char * path, char * destination){
+
+    if (isARepertory(path) == 0){
+         perror("utilisez l'option -r pour les dossiers");
+        return -1;
+    }
     int fd = openArchive (archive, O_RDONLY);
 
     struct posix_header * copyHeader = malloc (BLOCKSIZE);
@@ -83,6 +92,11 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
 }
 
 int cpOutsideTarInTar(char * archive, char * path, char * destination){
+
+    if (isARepertory(path) == 0){
+         perror("utilisez l'option -r pour les dossiers");
+        return -1;
+    }
     int fd = openArchive (archive, O_RDWR);
     int fdFile = open(path, O_RDONLY);
     copyFileToTar (fd, fdFile, destination);
