@@ -10,4 +10,7 @@ int cp2 (char * path, char * destination);
 int cp3 (char * path, char * destination);
 int cp(char ** argv);
 
+char ** nameOfAllFileInDirectory (int fd, char * path, int archiveSize);
+int cpTarInTarOptionR(char * archive, char * path, char * destination);
+
 #endif

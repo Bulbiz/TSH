@@ -141,3 +141,47 @@ int cp (char ** argv){
         return 0;
     }
 }
+
+
+char ** nameOfAllFileInDirectory (int fd, char * path, int archiveSize) {
+    replaceCurseurToStart (fd);
+    struct posix_header * h = malloc(BLOCKSIZE);
+    char ** tabContent = malloc (sizeof(char *) * archiveSize);
+    for (int i = 0; i < archiveSize; i++){
+        tabContent[i] = NULL;
+    }
+    int i = 0;
+    int tmp = getHeader(fd, h);
+    while(tmp == 0) {
+        tmp = getHeader(fd, h);
+        if(isInRepertory (path, h -> name)){
+            tabContent[i] = h -> name;
+            i++;
+        }
+    }
+
+    if(tmp == -2) {
+        lseek(fd, -BLOCKSIZE, SEEK_CUR);
+    }
+    free(h);
+    replaceCurseurToStart (fd);
+    return tabContent;
+}
+
+int cpTarInTarOptionR(char * archive, char * path, char * destination){
+
+    int fd = openArchive (archive, O_RDWR);
+    int archiveSize = numberFileInArchive(fd);
+    char ** tabContent = nameOfAllFileInDirectory(fd, path, archiveSize);
+
+    for (int i = 0; i < archiveSize; i++){
+        if(tabContent[i] == NULL){
+            return 0;
+        }else{
+            cpTarInTar(archive, tabContent[i], destination);
+        }
+    }
+    free(tabContent);
+    close(fd);
+    return 0;
+}
