@@ -22,10 +22,7 @@ int fileName (char * pathName){
 }
 
 int cpTarInTar(char * archive, char * path, char * destination){
-    if (isARepertory(path) == 0){
-         perror("utilisez l'option -r pour les dossiers");
-        return -1;
-    }
+
     int fd = openArchive (archive, O_RDWR);
     struct posix_header * copyHeader = malloc (BLOCKSIZE);
     if(searchFile (fd, copyHeader, path) == -1){
@@ -58,10 +55,6 @@ int cpTarInTar(char * archive, char * path, char * destination){
 
 int cpTarInOutsideTar(char * archive, char * path, char * destination){
 
-    if (isARepertory(path) == 0){
-         perror("utilisez l'option -r pour les dossiers");
-        return -1;
-    }
     int fd = openArchive (archive, O_RDONLY);
 
     struct posix_header * copyHeader = malloc (BLOCKSIZE);
@@ -93,10 +86,6 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
 
 int cpOutsideTarInTar(char * archive, char * path, char * destination){
 
-    if (isARepertory(path) == 0){
-         perror("utilisez l'option -r pour les dossiers");
-        return -1;
-    }
     int fd = openArchive (archive, O_RDWR);
     int fdFile = open(path, O_RDONLY);
     copyFileToTar (fd, fdFile, destination);
@@ -123,8 +112,14 @@ int cp3 (char * path, char * destination){
 
 
 int cp (char ** argv){
-    if (getArgc(argv) > 3 && getArgc(argv) < 3)
+    if (getArgc(argv) > 3 && getArgc(argv) < 3){
         print("Trop d'arguments ou pas assez d'arguments!\n");
+    }
+
+    if (isARepertory(argv[1]) == 0){
+         perror("utilisez l'option -r pour les dossiers");
+        return -1;
+    }
 
     int pathName = isInTar(argv[1]);
     int destination = isInTar(argv[2]);
