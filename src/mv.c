@@ -47,7 +47,6 @@ int mv (char ** argv){
         return 0;
 
     }else{
-        print(argv[1]);
         cp(argv);
         if (source == 0)
             rm_aux(argv[1]);
