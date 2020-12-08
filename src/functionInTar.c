@@ -14,6 +14,7 @@
 #include "pathTreatement.h"
 
 #define BLOCKSIZE 512
+char fileType (mode_t mode);
 
 void replaceCurseurToStart (int fd){
     lseek(fd,0,SEEK_SET);
@@ -127,22 +128,21 @@ int isARepertoryInTar (char * destination){
 }
 
 int isARepertoryOutsideTar (char * destination){
-    struct stat *statbuf = malloc (sizeof(statbuf));
-    stat(destination, statbuf);
-    if (statbuf -> st_mode == '5'){
-        free(statbuf);
+    struct stat statbuf;
+    stat(destination, &statbuf);
+    if (fileType(statbuf.st_mode) == '5'){
         return 0;
     }else{
-        free(statbuf);
         return -1;
     }
 }
 
 int isARepertory (char * destination){
-    if(isInTar(destination) == 0)
+    if(isInTar(destination) == 0){
         return isARepertoryInTar(destination);
-    else
+    }else{
         return isARepertoryOutsideTar (destination);
+    }
     
 }
 
