@@ -16,24 +16,12 @@
 #include "cp.h"
 #include "mkdir.h"
 #include "rmdir.h"
-/*
-void mvFile (char ** argv) {
-    if(cp (argv) == 0)
-        rm(argv);
-    else
-        print("Echec du move, je n'ai pas réussi à déplacer le fichier\n");  
-}
-
-void mvRepertoire (char ** argv){
-    if(rmdir(argv[0]) == 0)
-        myMkdir(argv);
-    else
-        print("Echec du move, je n'ai pas réussi à déplacer le répertoire\n");
-}*/
 
 int mv (char ** argv){
-    if (getArgc(argv) != 3)
+    if (getArgc(argv) != 3){
         print("Trop d'arguments ou pas assez d'arguments!\n");
+        return -1;
+    }
 
     int source = isInTar(argv[1]);
     int destination = isInTar(argv[2]);
@@ -46,24 +34,26 @@ int mv (char ** argv){
     
     //First argument is a repertory
     if(isARepertory(argv[1]) == 0){
+        print("AAAAAAAAAAA\n");
         if (source == 0)
             myRmdir_aux(argv[1]);
         else
             rmdir (argv[1]);
 
         if(destination == 0)
-            myMkdir_aux(argv[1]);
+            myMkdir_aux(argv[2]);
         else
-            mkdir (argv[1],O_RDWR);
+            mkdir (argv[2],O_RDWR);
         return 0;
 
     }else{
-
+        print(argv[1]);
         cp(argv);
         if (source == 0)
             rm_aux(argv[1]);
         else
             unlink(argv[1]);
+        
         return 0;
     }
 }
