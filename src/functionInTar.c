@@ -75,6 +75,22 @@ void passArchive(int fd) {
     }
 }
 
+int numberFileInArchive(int fd) {
+    replaceCurseurToStart (fd);
+    struct posix_header * h = malloc(BLOCKSIZE);
+    int tmp = getHeader(fd, h);
+    int count = 0;
+    while(tmp == 0) {
+        tmp = getHeader(fd, h);
+        count ++;
+    }
+
+    if(tmp == -2) {
+        lseek(fd, -BLOCKSIZE, SEEK_CUR);
+    }
+    return count;
+}
+
 int getFileSizeFromHeader (struct posix_header * buf){
     int numberBlock = 0;
     sscanf(buf -> size ,"%o", &numberBlock);
