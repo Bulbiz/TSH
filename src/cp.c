@@ -2,6 +2,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
+#include <dirent.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <sys/types.h>
@@ -201,4 +202,95 @@ int cpTarInOutsideTarOptionR(char * archive, char * path, char * destination){
     close(fd);
     return 0;
 }
+int numberOfFileInDirectoryOutsideTar(DIR * dirp, char * path){
 
+    if(dirp == NULL){
+        perror("numberOfFileInDirectoryOutsideTar");
+        return -1;
+    }
+    struct dirent *entity;
+    entity = readdir(dirp);
+    int count = 0;
+    while(entity != NULL){
+        if(strcmp(entity -> d_name, ".") != 0 && strcmp(entity -> d_name, "..") != 0){
+            if(entity -> d_type == DT_DIR){     
+                char * newPath = malloc (sizeof(char) * (strlen(path) + strlen(entity -> d_name) + 1));
+                sprintf(newPath, "%s/%s", path, entity -> d_name);
+                count += numberOfFileInDirectoryOutsideTar(opendir(newPath), newPath);
+            }else{
+                count += 1;
+            }
+        } 
+        entity = readdir(dirp);
+    }
+    return count + 1;
+}
+
+void getAllFileNameFromFolderAux (DIR * dirp, char * path, int * index, char ** allEntityName){
+    if(dirp == NULL){
+        perror("getAllFileNameFromFolderAux");
+    }
+    struct dirent *entity;
+    entity = readdir(dirp);
+    while(entity != NULL){
+        if(strcmp(entity -> d_name, ".") != 0 && strcmp(entity -> d_name, "..") != 0){
+
+            if(entity -> d_type == DT_DIR){     
+                char * newPath = malloc (sizeof(char) * (strlen(path) + strlen(entity -> d_name) + 1));
+                sprintf(newPath, "%s/%s", path, entity -> d_name);
+                allEntityName[*index] = newPath;
+                (*index) ++;
+                getAllFileNameFromFolderAux (opendir(newPath), newPath, index, allEntityName);
+            }else{
+                char * newPath = malloc (sizeof(char) * (strlen(path) + strlen(entity -> d_name) + 1));
+                sprintf(newPath, "%s/%s", path, entity -> d_name);
+                allEntityName[*index] = newPath;
+                (*index) ++;
+            }
+        } 
+        entity = readdir(dirp);
+    }
+}
+
+char ** getAllFileNameFromFolder (char * path){
+    DIR * dirp = opendir(path);
+    int index = 1;
+    int size = numberOfFileInDirectoryOutsideTar(dirp, path);
+
+    rewinddir(dirp);
+
+    char ** allEntityName = malloc (sizeof(char * ) * size);
+    getAllFileNameFromFolderAux (dirp, path, &index, allEntityName);
+    
+    allEntityName[0] = path;
+    closedir(dirp);
+    
+    return allEntityName;
+}
+/*int cpOutsideTarInTarOptionR(char * archive, char * path, char * destination){
+    int fd = openArchive (archive, O_RDWR);
+
+    struct dirent *entity;
+    DIR * dirp = opendir(path);
+    if (dirp == NULL){
+        perror("bug ouverture dossier");
+        return -1;
+    }
+    entity = readdir(dirp);
+
+    if(entity = NULL){
+        cpOutsideTarInTar(archive, path, destination);
+    }else{
+
+        int size = numberOfFileInDirectoryOutsideTar(dirp, 1);
+
+        char ** allEntityName = malloc (sizeof(char *) * size);   
+        cpOutsideTarInTarOptionRAux (dirp, 0, allEntityName);
+
+        for (int i = 0; i < size; i++){
+            cpOutsideTarInTar(archive, allEntityName[i], destination);
+        }
+    }
+
+    return 0;
+}*/
