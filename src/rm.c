@@ -99,7 +99,6 @@ int rmInTar(char * archive, char * path){
 
 }
 
-
 int rmReccursiveInTar (char * archive, char * path){
     int fd = openArchive (archive, O_RDWR);
     struct posix_header * buf = malloc (512);
@@ -132,14 +131,14 @@ void rmR (char * path){
     rmReccursiveInTar (pathInTar[0], pathInTar[1]);
 }
 
-void rm (char * path){
+void rm_aux (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
-    //rmInTar(pathInTar[0], pathInTar[1]);
-    rmReccursiveInTar (pathInTar[0], pathInTar[1]);
+    rmInTar(pathInTar[0], pathInTar[1]);
 }
 
-
-/*int main(int argc, char * argv[]){
-    rmInTar("archive.tar","rep/toto");
-    return 0;
-}*/
+void rm (char ** argv){
+    if(isInTar(argv[1]) == 0)
+        rm_aux (argv[1]);
+    else
+        executeCommandExterne(argv);
+}

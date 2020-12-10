@@ -156,27 +156,19 @@ void shell(){
             continue;
 
         if(strcmp (argv[0],"cd") == 0){
-            if (getArgc(argv) > 2)
-                print("Trop d'argument !\n");
-            cd(argv[1]);
+            cd(argv);
 
         }else if(strcmp (argv[0],"pwd") == 0){
 
             pwd();
 
         }else if(strcmp (argv[0],"mkdir") == 0){
-
-            if(isInTar(argv[1]) == 0)
-                myMkdir (argv[1]);
-            else
-                executeCommandExterne(argv);
+            
+            myMkdir (argv);
 
         }else if(strcmp (argv[0],"rmdir") == 0){
 
-            if(isInTar(argv[1]) == 0)
-                myRmdir (argv[1]);
-            else
-                executeCommandExterne(argv);
+            myRmdir (argv);
 
         }else if(strcmp (argv[0],"mv") == 0){
 
@@ -188,25 +180,15 @@ void shell(){
 
         }else if(strcmp (argv[0],"rm") == 0){
 
-            if(isInTar(argv[1]) == 0)
-                rm (argv[1]);
-            else
-                executeCommandExterne(argv);
+            rm (argv);
 
         }else if(strcmp (argv[0],"ls") == 0){
 
-            argv[1] = getArgc(argv) == 1 ? pathTreated(getPWD()) : argv[1];
-            if (isInTar(argv[1]) == 0)
-                ls(argv[1]);
-            else
-                executeCommandExterne(argv);
+            ls(argv);
 
         }else if(strcmp (argv[0],"cat") == 0){
 
-            if(getArgc (argv) == 1 || isInTar(argv[1]) == -1)                 //cat without argument or not in tar
-                executeCommandExterne(argv);
-            else
-                cat (argv[1]);
+            cat (argv);
 
         }else if(strcmp (argv[0],"exit") == 0){
 

@@ -66,8 +66,14 @@ int rmdirInTar(char * archive, char * path){
     }
 }
 
-void myRmdir (char * path){
+int myRmdir_aux (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
-    rmdirInTar(pathInTar[0], pathInTar[1]);
+    return rmdirInTar(pathInTar[0], pathInTar[1]);
 }
 
+void myRmdir (char ** argv){
+    if(isInTar(argv[1]) == 0)
+        myRmdir_aux (argv[1]);
+    else
+        executeCommandExterne(argv);
+}

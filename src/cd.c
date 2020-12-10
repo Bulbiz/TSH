@@ -15,7 +15,7 @@ int setPWD (char * path){
     return 0;
 }
 
-int cdAux (char * path){
+int cdInTar (char * path){
     char ** traitedPath = dividePathWithTar(path);
     int fd = openArchive(traitedPath[0],O_RDONLY);
     if(fd < 0) {return -1;}
@@ -38,12 +38,12 @@ int cdAux (char * path){
 
 }
 
-void cd (char * path){
+void cd_aux (char * path){
     if(path[strlen(path) - 1] != '/')
         strcat(path,"/");
         
     if (isInTar(path) == 0){
-        if(cdAux(path) == -1)
+        if(cdInTar(path) == -1)
             print("CD : Déplacement échoué\n");
     }else{
         if(chdir(path) < 0)
@@ -52,12 +52,11 @@ void cd (char * path){
     }
 }
 
-/*
-int main (){
-    printf("Avant : %s\n",getenv("PWD"));
-    cd("archive.tar/rep/");
-    printf("Après : %s\n",getenv("PWD"));
-    cd(duplicate("/home/pholasa/Bureau/L3/Système d'exploitation/projet/shellfortarball/archive.tar/"));
-    printf("Après2 : %s\n",getenv("PWD"));
-}*/
+void cd (char ** argv) {
+    if (getArgc(argv) != 2)
+        print("Trop d'argument !\n");
+    else
+        cd_aux(argv[1]);
+}
+
 

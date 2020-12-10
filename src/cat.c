@@ -34,12 +34,14 @@ int catInTar(char * archive, char * path){
     return -1;
 }
 
-void cat (char * path){
+void cat_aux (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
     catInTar(pathInTar[0], pathInTar[1]);
 }
 
-/*int main(int argc, char * argv[]){
-    cat(relatifToAbsolute ("test/titi"));
-    return 0;
-}*/
+void cat (char ** argv){
+    if(getArgc (argv) == 1 || isInTar(argv[1]) == -1)                 //cat without argument or not in tar
+        executeCommandExterne(argv);
+    else
+        cat_aux (argv[1]);
+}
