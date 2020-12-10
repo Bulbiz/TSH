@@ -143,15 +143,14 @@ int isARepertoryInTar (char * destination){
 }
 
 int isARepertoryOutsideTar (char * destination){
-    struct stat *statbuf = malloc (sizeof(statbuf));
-    stat(destination, statbuf);
-    if (statbuf -> st_mode == '5'){
-        free(statbuf);
-        return 0;
-    }else{
-        free(statbuf);
+    struct stat buffer;
+    if (stat(destination,&buffer) == -1)
         return -1;
-    }
+
+    if ((buffer.st_mode & S_IFMT) == S_IFDIR)
+        return 0;
+    else
+        return -1;   
 }
 
 int isARepertory (char * destination){
