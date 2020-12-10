@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
+#include <dirent.h>
 
 #include "tar.h"
 #include "functionInTar.h"
