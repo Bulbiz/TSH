@@ -86,7 +86,7 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
 }
 
 int cpOutsideTarInTar(char * archive, char * path, char * destination){
-
+    print(path);
     int fd = openArchive (archive, O_RDWR);
     int fdFile = open(path, O_RDONLY);
     copyFileToTar (fd, fdFile, destination);
@@ -241,13 +241,15 @@ void getAllFileNameFromFolderAux (DIR * dirp, char * path, int * index, char ** 
                 allEntityName[*index] = newPath;
                 (*index) ++;
                 getAllFileNameFromFolderAux (opendir(newPath), newPath, index, allEntityName);
+                free(newPath);
             }else{
                 char * newPath = malloc (sizeof(char) * (strlen(path) + strlen(entity -> d_name) + 1));
                 sprintf(newPath, "%s/%s", path, entity -> d_name);
                 allEntityName[*index] = newPath;
                 (*index) ++;
+                free(newPath);
             }
-        } 
+        }
         entity = readdir(dirp);
     }
 }
@@ -267,30 +269,25 @@ char ** getAllFileNameFromFolder (char * path){
     
     return allEntityName;
 }
-/*int cpOutsideTarInTarOptionR(char * archive, char * path, char * destination){
-    int fd = openArchive (archive, O_RDWR);
-
-    struct dirent *entity;
+int cpOutsideTarInTarOptionR(char * archive, char * path, char * destination){
     DIR * dirp = opendir(path);
-    if (dirp == NULL){
-        perror("bug ouverture dossier");
-        return -1;
-    }
-    entity = readdir(dirp);
 
-    if(entity = NULL){
+    int numberFile = numberOfFileInDirectoryOutsideTar(dirp, path);
+    if(numberFile == 1){
         cpOutsideTarInTar(archive, path, destination);
     }else{
 
-        int size = numberOfFileInDirectoryOutsideTar(dirp, 1);
-
-        char ** allEntityName = malloc (sizeof(char *) * size);   
-        cpOutsideTarInTarOptionRAux (dirp, 0, allEntityName);
-
-        for (int i = 0; i < size; i++){
-            cpOutsideTarInTar(archive, allEntityName[i], destination);
+        char ** allEntityName = getAllFileNameFromFolder(path);
+        char buf[2000];
+        for (int i = 0; i < numberFile; i++){
+            //char buf[strlen(allEntityName[i]) + strlen(destination) + 2];
+            sprintf(buf, "%s/%s", destination, allEntityName[i]);
+            //cpOutsideTarInTar(archive, allEntityName[i], buf);
+            print(buf);
+            memset(buf, '\0', 2000);
+            print("\n");
         }
     }
-
+    closedir(dirp);
     return 0;
-}*/
+}

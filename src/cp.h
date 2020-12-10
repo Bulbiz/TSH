@@ -18,5 +18,6 @@ int cpTarInOutsideTarOptionR(char * archive, char * path, char * destination);
 int numberOfFileInDirectoryOutsideTar(DIR * dirp, char * path);
 void getAllFileNameFromFolderAux (DIR * dirp, char * path, int * index, char ** allEntityName);
 char ** getAllFileNameFromFolder (char * path);
+int cpOutsideTarInTarOptionR(char * archive, char * path, char * destination);
 
 #endif
