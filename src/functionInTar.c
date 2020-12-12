@@ -366,11 +366,11 @@ int isInRepertory (char * repertory, char * filename){
     return (
         strlen (repertory) < strlen(filename) && 
         strncmp(repertory,filename,strlen(repertory)) == 0 && 
-
         (numberOfSlash (filename) == numberOfSlash(repertory)  || 
         (numberOfSlash (filename) == numberOfSlash(repertory) + 1 && filename[strlen(filename) - 1] == '/'))) ? 0 : -1;
 }
-//return 0 if a file is in the repertory in the archive, else, return -1
+
+/* Verify if the repertory have at least one file inside */
 int fileInRepertory(int fd, char * repertory){
     struct posix_header * buf = malloc(BLOCKSIZE);
     while(getHeader(fd,buf) == 0 ){
@@ -383,7 +383,7 @@ int fileInRepertory(int fd, char * repertory){
     return -1;
 }
 
-
+/* Return the number of argument */
 int getArgc (char ** argv){
     int i = 0;
     while (argv[i] != NULL){
@@ -392,6 +392,7 @@ int getArgc (char ** argv){
     return i;
 }
 
+/* Execute the command defined in the argv */
 void executeCommandExterne (char ** argv){
     int child = fork ();
 

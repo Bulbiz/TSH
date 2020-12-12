@@ -13,6 +13,7 @@
 #include "functionInTar.h"
 #include "pathTreatement.h"
 
+/* Do the command cat in the tar */
 int catInTar(char * archive, char * path){
     int fd = openArchive (archive, O_RDONLY);
     struct posix_header * p = malloc (512);
@@ -34,11 +35,13 @@ int catInTar(char * archive, char * path){
     return -1;
 }
 
+/* Convert the path for the execution of the command */
 void cat_aux (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
     catInTar(pathInTar[0], pathInTar[1]);
 }
 
+/* Execute the command cat */
 void cat (char ** argv){
     if(getArgc (argv) == 1 || isInTar(argv[1]) == -1)                 //cat without argument or not in tar
         executeCommandExterne(argv);

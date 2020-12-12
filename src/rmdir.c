@@ -13,7 +13,7 @@
 #include "pwd.h"
 #include "functionInTar.h"
 
-//return 0 is there is file in the folder else -1
+/* Return 0 is there is file in the folder else -1 */
 int fileInFolderInTar (char * archive, char * path){
     int fd = openArchive (archive, O_RDONLY);
     struct posix_header * buf = malloc (512);
@@ -26,7 +26,8 @@ int fileInFolderInTar (char * archive, char * path){
     return -1;
 }   
 
-//return 0 if the command succes, else -1
+/*  Execute rmdir inside a tar
+    Return 0 if the command succes, else -1 */
 int rmdirInTar(char * archive, char * path){
     int fd = openArchive(archive, O_RDWR);
     struct posix_header * buf = malloc (512);
@@ -66,12 +67,13 @@ int rmdirInTar(char * archive, char * path){
     }
 }
 
-/*rmdir for a directory in tar*/
+/* Divide the path for the execution of rmdir inside a tarball */
 int myRmdir_aux (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
     return rmdirInTar(pathInTar[0], pathInTar[1]);
 }
-/*rmdir for a directory outside tar*/
+
+/* Execute the command rmdir */
 void myRmdir (char ** argv){
     if(isInTar(argv[1]) == 0)
         myRmdir_aux (argv[1]);
