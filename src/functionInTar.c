@@ -237,7 +237,7 @@ struct posix_header * createHeader (char * name, struct stat information){
     set_checksum(h);
 
     if(!check_checksum(h))
-        perror("Checksum :");
+        perror("Checksum");
 
     return h;
 }
@@ -256,7 +256,7 @@ struct posix_header * createHeaderFolder (char * name){
     set_checksum(h);
 
     if(!check_checksum(h))
-        perror("Checksum :");
+        perror("Checksum");
 
     return h;
 }
@@ -276,7 +276,7 @@ char * getFileContentForTar (int fd, int * size){
     memset(content,0,*size);
 
     if (read(fd,content,buf.st_size) == -1)
-        perror("GetFileContent: ");
+        perror("GetFileContent");
     return content;
 }
 
@@ -324,11 +324,10 @@ size_t getSizeAfterFile (char * path, int fd){
     return size;
 }
 
-//à tester
 char * getContentUntilPathFile(char * path, int fd, size_t size){
     replaceCurseurToStart (fd);
     if (size == -1)
-        perror("Fichier introuvable");
+        print("Fichier introuvable");
 
     char * res = malloc (sizeof(char) * (size));
     struct posix_header * buffer = malloc (BLOCKSIZE);
@@ -336,7 +335,7 @@ char * getContentUntilPathFile(char * path, int fd, size_t size){
     passContent (fd, buffer);
 
     if(read (fd,res,size) < 0)
-        perror("read");
+        perror("getContentUntilPathFile");
     free(buffer);
     return res;
 }
@@ -376,10 +375,10 @@ void executeCommandExterne (char ** argv){
     int child = fork ();
 
     switch (child){
-        case -1 : perror ("Command execution"); break;
+        case -1 : perror ("executeCommandExterne"); break;
         case 0 ://child 
             if( execvp (argv[0],argv) == -1){
-                perror ("Execution failure");
+                perror ("executeCommandExterne");
                 exit(0);
             }   
             break;
