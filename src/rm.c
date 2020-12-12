@@ -93,7 +93,7 @@ int rmInTar(char * archive, char * path){
         close(fd);
         return 0;
     }else{
-        perror("impossible de supprimer, ce n'est pas un fichier");
+        print("impossible de supprimer, ce n'est pas un fichier");
         return -1;
     }
 

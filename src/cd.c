@@ -58,7 +58,7 @@ void cd_aux (char * path){
 /*verification argv and do cd_aux*/
 void cd (char ** argv) {
     if (getArgc(argv) != 2)
-        print("Trop d'argument !\n");
+        print("CD : Trop d'arguments !\n");
     else
         cd_aux(argv[1]);
 }
