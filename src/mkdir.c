@@ -13,6 +13,7 @@
 #include "pwd.h"
 #include "functionInTar.h"
 
+/* Execute the command mkdir inside a tarball */
 int mkdirInTar(char * archive, char * path){
     int fd = openArchive(archive, O_RDWR);
     passArchive(fd);
@@ -23,12 +24,13 @@ int mkdirInTar(char * archive, char * path){
     close(fd);
     return 0;
 }
-
+/* Divide the path for the execution of mkdir inside a tarball */
 void myMkdir_aux (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
     mkdirInTar(pathInTar[0], pathInTar[1]);
 }
 
+/* Execute mkdir */
 void myMkdir (char ** argv) {
     if(isInTar(argv[1]) == 0)
         myMkdir_aux (argv[1]);
