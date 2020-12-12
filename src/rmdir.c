@@ -66,11 +66,12 @@ int rmdirInTar(char * archive, char * path){
     }
 }
 
+/*rmdir for a directory in tar*/
 int myRmdir_aux (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
     return rmdirInTar(pathInTar[0], pathInTar[1]);
 }
-
+/*rmdir for a directory outside tar*/
 void myRmdir (char ** argv){
     if(isInTar(argv[1]) == 0)
         myRmdir_aux (argv[1]);
