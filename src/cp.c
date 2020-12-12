@@ -75,7 +75,7 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
     int fdFile = open(destination, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     
     if(write(fdFile, copyContent, strlen(copyContent))<0){
-        perror("write");
+        perror("cpTarInOutsideTar");
         return -1;
     }
 
