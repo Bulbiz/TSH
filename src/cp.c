@@ -13,6 +13,7 @@
 #include "tar.h"
 #include "pwd.h"
 #include "functionInTar.h"
+#include "mkdir.h"
 
 //give the number for the name after the last '/'
 int fileName (char * pathName){
@@ -86,7 +87,6 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
 }
 
 int cpOutsideTarInTar(char * archive, char * path, char * destination){
-
     int fd = openArchive (archive, O_RDWR);
     int fdFile = open(path, O_RDONLY);
     copyFileToTar (fd, fdFile, destination);
@@ -214,7 +214,8 @@ int numberOfFileInDirectoryOutsideTar(DIR * dirp, char * path){
     while(entity != NULL){
         if(strcmp(entity -> d_name, ".") != 0 && strcmp(entity -> d_name, "..") != 0){
             if(entity -> d_type == DT_DIR){     
-                char * newPath = malloc (sizeof(char) * (strlen(path) + strlen(entity -> d_name) + 1));
+                char * newPath = malloc (sizeof(char) * (strlen(path) + strlen(entity -> d_name) + 2));
+                memset(newPath ,'\0',strlen(path) + strlen(entity -> d_name) + 1);
                 sprintf(newPath, "%s/%s", path, entity -> d_name);
                 count += numberOfFileInDirectoryOutsideTar(opendir(newPath), newPath);
             }else{
@@ -234,20 +235,16 @@ void getAllFileNameFromFolderAux (DIR * dirp, char * path, int * index, char ** 
     entity = readdir(dirp);
     while(entity != NULL){
         if(strcmp(entity -> d_name, ".") != 0 && strcmp(entity -> d_name, "..") != 0){
+            char * newPath = malloc (sizeof(char) * (strlen(path) + strlen(entity -> d_name) + 2));
+            memset(newPath, '\0', strlen(path) + strlen(entity -> d_name) + 1);
+            sprintf(newPath, "%s/%s", path, entity -> d_name);
+            allEntityName[*index] = newPath;
+            (*index) ++;
 
             if(entity -> d_type == DT_DIR){     
-                char * newPath = malloc (sizeof(char) * (strlen(path) + strlen(entity -> d_name) + 1));
-                sprintf(newPath, "%s/%s", path, entity -> d_name);
-                allEntityName[*index] = newPath;
-                (*index) ++;
                 getAllFileNameFromFolderAux (opendir(newPath), newPath, index, allEntityName);
-            }else{
-                char * newPath = malloc (sizeof(char) * (strlen(path) + strlen(entity -> d_name) + 1));
-                sprintf(newPath, "%s/%s", path, entity -> d_name);
-                allEntityName[*index] = newPath;
-                (*index) ++;
             }
-        } 
+        }
         entity = readdir(dirp);
     }
 }
@@ -267,30 +264,29 @@ char ** getAllFileNameFromFolder (char * path){
     
     return allEntityName;
 }
-/*int cpOutsideTarInTarOptionR(char * archive, char * path, char * destination){
-    int fd = openArchive (archive, O_RDWR);
 
-    struct dirent *entity;
+int cpOutsideTarInTarOptionR(char * archive, char * path, char * destination){
     DIR * dirp = opendir(path);
-    if (dirp == NULL){
-        perror("bug ouverture dossier");
-        return -1;
-    }
-    entity = readdir(dirp);
 
-    if(entity = NULL){
+    int numberFile = numberOfFileInDirectoryOutsideTar(dirp, path);
+
+    if(numberFile == 1){
         cpOutsideTarInTar(archive, path, destination);
     }else{
 
-        int size = numberOfFileInDirectoryOutsideTar(dirp, 1);
+        char ** allEntityName = getAllFileNameFromFolder(path);
+        for (int i = 0; i < numberFile; i++){
+            char * buf = malloc (strlen(allEntityName[i]) + strlen(destination) + 2);
+            sprintf(buf, "%s/%s", destination, allEntityName[i]);
+            printf("Base %s ; Ajout : %s\n ",allEntityName[i], buf);
 
-        char ** allEntityName = malloc (sizeof(char *) * size);   
-        cpOutsideTarInTarOptionRAux (dirp, 0, allEntityName);
-
-        for (int i = 0; i < size; i++){
-            cpOutsideTarInTar(archive, allEntityName[i], destination);
+            if (isARepertory (allEntityName[i]) == 0){
+                mkdirInTar(archive,buf);
+            }else{
+                cpOutsideTarInTar(archive, allEntityName[i], buf);
+            }
         }
     }
-
+    closedir(dirp);
     return 0;
-}*/
+}
