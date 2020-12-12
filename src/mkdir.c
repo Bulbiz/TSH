@@ -24,7 +24,14 @@ int mkdirInTar(char * archive, char * path){
     return 0;
 }
 
-void myMkdir (char * path){
+void myMkdir_aux (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
     mkdirInTar(pathInTar[0], pathInTar[1]);
+}
+
+void myMkdir (char ** argv) {
+    if(isInTar(argv[1]) == 0)
+        myMkdir_aux (argv[1]);
+    else
+        executeCommandExterne(argv);
 }

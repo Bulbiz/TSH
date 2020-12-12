@@ -14,6 +14,7 @@
 #include "pathTreatement.h"
 
 #define BLOCKSIZE 512
+char fileType (mode_t mode);
 
 void replaceCurseurToStart (int fd){
     lseek(fd,0,SEEK_SET);
@@ -154,10 +155,11 @@ int isARepertoryOutsideTar (char * destination){
 }
 
 int isARepertory (char * destination){
-    if(isInTar(destination) == 0)
+    if(isInTar(destination) == 0){
         return isARepertoryInTar(destination);
-    else
+    }else{
         return isARepertoryOutsideTar (destination);
+    }
     
 }
 
