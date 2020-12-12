@@ -61,7 +61,7 @@ int rmdirInTar(char * archive, char * path){
         close(fd);
         return 0;
     }else{
-        perror("impossible de supprimer le répertoire");
+        print("impossible de supprimer le répertoire");
         return -1;
     }
 }
