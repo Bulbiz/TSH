@@ -9,12 +9,14 @@
 #include "functionInTar.h"
 #include "pathTreatement.h"
 
+/*copy the path in the global variable cwd*/
 int setPWD (char * path){
     strcpy(cwd,path);
     free(path);
     return 0;
 }
 
+/*change the path in the global variable cwd in case of cd in tar if the path is a directory*/
 int cdInTar (char * path){
     char ** traitedPath = dividePathWithTar(path);
     int fd = openArchive(traitedPath[0],O_RDONLY);
@@ -38,6 +40,8 @@ int cdInTar (char * path){
 
 }
 
+/*add "/" if the path don't have at the end, and if the path is a folder update the 
+global variable cwd */
 void cd_aux (char * path){
     if(path[strlen(path) - 1] != '/')
         strcat(path,"/");
@@ -51,7 +55,7 @@ void cd_aux (char * path){
         getcwd(cwd,SIZE);
     }
 }
-
+/*verification argv and do cd_aux*/
 void cd (char ** argv) {
     if (getArgc(argv) != 2)
         print("CD : Trop d'arguments !\n");

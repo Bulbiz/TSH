@@ -17,6 +17,15 @@
 #include "mkdir.h"
 #include "rmdir.h"
 
+/*do mv for all possibility :
+-tar to tar
+-tar to outside tar
+-outside tar to tar
+-outside tar to outside tar
+
+first do rm(if path is a file) or rmdir(if path is a folder) then 
+create file( if path is a file) or create mkdir (if path is a folder)
+*/
 int mv (char ** argv){
     if (getArgc(argv) != 3){
         print("Trop d'arguments ou pas assez d'arguments!\n");
@@ -34,7 +43,6 @@ int mv (char ** argv){
     
     //First argument is a repertory
     if(isARepertory(argv[1]) == 0){
-        print("AAAAAAAAAAA\n");
         if (source == 0)
             myRmdir_aux(argv[1]);
         else

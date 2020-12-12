@@ -57,7 +57,7 @@ int removeFile (char * archive, char * path){
     return 0;
 }
 
-/* Remove a file if it's a regular file */
+/* Remove a file if the file is a regular file */
 int rmInTar(char * archive, char * path){
     int fd = openArchive (archive, O_RDWR);
     struct posix_header * buf = malloc (512);
@@ -98,7 +98,8 @@ int rmInTar(char * archive, char * path){
     }
 
 }
-
+/*  Remove every file that is in a repertory 
+    (a file is considered inside a repertory if it has as a prefix in the name the name of the repertory) */
 int rmReccursiveInTar (char * archive, char * path){
     int fd = openArchive (archive, O_RDWR);
     struct posix_header * buf = malloc (512);
@@ -126,16 +127,19 @@ int rmReccursiveInTar (char * archive, char * path){
     return 0;
 }
 
+/* Execute the command rm -r inside a tar */
 void rmR (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
     rmReccursiveInTar (pathInTar[0], pathInTar[1]);
 }
 
+/* Execute the command rm inside a tar */
 void rm_aux (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
     rmInTar(pathInTar[0], pathInTar[1]);
 }
 
+/* Execute the command rm */
 void rm (char ** argv){
     if(isInTar(argv[1]) == 0)
         rm_aux (argv[1]);

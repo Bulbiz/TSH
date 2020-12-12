@@ -8,6 +8,7 @@
 /* current working directory */
 char * cwd;
 
+/*print the char * message in the shell*/
 void print (char * message){
     if (write (STDIN_FILENO,message,strlen(message)) == -1)
         perror("Print");
@@ -20,19 +21,21 @@ char * getPWD (){
     return path;
 }
 
+/*return 0 if the path is Absolute, else -1*/
 int isAbsolute (char * path){
     if (path[0] == '/')
         return 0;
     return -1;
 }
 
+/*return a copy of str (String) */
 char * duplicate (char * str){
-    char * res = malloc (sizeof(char) * (strlen(str)+1));
+    char * res = malloc (sizeof(char) * (strlen(str)+2));
     strcpy(res,str);
     return res;
 }
 
-/* Tell if the path is in a tar */
+/* return 0 if the path is in a tar else -1*/
 int isInTar (char * path){
     return (strstr(path,".tar") != NULL) ? 0 : -1;
 }
@@ -55,6 +58,7 @@ char ** dividePathWithTar (char * path){
     return res;
 }
 
+/*convert the relatifPath to absolutePath*/
 char * relatifToAbsolute (char * relatifPath){
     char * path = getPWD();
     strcat(path,"/");
@@ -62,6 +66,7 @@ char * relatifToAbsolute (char * relatifPath){
     return path;
 }
 
+/*count the number of slash in the path*/
 int numberOfSlash(char * path){
     int cmp = 0;
     for(char * c = path; *c != '\0'; c ++){
@@ -108,7 +113,7 @@ char * pathWithoutPoint (char * absolute){
     return resultat;
 }
 
-
+/*convert every path to absolute path without . and ..*/
 char * pathTreated (char * path){
     char * res = (isAbsolute(path) == 0)? path : relatifToAbsolute(path);
     return pathWithoutPoint(res);
