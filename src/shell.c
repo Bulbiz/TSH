@@ -6,6 +6,10 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "tar.h"
 #include "functionInTar.h"
@@ -207,8 +211,8 @@ void shell(){
 
 
 int main (){
-    cwd = malloc (SIZE);
+    /*cwd = malloc (SIZE);
     getcwd(cwd,SIZE);
-    shell();
+    shell();*/
     return 0;
 }

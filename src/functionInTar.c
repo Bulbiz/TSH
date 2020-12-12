@@ -76,6 +76,22 @@ void passArchive(int fd) {
     }
 }
 
+int numberFileInArchive(int fd) {
+    replaceCurseurToStart (fd);
+    struct posix_header * h = malloc(BLOCKSIZE);
+    int tmp = getHeader(fd, h);
+    int count = 0;
+    while(tmp == 0) {
+        tmp = getHeader(fd, h);
+        count ++;
+    }
+
+    if(tmp == -2) {
+        lseek(fd, -BLOCKSIZE, SEEK_CUR);
+    }
+    return count;
+}
+
 int getFileSizeFromHeader (struct posix_header * buf){
     int numberBlock = 0;
     sscanf(buf -> size ,"%o", &numberBlock);
@@ -128,13 +144,14 @@ int isARepertoryInTar (char * destination){
 }
 
 int isARepertoryOutsideTar (char * destination){
-    struct stat statbuf;
-    stat(destination, &statbuf);
-    if (fileType(statbuf.st_mode) == '5'){
-        return 0;
-    }else{
+    struct stat buffer;
+    if (stat(destination,&buffer) == -1)
         return -1;
-    }
+
+    if ((buffer.st_mode & S_IFMT) == S_IFDIR)
+        return 0;
+    else
+        return -1;   
 }
 
 int isARepertory (char * destination){

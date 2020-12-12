@@ -11,6 +11,7 @@ char * getContent (int fd, struct posix_header * header);
 void passContent (int fd, struct posix_header * header);
 int getHeader(int fd, struct posix_header *header);
 void passArchive(int fd);
+int numberFileInArchive(int fd);
 
 void set_checksum(struct posix_header *hd);
 int check_checksum(struct posix_header *hd);
