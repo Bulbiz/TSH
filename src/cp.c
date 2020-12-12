@@ -28,7 +28,7 @@ int cpTarInTar(char * archive, char * path, char * destination){
     int fd = openArchive (archive, O_RDWR);
     struct posix_header * copyHeader = malloc (BLOCKSIZE);
     if(searchFile (fd, copyHeader, path) == -1){
-        perror("fichier inexistant");
+        print("fichier inexistant");
         return -1;
     }
   
@@ -36,7 +36,7 @@ int cpTarInTar(char * archive, char * path, char * destination){
     memcpy(copyHeader -> name, destination, (strlen(destination)));
     set_checksum(copyHeader);
     if(!check_checksum(copyHeader)){
-        perror("Checksum :");
+        print("impossible d'initialiser checksum");
         return -1;
     }
 
@@ -61,7 +61,7 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
 
     struct posix_header * copyHeader = malloc (BLOCKSIZE);
     if(searchFile (fd, copyHeader, path) == -1){
-        perror("fichier inexistant");
+        print("fichier inexistant");
         return -1;
     }
 
@@ -75,7 +75,7 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
     int fdFile = open(destination, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
     
     if(write(fdFile, copyContent, strlen(copyContent))<0){
-        perror("erreur sur l'écriture");
+        perror("write");
         return -1;
     }
 
@@ -118,7 +118,7 @@ int cp (char ** argv){
     }
 
     if (isARepertory(argv[1]) == 0){
-         perror("utilisez l'option -r pour les dossiers");
+         print("utilisez l'option -r pour les dossiers");
         return -1;
     }
 
@@ -206,7 +206,7 @@ int numberOfFileInDirectoryOutsideTar(DIR * dirp, char * path){
 
     if(dirp == NULL){
         perror("numberOfFileInDirectoryOutsideTar");
-        return -1;
+        return 0;
     }
     struct dirent *entity;
     entity = readdir(dirp);
