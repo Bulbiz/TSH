@@ -14,12 +14,13 @@
 #include "pathTreatement.h"
 
 #define BLOCKSIZE 512
-char fileType (mode_t mode);
 
+/* Replace the cursor at the start of the descriptor */
 void replaceCurseurToStart (int fd){
     lseek(fd,0,SEEK_SET);
 }
 
+/* Open a archive and print a error if there is a failure */
 int openArchive (char * pathname, int flags){
     int tmp = open(pathname, flags);
     if(tmp < 0)
@@ -27,6 +28,7 @@ int openArchive (char * pathname, int flags){
     return tmp;
 }
 
+/* Read 512 bites in the descripteur and initialise it in buffer, the cursor of the descriptor have to be just in front of the header */
 int readHeader (int fd, struct posix_header * buffer){
     int tmp = read(fd, buffer, BLOCKSIZE);
     if(tmp < 0)
@@ -34,6 +36,7 @@ int readHeader (int fd, struct posix_header * buffer){
     return tmp;
 }
 
+/* Read the content of the header in the descriptor, the cursor of the descriptor have to be just in front of the content */
 char * getContent (int fd, struct posix_header * header){
     int numberBlock = 0;
     sscanf(header -> size ,"%o", &numberBlock);
@@ -43,6 +46,7 @@ char * getContent (int fd, struct posix_header * header){
     return message;
 }
 
+/* Place the cursor of the descriptor after the content of the header */
 void passContent (int fd, struct posix_header * header){
     int numberBlock = 0;
     sscanf(header -> size ,"%o", &numberBlock);
@@ -50,6 +54,7 @@ void passContent (int fd, struct posix_header * header){
     lseek(fd, BLOCKSIZE * numberBlock, SEEK_CUR);
 }
 
+/* Read the header and pass the content in one go */
 int getHeader(int fd, struct posix_header * header) {
     int tmp = readHeader(fd, header);
 
@@ -63,6 +68,7 @@ int getHeader(int fd, struct posix_header * header) {
     return -1;
 }
 
+/* Place the cursor of the descriptor at the end of the archive */
 void passArchive(int fd) {
     replaceCurseurToStart (fd);
     struct posix_header * h = malloc(BLOCKSIZE);
@@ -76,6 +82,7 @@ void passArchive(int fd) {
     }
 }
 
+/* Count the number of file/repertory in the archive */
 int numberFileInArchive(int fd) {
     replaceCurseurToStart (fd);
     struct posix_header * h = malloc(BLOCKSIZE);
@@ -92,6 +99,7 @@ int numberFileInArchive(int fd) {
     return count;
 }
 
+/* Return the size of a header (after converting it with the Blocksize) */
 int getFileSizeFromHeader (struct posix_header * buf){
     int numberBlock = 0;
     sscanf(buf -> size ,"%o", &numberBlock);
@@ -99,7 +107,7 @@ int getFileSizeFromHeader (struct posix_header * buf){
     return numberBlock * BLOCKSIZE;
 }
 
-/*  Return 0 if the file is found, else -1 */
+/*  Search a file with the name in the descriptor, if found return 0 else -1 */
 int searchFile (int fd,struct posix_header * buf, char * name){
     replaceCurseurToStart (fd);
     while (getHeader(fd,buf) == 0){
@@ -111,7 +119,7 @@ int searchFile (int fd,struct posix_header * buf, char * name){
     return -1;
 }
 
-/*  Return size if the file is found, else -1 */
+/*  Search a file with the name in the descriptor, if found return the size of the file else -1 */
 int searchFileSize (int fd,struct posix_header * buf, char * name){
     size_t size = 0;
     replaceCurseurToStart (fd);
@@ -127,6 +135,7 @@ int searchFileSize (int fd,struct posix_header * buf, char * name){
     return -1;
 }
 
+/* Verify if destination is a repertory (destination have to be a path in a tarball) */
 int isARepertoryInTar (char * destination){
     char ** division = dividePathWithTar(duplicate(destination));
     int fd = openArchive(division[0], O_RDONLY);
@@ -143,6 +152,7 @@ int isARepertoryInTar (char * destination){
     }
 }
 
+/* Verify if destination is a repertory (destination have to be a path outside of a tarball) */
 int isARepertoryOutsideTar (char * destination){
     struct stat buffer;
     if (stat(destination,&buffer) == -1)
@@ -154,6 +164,7 @@ int isARepertoryOutsideTar (char * destination){
         return -1;   
 }
 
+/* Verify if destination is a repertory */
 int isARepertory (char * destination){
     if(isInTar(destination) == 0){
         return isARepertoryInTar(destination);
@@ -163,7 +174,8 @@ int isARepertory (char * destination){
     
 }
 
-/* Fonction de test ! n'intervient pas dans le projet !*/
+/*  Test function, not directly used in the project ! 
+    Print all the file in the archive with some information */
 void printTar (int fd){
     printf("Lancement du print\n");
     replaceCurseurToStart(fd);
@@ -177,6 +189,7 @@ void printTar (int fd){
 
 /**** Fonction récupérer depuis le TP1 de système ****/
 
+/* Initialise the chksum value for a pre constructed posix_header for the tar*/
 void set_checksum(struct posix_header *hd) {
   memset(hd->chksum,' ',8);
   unsigned int sum = 0;
@@ -186,7 +199,6 @@ void set_checksum(struct posix_header *hd) {
 }
 
 /* Check that the checksum of a header is correct */
-
 int check_checksum(struct posix_header *hd) {
   unsigned int checksum;
   sscanf(hd->chksum,"%o ", &checksum);
@@ -198,12 +210,14 @@ int check_checksum(struct posix_header *hd) {
 }
 /* ******************************************************/
 
+/* Create a completely empty posix header */
 struct posix_header * createBloc0 (){
     struct posix_header * h = malloc (BLOCKSIZE);
     memset(h,0,BLOCKSIZE);
     return h;
 }
 
+/* Extract the file type from a mode_t */
 char fileType (mode_t mode){
     switch (mode & S_IFMT) /* S_IFMT is the mask to have the filetype */
     {
@@ -216,12 +230,14 @@ char fileType (mode_t mode){
     }
 }
 
+/* Convert a mode_t in a char [12] for the initialisation of a header */
 char * convertModeToChar (mode_t mode){
     char * buf = malloc (sizeof(char) * 12);
     sprintf(buf,"%011o",(~S_IFMT & mode));
     return buf + 4;
 }
 
+/* Create a header from a stat */
 struct posix_header * createHeader (char * name, struct stat information){
     struct posix_header *  h = createBloc0();
     
@@ -242,6 +258,7 @@ struct posix_header * createHeader (char * name, struct stat information){
     return h;
 }
 
+/* Create a header for a folder */
 struct posix_header * createHeaderFolder (char * name){
     struct posix_header *  h = createBloc0();
     
@@ -261,12 +278,14 @@ struct posix_header * createHeaderFolder (char * name){
     return h;
 }
 
+/* Create a header from the descriptor of the file and initialise it with the new name */
 struct posix_header * createHeaderFromFile (int fd, char * newName){  
     struct stat information;
     fstat(fd,&information);
     return createHeader(newName,information);
 }
 
+/* Return the content of fd (a descriptor for the file we want to get the content) */
 char * getFileContentForTar (int fd, int * size){
     replaceCurseurToStart (fd);
     struct stat buf;
@@ -280,13 +299,14 @@ char * getFileContentForTar (int fd, int * size){
     return content;
 }
 
+/* Add to the archive the file with the header headerfile, the content contentfile and the size size */
 void addFileToTar (int archive, struct posix_header * headerfile, char * contentfile, int size){
     passArchive(archive);
     if(write(archive,headerfile,BLOCKSIZE) < 0 || write(archive,contentfile,size) < 0)
         perror("addFileToTar");
 }
 
-/*
+/* Copy a file in the archive with the new name nametar
 Warning : archive have to be openned with O_RDWR or it will not succed!
 FIXME: Verify that the name isn't already here and if the path is valid !
 */
@@ -302,7 +322,7 @@ void copyFileToTar (int archive, int file,char * nametar){
 }
 
 //à tester
-//return the size of the archive from the file path to the end
+/* Return the size of the archive from the file path to the end */
 size_t getSizeAfterFile (char * path, int fd){
     replaceCurseurToStart(fd);
     struct posix_header * buffer = malloc (BLOCKSIZE);
@@ -324,7 +344,7 @@ size_t getSizeAfterFile (char * path, int fd){
     return size;
 }
 
-//à tester
+/* Return the size bite of the archive */
 char * getContentUntilPathFile(char * path, int fd, size_t size){
     replaceCurseurToStart (fd);
     if (size == -1)
@@ -341,7 +361,7 @@ char * getContentUntilPathFile(char * path, int fd, size_t size){
     return res;
 }
 
-//if in repertory, 0 else -1
+/* Verify if the file filename is in the repertory repertory */
 int isInRepertory (char * repertory, char * filename){
     return (
         strlen (repertory) < strlen(filename) && 
