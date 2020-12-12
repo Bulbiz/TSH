@@ -43,6 +43,7 @@ void userInput (){
     }
 }
 
+/*count the number of command separe by '|' */
 int numberOfCommand (){
     int cmp = 0;
     for(int i=0; i<LIMIT; i++)
@@ -101,6 +102,7 @@ int numberOfArgument (char * command){
     return cmp;
 }
 
+/*replace ' ' by '\0' in the String command */
 void replaceSpace (char * command){
     for (int i=0; command[i] != '\0'; i++)
         if(command[i] == ' ' )
@@ -131,6 +133,7 @@ char ** getArgument (char * command){
     return argv;
 }
 
+/*tranform all path in argv to path absolute, except the options and the commande*/
 char ** transformPathOfArgv (char ** argv){
     for (int i = 1; i< getArgc(argv); i++){
         if(argv[i][0] != '-')
@@ -139,6 +142,7 @@ char ** transformPathOfArgv (char ** argv){
     return argv;
 }
 
+/*if the argv has the option in the argument then return 0 else -1 */
 int hasOption (char * option, char ** argv ){
     int i = 0;
     while(argv[i] != NULL){
@@ -209,10 +213,10 @@ void shell(){
 
 
 
-
+/*execute the shell*/
 int main (){
-    /*cwd = malloc (SIZE);
+    cwd = malloc (SIZE);
     getcwd(cwd,SIZE);
-    shell();*/
+    shell();
     return 0;
 }
