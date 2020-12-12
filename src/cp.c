@@ -15,7 +15,7 @@
 #include "functionInTar.h"
 #include "mkdir.h"
 
-//give the number for the name after the last '/'
+/* give the index for the name after the last '/' */
 int fileName (char * pathName){
     int i = strlen(pathName) -2;
     while(pathName[i] != '/')
@@ -23,6 +23,9 @@ int fileName (char * pathName){
     return i;
 }
 
+/*  Execute the command cp if the source and destination is in the tar 
+    Destination is the name of the header (it needs to have the full path with archive as it's racine) 
+    Path is the name of the file in the tar that needs to be copied */
 int cpTarInTar(char * archive, char * path, char * destination){
 
     int fd = openArchive (archive, O_RDWR);
@@ -54,7 +57,10 @@ int cpTarInTar(char * archive, char * path, char * destination){
     close(fd);
     return 0;
 }
-
+/*  Execute the command cp if the source is in the tar and destination is outside of the tar
+    Destination is the name of the header (it needs to have the full path with archive as it's racine) 
+    Path is the name of the file in the tar that needs to be copied
+*/
 int cpTarInOutsideTar(char * archive, char * path, char * destination){
 
     int fd = openArchive (archive, O_RDONLY);
@@ -85,7 +91,10 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
     close(fdFile);
     return 0;
 }
-
+/*  Execute the command cp if the source is outside of the tar and destination is in the tar
+    Destination is the name of the header (it needs to have the full path with archive as it's racine) 
+    Path is the name of the file in the tar that needs to be copied
+*/
 int cpOutsideTarInTar(char * archive, char * path, char * destination){
     int fd = openArchive (archive, O_RDWR);
     int fdFile = open(path, O_RDONLY);
@@ -95,23 +104,26 @@ int cpOutsideTarInTar(char * archive, char * path, char * destination){
     return 0;
 }
 
+/* Divide the path and the destination cp if the source and destination is in the tar*/
 int cp1 (char * path, char * destination){
     char ** pathInTar = (char **) dividePathWithTar (path);
     char ** destinationInTar = (char **) dividePathWithTar (destination);
     return cpTarInTar(pathInTar[0], pathInTar[1], destinationInTar[1]);
 }
 
+/* Divide the path and the destination cp if the source is in the tar and destination is outside of the tar */
 int cp2 (char * path, char * destination){
     char ** pathInTar = (char **) dividePathWithTar (path);
     return cpTarInOutsideTar(pathInTar[0], pathInTar[1], destination);
 }
 
+/* Divide the path and the destination cp if the source is outside of the tar and destination is in the tar */
 int cp3 (char * path, char * destination){
     char ** destinationInTar = (char **) dividePathWithTar (destination);
     return cpOutsideTarInTar(destinationInTar[0], path, destinationInTar[1]);
 }
 
-
+/* Execute the command cp */
 int cp (char ** argv){
     if (getArgc(argv) > 3 && getArgc(argv) < 3){
         print("Trop d'arguments ou pas assez d'arguments!\n");
@@ -143,7 +155,7 @@ int cp (char ** argv){
     }
 }
 
-
+/* Make a list of all the file inside a directory */
 char ** nameOfAllFileInDirectory (int fd, char * path, int archiveSize) {
     replaceCurseurToStart (fd);
     struct posix_header * h = malloc(BLOCKSIZE);
@@ -169,6 +181,7 @@ char ** nameOfAllFileInDirectory (int fd, char * path, int archiveSize) {
     return tabContent;
 }
 
+/* Execute the command cp with the option -r if the source and destination is in the tar */
 int cpTarInTarOptionR(char * archive, char * path, char * destination){
 
     int fd = openArchive (archive, O_RDWR);
@@ -187,6 +200,7 @@ int cpTarInTarOptionR(char * archive, char * path, char * destination){
     return 0;
 }
 
+/* Execute the command cp with the option -r if the source is in the tar and destination is outside the tar */
 int cpTarInOutsideTarOptionR(char * archive, char * path, char * destination){
     int fd = openArchive (archive, O_RDWR);
     int archiveSize = numberFileInArchive(fd);
@@ -202,6 +216,8 @@ int cpTarInOutsideTarOptionR(char * archive, char * path, char * destination){
     close(fd);
     return 0;
 }
+
+/* Count the number of file in a repertory */
 int numberOfFileInDirectoryOutsideTar(DIR * dirp, char * path){
 
     if(dirp == NULL){
@@ -227,6 +243,7 @@ int numberOfFileInDirectoryOutsideTar(DIR * dirp, char * path){
     return count + 1;
 }
 
+/* Auxilary function : List all the file that is contained in the dirp repertory */
 void getAllFileNameFromFolderAux (DIR * dirp, char * path, int * index, char ** allEntityName){
     if(dirp == NULL){
         perror("getAllFileNameFromFolderAux");
@@ -249,6 +266,7 @@ void getAllFileNameFromFolderAux (DIR * dirp, char * path, int * index, char ** 
     }
 }
 
+/* List all the file that is contained in the path repertory */
 char ** getAllFileNameFromFolder (char * path){
     DIR * dirp = opendir(path);
     int index = 1;
@@ -265,6 +283,7 @@ char ** getAllFileNameFromFolder (char * path){
     return allEntityName;
 }
 
+/* Execute the command cp with the option -r if the source is is outside of the tar and destination in the tar */
 int cpOutsideTarInTarOptionR(char * archive, char * path, char * destination){
     DIR * dirp = opendir(path);
 
