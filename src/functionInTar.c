@@ -383,7 +383,7 @@ int fileInRepertory(int fd, char * repertory){
     return -1;
 }
 
-/* return the number of argument */
+/* Return the number of argument */
 int getArgc (char ** argv){
     int i = 0;
     while (argv[i] != NULL){
