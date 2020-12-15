@@ -128,9 +128,17 @@ int rmReccursiveInTar (char * archive, char * path){
 }
 
 /* Execute the command rm -r inside a tar */
-void rmR (char * path){
+void rmR_aux (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
     rmReccursiveInTar (pathInTar[0], pathInTar[1]);
+}
+
+/* Execute the command rm -r*/
+void rmR (char ** argv){
+    if(isInTar(argv[1]) == 0)
+        rmR_aux (argv[1]);
+    else
+        executeCommandExterne(argv);
 }
 
 /* Execute the command rm inside a tar */
