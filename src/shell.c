@@ -183,16 +183,25 @@ void shell(){
             mv(argv);
 
         }else if(strcmp (argv[0],"cp") == 0){
-	
-            cp(argv);
+            
+            if (hasOption ("-r", argv))
+                print("cp -r");            //FIXME : fonction cp -r
+            else
+                cp(argv);
 
         }else if(strcmp (argv[0],"rm") == 0){
-
-            rm (argv);
+            
+            if (hasOption ("-r", argv))
+                print("rm -r");            //FIXME : fonction rm -r
+            else
+                rm (argv);
 
         }else if(strcmp (argv[0],"ls") == 0){
 
-            ls(argv);
+            if (hasOption ("-l", argv))
+                print("ls - l");            //FIXME : fonction ls avec option
+            else
+                ls(argv);
 
         }else if(strcmp (argv[0],"cat") == 0){
 
