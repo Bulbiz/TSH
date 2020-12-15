@@ -199,7 +199,7 @@ void shell(){
         }else if(strcmp (argv[0],"ls") == 0){
 
             if (hasOption ("-l", argv))
-                print("ls - l");            //FIXME : fonction ls avec option
+                lsL(argv);
             else
                 ls(argv);
 
