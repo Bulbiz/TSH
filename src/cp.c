@@ -130,7 +130,7 @@ int cp (char ** argv){
     }
 
     if (isARepertory(argv[1]) == 0){
-         print("utilisez l'option -r pour les dossiers");
+         print("action impossible sur un dossier, utilisez l'option -r pour les dossiers");
         return -1;
     }
 
@@ -308,4 +308,49 @@ int cpOutsideTarInTarOptionR(char * archive, char * path, char * destination){
     }
     closedir(dirp);
     return 0;
+}
+
+/* Divide the path and the destination cp -r if the source and destination is in the tar*/
+int cp1R (char * path, char * destination){
+    char ** pathInTar = (char **) dividePathWithTar (path);
+    char ** destinationInTar = (char **) dividePathWithTar (destination);
+    return cpTarInTarOptionR(pathInTar[0], pathInTar[1], destinationInTar[1]);
+}
+
+/* Divide the path and the destination cp -r if the source is in the tar and destination is outside of the tar */
+int cp2R (char * path, char * destination){
+    char ** pathInTar = (char **) dividePathWithTar (path);
+    return cpTarInOutsideTarOptionR(pathInTar[0], pathInTar[1], destination);
+}
+
+/* Divide the path and the destination cp -r if the source is outside of the tar and destination is in the tar */
+int cp3R (char * path, char * destination){
+    char ** destinationInTar = (char **) dividePathWithTar (destination);
+    return cpOutsideTarInTarOptionR(destinationInTar[0], path, destinationInTar[1]);
+}
+
+/* Execute the command cp -r*/
+int cpR (char ** argv){
+    if (getArgc(argv) > 3 && getArgc(argv) < 3){
+        print("Trop d'arguments ou pas assez d'arguments!\n");
+    }
+
+    if (isARepertory(argv[1]) == -1){
+         print("action impossible ce n'est pas un dossier, utilisez cp sans option");
+        return -1;
+    }
+
+    int pathName = isInTar(argv[1]);
+    int destination = isInTar(argv[2]);
+
+    if(pathName == 0 && destination == 0)
+        return cp1R(argv[1], argv[2]);
+    else if (pathName == 0 && destination == -1)
+        return cp2R(argv[1], argv[2]);
+    else if (pathName == -1 && destination == 0) 
+        return cp3R(argv[1], argv[2]);
+    else{
+        executeCommandExterne(argv);
+        return 0;
+    }
 }

@@ -185,14 +185,14 @@ void shell(){
         }else if(strcmp (argv[0],"cp") == 0){
             
             if (hasOption ("-r", argv))
-                print("cp -r");            //FIXME : fonction cp -r
+                cpR(argv);
             else
                 cp(argv);
 
         }else if(strcmp (argv[0],"rm") == 0){
             
             if (hasOption ("-r", argv))
-                print("rm -r");            //FIXME : fonction rm -r
+                rmR(argv);           
             else
                 rm (argv);
 
