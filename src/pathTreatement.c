@@ -44,7 +44,7 @@ int isInTar (char * path){
  * the first is the path to the tar file, 
  * the seconde is the rest (without the / just after ".tar")*/
 char ** dividePathWithTar (char * path){
-    char ** res = (char ** ) malloc (sizeof(char *) * 2);
+    char ** res = (char ** ) malloc (sizeof(char *) * 4);
     char * pathcpy = duplicate(path);
     char * separateur = strstr (pathcpy,".tar");
 

@@ -133,6 +133,16 @@ int cp (char ** argv){
          print("action impossible sur un dossier, utilisez l'option -r pour les dossiers");
         return -1;
     }
+    
+    if (fileExist(argv[1]) != 0){
+        print ("Source introuvable, Impossible de Copier");
+        return -1;
+    }
+
+    if (fileExist(argv[2]) != 0){
+        print ("Fichier déja présent à la destination ou chemin non valide, Impossible de Copier");
+        return -1;
+    }
 
     int pathName = isInTar(argv[1]);
     int destination = isInTar(argv[2]);

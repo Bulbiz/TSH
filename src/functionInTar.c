@@ -370,6 +370,33 @@ int isInRepertory (char * repertory, char * filename){
         (numberOfSlash (filename) == numberOfSlash(repertory) + 1 && filename[strlen(filename) - 1] == '/'))) ? 0 : -1;
 }
 
+/* Check if a file exist */
+int fileExist (char * path){
+    print("aaaaaaaaaaaaaaa");
+    char * duplicatePath = duplicate (path);
+
+    if (isInTar(duplicatePath) == 0){
+        print("BBBBBBBBBBBBBBBBBBBBB");
+        char ** division = dividePathWithTar (duplicatePath);
+        int fd = openArchive(division[0],O_RDWR);
+        if (fd == -1)
+            return -1;
+        struct posix_header * buf = malloc (512);
+        int retour = searchFile(fd,buf,division[1]);
+        close (fd);
+        return retour;
+        
+    }else{
+        print("ccccccccccccccccccccccc");
+        int fd = open(path,O_RDONLY);
+        if (fd == -1) {
+            close (fd);
+            return -1;
+        }
+        close (fd);
+        return 0;
+    }
+}
 /* Verify if the repertory have at least one file inside */
 int fileInRepertory(int fd, char * repertory){
     struct posix_header * buf = malloc(BLOCKSIZE);
