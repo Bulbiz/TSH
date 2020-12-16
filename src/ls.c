@@ -77,6 +77,16 @@ void lsLong (char * path) {
     print("\n");
 }
 
+void lsL (char ** argv) {
+    argv[1] = getArgc(argv) == 1 ? pathTreated(getPWD()) : argv[1];
+    if (isInTar(argv[1]) == 0)
+        lsLong(argv[1]);
+    else{
+        argv[getArgc(argv)] = "-l";
+        executeCommandExterne(argv);
+    }
+}
+
 
 /* FIXME : pour l'instant on va le faire que sur un argument, il faudra modifier pour plusieur argument */
 void ls_aux (char * path) {

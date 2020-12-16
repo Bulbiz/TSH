@@ -20,4 +20,9 @@ void getAllFileNameFromFolderAux (DIR * dirp, char * path, int * index, char ** 
 char ** getAllFileNameFromFolder (char * path);
 int cpOutsideTarInTarOptionR(char * archive, char * path, char * destination);
 
+int cp1R (char * path, char * destination);
+int cp2R (char * path, char * destination);
+int cp3R (char * path, char * destination);
+int cpR(char ** argv);
+
 #endif

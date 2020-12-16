@@ -114,7 +114,9 @@ char ** getArgument (char * command){
     int pointer = 0;
     int i = 0;
     int nbOfArg = numberOfArgument (command);
-    char ** argv = malloc (sizeof(char *) * (nbOfArg + 2)); // There is a place to add one argument if wanted 
+    char ** argv = malloc (sizeof(char *) * (nbOfArg + 5)); // There is a place to add one argument if wanted 
+    for (int i = 0; i < nbOfArg + 5; i++)
+        argv[i] = NULL;
 
     while(command[i]!= '\0'){
         if (command[i] == ' ')
@@ -126,9 +128,6 @@ char ** getArgument (char * command){
     }
 
     replaceSpace (command);
-
-    argv[nbOfArg] = NULL;
-    argv[nbOfArg + 1] = NULL;
 
     return argv;
 }
@@ -151,6 +150,23 @@ int hasOption (char * option, char ** argv ){
         i++; 
     }
     return -1;
+}
+
+/* delete all "-" option in the argv */
+char **  deleteOption (char ** argv){
+    char ** newArgv = malloc (sizeof (char *) * (getArgc(argv) + 2));
+    for (int i=0; i < getArgc(argv) + 2; i++)
+        newArgv[i] = NULL;
+    
+    int count = 0;
+    for (int i = 0; argv[i] != NULL; i ++){
+
+        if (argv[i][0] != '-'){
+            newArgv[count] = argv[i];
+            count ++;
+        }
+    }
+    return newArgv;
 }
 
 /*main function that executes the shell 
@@ -183,16 +199,25 @@ void shell(){
             mv(argv);
 
         }else if(strcmp (argv[0],"cp") == 0){
-	
-            cp(argv);
+            
+            if (hasOption ("-r", argv) == 0)
+                cpR(deleteOption(argv));
+            else
+                cp(argv);
 
         }else if(strcmp (argv[0],"rm") == 0){
-
-            rm (argv);
+            
+            if (hasOption ("-r", argv) == 0)
+                rmR(deleteOption(argv));           
+            else
+                rm (argv);
 
         }else if(strcmp (argv[0],"ls") == 0){
 
-            ls(argv);
+            if (hasOption ("-l", argv) == 0)
+                lsL(deleteOption(argv));
+            else
+                ls(argv);
 
         }else if(strcmp (argv[0],"cat") == 0){
 
