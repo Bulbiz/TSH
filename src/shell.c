@@ -153,6 +153,23 @@ int hasOption (char * option, char ** argv ){
     return -1;
 }
 
+/* delete all "-" option in the argv */
+char **  deleteOption (char ** argv){
+    char ** newArgv = malloc (sizeof (char *) * (getArgc(argv) + 2));
+    for (int i=0; i < getArgc(argv) + 2; i++)
+        newArgv[i] = NULL;
+    
+    int count = 0;
+    for (int i = 0; argv[i] != NULL; i ++){
+
+        if (argv[i][0] != '-'){
+            newArgv[count] = argv[i];
+            count ++;
+        }
+    }
+    return newArgv;
+}
+
 /*main function that executes the shell 
 */
 void shell(){
@@ -185,21 +202,21 @@ void shell(){
         }else if(strcmp (argv[0],"cp") == 0){
             
             if (hasOption ("-r", argv))
-                cpR(argv);
+                cpR(deleteOption(argv));
             else
                 cp(argv);
 
         }else if(strcmp (argv[0],"rm") == 0){
             
             if (hasOption ("-r", argv))
-                rmR(argv);           
+                rmR(deleteOption(argv));           
             else
                 rm (argv);
 
         }else if(strcmp (argv[0],"ls") == 0){
 
             if (hasOption ("-l", argv))
-                lsL(argv);
+                lsL(deleteOption(argv));
             else
                 ls(argv);
 
