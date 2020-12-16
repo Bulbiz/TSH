@@ -25,12 +25,19 @@ int fileName (char * pathName){
 
 /*  Execute the command cp if the source and destination is in the tar 
     Destination is the name of the header (it needs to have the full path with archive as it's racine) 
-    Path is the name of the file in the tar that needs to be copied */
-int cpTarInTar(char * archive, char * path, char * destination){
+    Path is the name of the file in the tar that needs to be copied 
+    sameArchive return 0 if archivePath and archiveDestination is the same else -1*/
+int cpTarInTar(char * archivePath, char * archiveDestination, char * path, char * destination){
 
-    int fd = openArchive (archive, O_RDWR);
+    int fdPath = openArchive (archivePath, O_RDWR);
+    int sameArchive = -1;
+    int fdDestination = 0;
+    if(strcmp (archivePath, archiveDestination) != 0){
+        sameArchive = 0;
+        fdDestination = openArchive (archiveDestination, O_RDWR);
+    }
     struct posix_header * copyHeader = malloc (BLOCKSIZE);
-    if(searchFile (fd, copyHeader, path) == -1){
+    if(searchFile (fdPath, copyHeader, path) == -1){
         print("fichier inexistant");
         return -1;
     }
@@ -46,15 +53,24 @@ int cpTarInTar(char * archive, char * path, char * destination){
     int filesize;
     sscanf(copyHeader -> size, "%o" , &filesize);
     char * copyContent = malloc (sizeof(char) * filesize);
-    read (fd, copyContent, filesize);
-    passArchive(fd);
+    if(sameArchive == 0){
+        read (fdPath, copyContent, filesize);
+        passArchive(fdPath);
 
-    write(fd, copyHeader, BLOCKSIZE);
-    write(fd, copyContent, filesize);
+        write(fdPath, copyHeader, BLOCKSIZE);
+        write(fdPath, copyContent, filesize);
+    }else{
+        read (fdDestination, copyContent, filesize);
+        passArchive(fdDestination);
+
+        write(fdDestination, copyHeader, BLOCKSIZE);
+        write(fdDestination, copyContent, filesize);
+        close(fdDestination);
+    }
 
     free(copyHeader);
     free(copyContent);
-    close(fd);
+    close(fdPath);
     return 0;
 }
 /*  Execute the command cp if the source is in the tar and destination is outside of the tar
@@ -108,7 +124,8 @@ int cpOutsideTarInTar(char * archive, char * path, char * destination){
 int cp1 (char * path, char * destination){
     char ** pathInTar = (char **) dividePathWithTar (path);
     char ** destinationInTar = (char **) dividePathWithTar (destination);
-    return cpTarInTar(pathInTar[0], pathInTar[1], destinationInTar[1]);
+
+    return cpTarInTar(pathInTar[0], destinationInTar[0], pathInTar[1], destinationInTar[1]);
 }
 
 /* Divide the path and the destination cp if the source is in the tar and destination is outside of the tar */
@@ -182,9 +199,9 @@ char ** nameOfAllFileInDirectory (int fd, char * path, int archiveSize) {
 }
 
 /* Execute the command cp with the option -r if the source and destination is in the tar */
-int cpTarInTarOptionR(char * archive, char * path, char * destination){
+int cpTarInTarOptionR(char * archivePath, char * archiveDestination, char * path, char * destination){
 
-    int fd = openArchive (archive, O_RDWR);
+    int fd = openArchive (archivePath, O_RDWR);
     int archiveSize = numberFileInArchive(fd);
     char ** tabContent = nameOfAllFileInDirectory(fd, path, archiveSize);
 
@@ -192,7 +209,7 @@ int cpTarInTarOptionR(char * archive, char * path, char * destination){
         if(tabContent[i] == NULL){
             return 0;
         }else{
-            cpTarInTar(archive, tabContent[i], destination);
+            cpTarInTar(archivePath, archiveDestination, tabContent[i], destination);
         }
     }
     free(tabContent);
@@ -314,7 +331,7 @@ int cpOutsideTarInTarOptionR(char * archive, char * path, char * destination){
 int cp1R (char * path, char * destination){
     char ** pathInTar = (char **) dividePathWithTar (path);
     char ** destinationInTar = (char **) dividePathWithTar (destination);
-    return cpTarInTarOptionR(pathInTar[0], pathInTar[1], destinationInTar[1]);
+    return cpTarInTarOptionR(pathInTar[0], destinationInTar[0], pathInTar[1], destinationInTar[1]);
 }
 
 /* Divide the path and the destination cp -r if the source is in the tar and destination is outside of the tar */
