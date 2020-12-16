@@ -30,10 +30,10 @@ int fileName (char * pathName){
 int cpTarInTar(char * archivePath, char * archiveDestination, char * path, char * destination){
 
     int fdPath = openArchive (archivePath, O_RDWR);
-    int sameArchive = -1;
+    int sameArchive = 0;
     int fdDestination = 0;
     if(strcmp (archivePath, archiveDestination) != 0){
-        sameArchive = 0;
+        sameArchive = -1;
         fdDestination = openArchive (archiveDestination, O_RDWR);
     }
     struct posix_header * copyHeader = malloc (BLOCKSIZE);
