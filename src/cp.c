@@ -350,6 +350,7 @@ int cpR (char ** argv){
     else if (pathName == -1 && destination == 0) 
         return cp3R(argv[1], argv[2]);
     else{
+        argv[getArgc(argv)] = "-r";
         executeCommandExterne(argv);
         return 0;
     }

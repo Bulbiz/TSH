@@ -137,8 +137,10 @@ void rmR_aux (char * path){
 void rmR (char ** argv){
     if(isInTar(argv[1]) == 0)
         rmR_aux (argv[1]);
-    else
+    else{
+        argv[getArgc(argv)] = "-r";
         executeCommandExterne(argv);
+    }
 }
 
 /* Execute the command rm inside a tar */
