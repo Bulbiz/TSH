@@ -407,6 +407,15 @@ int fileInRepertory(int fd, char * repertory){
     free(buf);
     return -1;
 }
+/* Verify if path is the racine of the archive */
+int isArchiveRacine (char * path){
+    if (isInTar(path) == -1)
+        return -1;
+    char * pathAfterTar = dividePathWithTar(duplicate(path))[1];
+    if (strlen(pathAfterTar) == 0)
+        return 0;
+    return -1;
+}
 
 /* Return the number of argument */
 int getArgc (char ** argv){
