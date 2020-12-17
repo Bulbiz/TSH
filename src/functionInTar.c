@@ -23,8 +23,9 @@ void replaceCurseurToStart (int fd){
 /* Open a archive and print a error if there is a failure */
 int openArchive (char * pathname, int flags){
     int tmp = open(pathname, flags);
-    if(tmp < 0)
-        perror("open");
+    if(tmp < 0){
+        print("Cette archive n'existe pas !\n");
+    }
     return tmp;
 }
 
