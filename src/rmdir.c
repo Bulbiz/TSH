@@ -69,6 +69,7 @@ int rmdirInTar(char * archive, char * path){
 
 /* Divide the path for the execution of rmdir inside a tarball */
 int myRmdir_aux (char * path){
+    path = addSlash (path);
     char ** pathInTar = (char **) dividePathWithTar (path);
     return rmdirInTar(pathInTar[0], pathInTar[1]);
 }

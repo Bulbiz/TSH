@@ -31,7 +31,6 @@ int mv (char ** argv){
         print("Trop d'arguments ou pas assez d'arguments!\n");
         return -1;
     }
-
     int source = isInTar(argv[1]);
     int destination = isInTar(argv[2]);
 
@@ -42,7 +41,8 @@ int mv (char ** argv){
     }
     
     //First argument is a repertory
-    if(isARepertory(argv[1]) == 0){
+    if(isARepertory(addSlash(argv[1])) == 0){
+        argv[1] = addSlash (argv[1]);
         if (source == 0)
             myRmdir_aux(argv[1]);
         else
@@ -55,7 +55,10 @@ int mv (char ** argv){
         return 0;
 
     }else{
-        cp(argv);
+        int copie = cp(argv);
+        if (copie == -1)
+            return -1;
+
         if (source == 0)
             rm_aux(argv[1]);
         else

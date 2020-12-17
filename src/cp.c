@@ -90,12 +90,12 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
     int filesize;
     sscanf(copyHeader -> size, "%o" , &filesize);
 
-    char * copyContent = malloc (sizeof(char) * filesize);
-
+    char * copyContent = malloc (sizeof(char) * (filesize + 2));
+    memset(copyContent,'\0',filesize + 2);
     read (fd, copyContent, filesize);
 
     int fdFile = open(destination, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-    
+
     if(write(fdFile, copyContent, strlen(copyContent))<0){
         perror("cpTarInOutsideTar");
         return -1;
@@ -147,17 +147,33 @@ int cp (char ** argv){
     }
 
     if (isARepertory(argv[1]) == 0){
-         print("action impossible sur un dossier, utilisez l'option -r pour les dossiers");
+         print("action impossible sur un dossier, utilisez l'option -r pour les dossiers\n");
+        return -1;
+    }
+    
+    if (fileExist(argv[1]) != 0){
+        print ("Source introuvable, Impossible de Copier\n");
         return -1;
     }
 
     int pathName = isInTar(argv[1]);
     int destination = isInTar(argv[2]);
 
-    if(isARepertory(argv[2]) == 0){
+    if (!isArchiveRacine (getFileRepertory(argv[2])) == 0 && fileExist(getFileRepertory(argv[2])) != 0){
+        print ("Chemin non valide !\n");
+        return -1;
+    }
+
+    if(isARepertory(argv[2]) == 0 || isArchiveRacine (argv[2]) == 0){
+        argv[2] = addSlash (argv[2]);
         char * buf = malloc ( sizeof(char) * (strlen(argv[2]) + strlen(argv[1] + fileName (argv[1]))));
         sprintf(buf,"%s%s", argv[2], argv[1] + fileName (argv[1]) + 1);
         argv[2] = buf;
+    }
+
+    if (fileExist(argv[2]) == 0){
+        print ("Fichier déja présent à la destination ou chemin non valide, Impossible de Copier\n");
+        return -1;
     }
 
     if(pathName == 0 && destination == 0)

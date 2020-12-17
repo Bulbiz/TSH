@@ -33,6 +33,8 @@ size_t getSizeAfterFile (char * path, int fd);
 char * getContentUntilPathFile(char * path, int fd, size_t size);
 int isInRepertory (char * repertory, char * filename);
 int fileInRepertory(int fd, char * repertory);
+int fileExist (char * path);
+int isArchiveRacine (char * path);
 
 int getArgc (char ** argv);
 void executeCommandExterne (char ** argv);

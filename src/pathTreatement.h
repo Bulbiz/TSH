@@ -17,5 +17,8 @@ int isAbsolute (char * path);
 char * pathWithoutPoint (char * absolute);
 char * duplicate (char * str);
 char * pathTreated (char * path);
+char * addSlash (char * path);
+char * getFileRepertory (char * path);
+char * getRepertoryRepertory (char * path);
 
 #endif

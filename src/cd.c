@@ -43,9 +43,7 @@ int cdInTar (char * path){
 /*add "/" if the path don't have at the end, and if the path is a folder update the 
 global variable cwd */
 void cd_aux (char * path){
-    if(path[strlen(path) - 1] != '/')
-        strcat(path,"/");
-        
+    path = addSlash (path);
     if (isInTar(path) == 0){
         if(cdInTar(path) == -1)
             print("CD : Déplacement échoué\n");

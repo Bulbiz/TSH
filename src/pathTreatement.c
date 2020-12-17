@@ -28,9 +28,10 @@ int isAbsolute (char * path){
     return -1;
 }
 
-/*return a copy of str (String) */
+/*return a copy of str (String), give some extra space just in case we need it */
 char * duplicate (char * str){
-    char * res = malloc (sizeof(char) * (strlen(str)+2));
+    char * res = malloc (sizeof(char) * (strlen(str) + 10));
+    memset(res,'\0',strlen(str) + 10);
     strcpy(res,str);
     return res;
 }
@@ -117,4 +118,34 @@ char * pathWithoutPoint (char * absolute){
 char * pathTreated (char * path){
     char * res = (isAbsolute(path) == 0)? path : relatifToAbsolute(path);
     return pathWithoutPoint(res);
+}
+
+/*Add a '/' at the end of the path if there wasn't one */
+char * addSlash (char * path){
+    char * duplication = duplicate(path);
+    if(duplication[strlen(duplication) - 1] != '/')
+        strcat(duplication,"/");
+    return duplication;
+}
+
+/* Get the name of the repertory of a file.
+For exemple, the file aaa/toto will return aaa/*/
+char * getFileRepertory (char * path){
+    path = duplicate(path);
+    int i = strlen(path) -1;
+    while(path[i] != '/')
+        i--;
+    path[i + 1] = '\0';
+    return path;
+}
+
+/* Get the name of the repertory of a repertory.
+For exemple, the file aaa/toto/ will return aaa/*/
+char * getRepertoryRepertory (char * path){
+    path = duplicate(path);
+    int i = strlen(path) -2;
+    while(path[i] != '/')
+        i--;
+    path[i + 1] = '\0';
+    return path;
 }

@@ -90,9 +90,7 @@ void lsL (char ** argv) {
 
 /* FIXME : pour l'instant on va le faire que sur un argument, il faudra modifier pour plusieur argument */
 void ls_aux (char * path) {
-    if(path[strlen(path) - 1] != '/')
-        strcat(path,"/");
-
+    path = addSlash (path);
     char ** division = dividePathWithTar (path);
     int fdArchive = openArchive(division[0],O_RDONLY);
     struct posix_header * buf = malloc (BLOCKSIZE);
