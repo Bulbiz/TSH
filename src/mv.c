@@ -41,7 +41,8 @@ int mv (char ** argv){
     }
     
     //First argument is a repertory
-    if(isARepertory(argv[1]) == 0){
+    if(isARepertory(addSlash(argv[1])) == 0){
+        argv[1] = addSlash (argv[1]);
         if (source == 0)
             myRmdir_aux(argv[1]);
         else
