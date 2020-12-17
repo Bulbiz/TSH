@@ -139,11 +139,6 @@ int cp (char ** argv){
         return -1;
     }
 
-    if (fileExist(argv[2]) == 0){
-        print ("Fichier déja présent à la destination ou chemin non valide, Impossible de Copier");
-        return -1;
-    }
-
     int pathName = isInTar(argv[1]);
     int destination = isInTar(argv[2]);
 
@@ -153,6 +148,11 @@ int cp (char ** argv){
         argv[2] = buf;
     }
 
+    if (fileExist(argv[2]) == 0){
+        print ("Fichier déja présent à la destination ou chemin non valide, Impossible de Copier");
+        return -1;
+    }
+    
     if(pathName == 0 && destination == 0)
         return cp1(argv[1], argv[2]);
     else if (pathName == 0 && destination == -1)

@@ -26,14 +26,19 @@ int mkdirInTar(char * archive, char * path){
 }
 /* Divide the path for the execution of mkdir inside a tarball */
 void myMkdir_aux (char * path){
+    path = addSlash (path);
     char ** pathInTar = (char **) dividePathWithTar (path);
     mkdirInTar(pathInTar[0], pathInTar[1]);
 }
 
 /* Execute mkdir */
 void myMkdir (char ** argv) {
-    if(isInTar(argv[1]) == 0)
-        myMkdir_aux (argv[1]);
-    else
-        executeCommandExterne(argv);
+    if (fileExist (argv[1]) == 0){
+        print ("Le dossier existe déja, impossible de le créer !");
+    }else{
+        if(isInTar(argv[1]) == 0)
+            myMkdir_aux (argv[1]);
+        else
+            executeCommandExterne(argv);
+    }
 }

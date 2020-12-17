@@ -31,7 +31,13 @@ int mv (char ** argv){
         print("Trop d'arguments ou pas assez d'arguments!\n");
         return -1;
     }
-
+    if (fileExist (argv[1]) != 0){
+        print ("La source n'existe pas, echecs du move !");
+        return -1;
+    }
+    if (fileExist (argv[2]) == 0){
+        print ("La destination est déja présente, echecs du move !");
+    }
     int source = isInTar(argv[1]);
     int destination = isInTar(argv[2]);
 
@@ -55,7 +61,10 @@ int mv (char ** argv){
         return 0;
 
     }else{
-        cp(argv);
+        int copie = cp(argv);
+        if (copie == -1)
+            return -1;
+
         if (source == 0)
             rm_aux(argv[1]);
         else
