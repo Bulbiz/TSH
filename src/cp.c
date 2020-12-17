@@ -75,7 +75,7 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
     sscanf(copyHeader -> size, "%o" , &filesize);
 
     char * copyContent = malloc (sizeof(char) * (filesize + 2));
-
+    memset(copyContent,'\0',filesize + 2);
     read (fd, copyContent, filesize);
 
     int fdFile = open(destination, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
