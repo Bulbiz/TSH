@@ -18,5 +18,6 @@ char * pathWithoutPoint (char * absolute);
 char * duplicate (char * str);
 char * pathTreated (char * path);
 char * addSlash (char * path);
+char * getFileRepertory (char * path);
 
 #endif

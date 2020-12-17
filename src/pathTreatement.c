@@ -31,6 +31,7 @@ int isAbsolute (char * path){
 /*return a copy of str (String), give some extra space just in case we need it */
 char * duplicate (char * str){
     char * res = malloc (sizeof(char) * (strlen(str) + 10));
+    memset(res,'\0',strlen(str) + 10);
     strcpy(res,str);
     return res;
 }
@@ -44,7 +45,7 @@ int isInTar (char * path){
  * the first is the path to the tar file, 
  * the seconde is the rest (without the / just after ".tar")*/
 char ** dividePathWithTar (char * path){
-    char ** res = (char ** ) malloc (sizeof(char *) * 4);
+    char ** res = (char ** ) malloc (sizeof(char *) * 2);
     char * pathcpy = duplicate(path);
     char * separateur = strstr (pathcpy,".tar");
 
@@ -125,4 +126,15 @@ char * addSlash (char * path){
     if(duplication[strlen(duplication) - 1] != '/')
         strcat(duplication,"/");
     return duplication;
+}
+
+/* Get the name of the repertory of a file.
+For exemple, the file aaa/toto will return aaa/*/
+char * getFileRepertory (char * path){
+    path = duplicate(path);
+    int i = strlen(path) -1;
+    while(path[i] != '/')
+        i--;
+    path[i + 1] = '\0';
+    return path;
 }
