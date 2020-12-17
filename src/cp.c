@@ -152,7 +152,6 @@ int cp (char ** argv){
         char * buf = malloc ( sizeof(char) * (strlen(argv[2]) + strlen(argv[1] + fileName (argv[1]))));
         sprintf(buf,"%s%s", argv[2], argv[1] + fileName (argv[1]) + 1);
         argv[2] = buf;
-        printf("Argv2 : %s\n",argv[2]);
     }
 
     if (fileExist(argv[2]) == 0){
