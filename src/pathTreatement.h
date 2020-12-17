@@ -19,5 +19,6 @@ char * duplicate (char * str);
 char * pathTreated (char * path);
 char * addSlash (char * path);
 char * getFileRepertory (char * path);
+char * getRepertoryRepertory (char * path);
 
 #endif

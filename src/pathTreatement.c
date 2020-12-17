@@ -138,3 +138,14 @@ char * getFileRepertory (char * path){
     path[i + 1] = '\0';
     return path;
 }
+
+/* Get the name of the repertory of a repertory.
+For exemple, the file aaa/toto/ will return aaa/*/
+char * getRepertoryRepertory (char * path){
+    path = duplicate(path);
+    int i = strlen(path) -2;
+    while(path[i] != '/')
+        i--;
+    path[i + 1] = '\0';
+    return path;
+}

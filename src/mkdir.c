@@ -25,20 +25,29 @@ int mkdirInTar(char * archive, char * path){
     return 0;
 }
 /* Divide the path for the execution of mkdir inside a tarball */
-void myMkdir_aux (char * path){
-    path = addSlash (path);
+int myMkdir_aux (char * path){
     char ** pathInTar = (char **) dividePathWithTar (path);
-    mkdirInTar(pathInTar[0], pathInTar[1]);
+    return mkdirInTar(pathInTar[0], pathInTar[1]);
 }
 
 /* Execute mkdir */
-void myMkdir (char ** argv) {
-    if (fileExist (argv[1]) == 0){
-        print ("Le dossier existe déja, impossible de le créer !");
-    }else{
-        if(isInTar(argv[1]) == 0)
-            myMkdir_aux (argv[1]);
-        else
-            executeCommandExterne(argv);
+int myMkdir (char ** argv) {
+    argv[1] = addSlash (argv[1]);
+
+    if (!isArchiveRacine (getRepertoryRepertory(argv[1])) == 0 && fileExist(getRepertoryRepertory(argv[1])) != 0){
+        print ("Chemin non valide !\n");
+        return -1;
     }
+
+    if (fileExist (argv[1]) == 0){
+        print ("Le dossier existe déja, impossible de le créer !\n");
+        return -1;
+    }
+
+    if(isInTar(argv[1]) == 0)
+        myMkdir_aux (argv[1]);
+    else
+        executeCommandExterne(argv);
+    return 0;
+    
 }
