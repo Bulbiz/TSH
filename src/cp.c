@@ -139,7 +139,7 @@ int cp (char ** argv){
         return -1;
     }
 
-    if (fileExist(argv[2]) != 0){
+    if (fileExist(argv[2]) == 0){
         print ("Fichier déja présent à la destination ou chemin non valide, Impossible de Copier");
         return -1;
     }

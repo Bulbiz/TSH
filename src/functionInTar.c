@@ -372,11 +372,9 @@ int isInRepertory (char * repertory, char * filename){
 
 /* Check if a file exist */
 int fileExist (char * path){
-    print("aaaaaaaaaaaaaaa");
     char * duplicatePath = duplicate (path);
 
     if (isInTar(duplicatePath) == 0){
-        print("BBBBBBBBBBBBBBBBBBBBB");
         char ** division = dividePathWithTar (duplicatePath);
         int fd = openArchive(division[0],O_RDWR);
         if (fd == -1)
@@ -387,7 +385,6 @@ int fileExist (char * path){
         return retour;
         
     }else{
-        print("ccccccccccccccccccccccc");
         int fd = open(path,O_RDONLY);
         if (fd == -1) {
             close (fd);
