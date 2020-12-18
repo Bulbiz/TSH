@@ -284,7 +284,6 @@ int cpTarInTarOptionR(char * archivePath, char * archiveDestination, char * path
         }else{
             char * buf = malloc (sizeof(char) * (strlen(tabContent[i]) + strlen(destination) + 5));
             sprintf(buf,"%s%s",destination,tabContent[i]);
-            printf("Source : %s ; Destination : %s\n , buf : %s",tabContent[i], destination, buf);
             cpTarInTar(archivePath, archiveDestination, tabContent[i], buf);
         }
     }
