@@ -26,3 +26,7 @@ clean:
 
 mrproper:
 	rm -rf $(TARGET)
+
+docker: all
+	docker build -t projet .
+	docker run -it projet
