@@ -174,53 +174,53 @@ char **  deleteOption (char ** argv){
 void shell(){
     while(TRUE){
         userInput ();
-        char ** argv = transformPathOfArgv(getArgument(buffer));
-
+        char ** argv = getArgument(buffer);
         if (getArgc(argv) == 0)
             continue;
 
         if(strcmp (argv[0],"cd") == 0){
+            argv = transformPathOfArgv(argv);
             cd(argv);
 
         }else if(strcmp (argv[0],"pwd") == 0){
-
+            argv = transformPathOfArgv(argv);
             pwd();
 
         }else if(strcmp (argv[0],"mkdir") == 0){
-            
+            argv = transformPathOfArgv(argv);
             myMkdir (argv);
 
         }else if(strcmp (argv[0],"rmdir") == 0){
-
+            argv = transformPathOfArgv(argv);
             myRmdir (argv);
 
         }else if(strcmp (argv[0],"mv") == 0){
-
+            argv = transformPathOfArgv(argv);
             mv(argv);
 
         }else if(strcmp (argv[0],"cp") == 0){
-            
+            argv = transformPathOfArgv(argv);
             if (hasOption ("-r", argv) == 0)
                 cpR(deleteOption(argv));
             else
                 cp(argv);
 
         }else if(strcmp (argv[0],"rm") == 0){
-            
+            argv = transformPathOfArgv(argv);
             if (hasOption ("-r", argv) == 0)
                 rmR(deleteOption(argv));           
             else
                 rm (argv);
 
         }else if(strcmp (argv[0],"ls") == 0){
-
+            argv = transformPathOfArgv(argv);
             if (hasOption ("-l", argv) == 0)
                 lsL(deleteOption(argv));
             else
                 ls(argv);
 
         }else if(strcmp (argv[0],"cat") == 0){
-
+            argv = transformPathOfArgv(argv);
             cat (argv);
 
         }else if(strcmp (argv[0],"exit") == 0){
