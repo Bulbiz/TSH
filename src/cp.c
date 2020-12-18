@@ -214,6 +214,53 @@ char ** nameOfAllFileInDirectory (int fd, char * path, int archiveSize) {
     return tabContent;
 }
 
+char ** triInsertionBySlash (char ** tab, int size){
+    char ** res = malloc (sizeof(char *) * size);
+    for (int i = 0; i < size; i++){
+        for (int j = i; j < size; j++){
+            if (i != j){
+                if(numberOfSlash(tab[i]) > numberOfSlash(tab[j])){
+                    char * tmp = tab[i];
+                    tab[i] = tab[j];
+                    tab[j] = tmp;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+/*BIG BIG YIKES*/
+char ** sortTabWithDirectoryFirst(char ** tab, int archiveSize){
+    int countDirectory = 0;
+    for(int i = 0; i < archiveSize; i++){
+        if(strcmp (tab[i] + (strlen(tab[i]) -1) , "/") == 0){
+            countDirectory++;
+        }
+    }
+    char ** tabDirectory = malloc (sizeof(char *) * countDirectory);
+    for (int i = 0; i < countDirectory; i++){
+        tabDirectory[i] = NULL;
+    }
+    int index = 0;
+    for(int i = 0; i < archiveSize; i++){
+        if(strcmp (tab[i] + (strlen(tab[i]) -1) , "/") == 0){
+            tabDirectory[index] = tab[i];
+        }
+    }
+    char ** tmpTabDirectory = triInsertionBySlash (tabDirectory, countDirectory);
+    char ** tabContentSort = malloc (sizeof(char *) * archiveSize);
+    for (int i = 0; i < countDirectory; i++){
+        tabContentSort[i] = tmpTabDirectory[i];
+    }
+    for(int i = 0; i< archiveSize; i++){
+        if(strcmp (tab[i] + (strlen(tab[i]) -1) , "/") != 0)
+            tabContentSort[countDirectory] = tab[i];
+            countDirectory++;
+    }
+    return tabContentSort;
+}
+
 /* Execute the command cp with the option -r if the source and destination is in the tar */
 int cpTarInTarOptionR(char * archivePath, char * archiveDestination, char * path, char * destination){
 
