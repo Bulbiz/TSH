@@ -15,6 +15,7 @@
 
 /* Execute the command mkdir inside a tarball */
 int mkdirInTar(char * archive, char * path){
+    path = addSlash (path);
     int fd = openArchive(archive, O_RDWR);
     passArchive(fd);
     struct posix_header * headerFolder = createHeaderFolder (path);
