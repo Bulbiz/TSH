@@ -15,6 +15,8 @@ char ** nameOfAllFileInDirectory (int fd, char * path, int archiveSize);
 int cpTarInTarOptionR(char * archive, char * path, char * destination);
 int cpTarInOutsideTarOptionR(char * archive, char * path, char * destination);
 
+char ** sortInsertionBySlash (char ** tab, int size);
+char ** sortTabWithDirectoryFirst(char ** tab, int sizeTab);
 int numberOfFileInDirectoryOutsideTar(DIR * dirp, char * path);
 void getAllFileNameFromFolderAux (DIR * dirp, char * path, int * index, char ** allEntityName);
 char ** getAllFileNameFromFolder (char * path);
