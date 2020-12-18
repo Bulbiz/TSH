@@ -275,9 +275,6 @@ int cpTarInTarOptionR(char * archivePath, char * archiveDestination, char * path
     int fd = openArchive (archivePath, O_RDWR);
     int archiveSize = numberFileInArchive(fd);
     char ** tabContent = nameOfAllFileInDirectory(fd, path, archiveSize);
-    /*for (int i = 0; tabContent[i] != NULL; i++){
-        printf ("tabcontent : %s\n",tabContent[i]);
-    }*/
     for (int i = 0; i < archiveSize; i++){
         if(tabContent[i] == NULL){
             return 0;
@@ -303,7 +300,13 @@ int cpTarInOutsideTarOptionR(char * archive, char * path, char * destination){
         if(sortTabContent[i] == NULL){
             return 0;
         }else{
-            cpTarInOutsideTar(archive, sortTabContent[i], destination);
+            char * buf = malloc (sizeof(char) * (strlen(sortTabContent[i]) + strlen(destination) + 10));
+            sprintf(buf,"%s%s",addSlash(destination),sortTabContent[i]);
+            if (isARepertory(sortTabContent[i]) == 0){
+                mkdir(buf, S_IRWXU | S_IRWXO| S_IRWXG);
+            }else{
+                cpTarInOutsideTar(archive, sortTabContent[i], buf);
+            }
         }
     }
     free(tabContent);
