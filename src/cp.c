@@ -214,27 +214,27 @@ char ** nameOfAllFileInDirectory (int fd, char * path, int archiveSize) {
     return tabContent;
 }
 
-char ** triInsertionBySlash (char ** tab, int size){
-    char ** res = malloc (sizeof(char *) * size);
-    for (int i = 0; i < size; i++){
-        for (int j = i; j < size; j++){
-            if (i != j){
-                if(numberOfSlash(tab[i]) > numberOfSlash(tab[j])){
-                    char * tmp = tab[i];
-                    tab[i] = tab[j];
-                    tab[j] = tmp;
-                    break;
-                }
-            }
+/*sort tab from the number of slash */
+char ** sortInsertionBySlash (char ** tab, int size){
+    for (int i = 0; i < size - 1; i++){
+        for (int j = i + 1; j < size; j++){
+            if(numberOfSlash(tab[i]) > numberOfSlash(tab[j])){
+                char * tmp = tab[i];
+                tab[i] = tab[j];
+                tab[j] = tmp;
+                break;
+            } 
         }
     }
+    return tab;
 }
 
-/*BIG BIG YIKES*/
-char ** sortTabWithDirectoryFirst(char ** tab, int archiveSize){
+/*sorts the repertories by the number of slashes in their name and places them at the beginning of tab
+ then sorts the remaining files and at the end, filled by NULL the remaining places*/
+char ** sortTabWithDirectoryFirst(char ** tab, int sizeArchive){
     int countDirectory = 0;
-    for(int i = 0; i < archiveSize; i++){
-        if(strcmp (tab[i] + (strlen(tab[i]) -1) , "/") == 0){
+    for(int i = 0; i < sizeArchive; i++){
+        if(tab[i] != NULL && strcmp (tab[i] + (strlen(tab[i]) -1) , "/") == 0){
             countDirectory++;
         }
     }
@@ -243,20 +243,28 @@ char ** sortTabWithDirectoryFirst(char ** tab, int archiveSize){
         tabDirectory[i] = NULL;
     }
     int index = 0;
-    for(int i = 0; i < archiveSize; i++){
-        if(strcmp (tab[i] + (strlen(tab[i]) -1) , "/") == 0){
+    for(int i = 0; i < sizeArchive; i++){
+        if(tab[i] != NULL && strcmp (tab[i] + (strlen(tab[i]) -1) , "/") == 0){
             tabDirectory[index] = tab[i];
+            index++;
         }
     }
-    char ** tmpTabDirectory = triInsertionBySlash (tabDirectory, countDirectory);
-    char ** tabContentSort = malloc (sizeof(char *) * archiveSize);
+    char ** tmpTabDirectory = sortInsertionBySlash (tabDirectory, countDirectory);
+    char ** tabContentSort = malloc (sizeof(char *) * sizeArchive);
+
+    for (int i = 0; i < sizeArchive; i++){
+        tabContentSort[i] = NULL;
+    }
+
     for (int i = 0; i < countDirectory; i++){
         tabContentSort[i] = tmpTabDirectory[i];
     }
-    for(int i = 0; i< archiveSize; i++){
-        if(strcmp (tab[i] + (strlen(tab[i]) -1) , "/") != 0)
-            tabContentSort[countDirectory] = tab[i];
-            countDirectory++;
+    int index2 = countDirectory;
+    for(int i = 0; i< sizeArchive; i++){
+        if(tab[i] != NULL && strcmp (tab[i] + (strlen(tab[i]) -1) , "/") != 0){
+            tabContentSort[index2] = tab[i];
+            index2++;
+        }
     }
     return tabContentSort;
 }
@@ -285,11 +293,12 @@ int cpTarInOutsideTarOptionR(char * archive, char * path, char * destination){
     int fd = openArchive (archive, O_RDWR);
     int archiveSize = numberFileInArchive(fd);
     char ** tabContent = nameOfAllFileInDirectory(fd, path, archiveSize);
+    char ** sortTabContent = sortTabWithDirectoryFirst(tabContent, archiveSize);
     for (int i = 0; i < archiveSize; i++){
-        if(tabContent[i] == NULL){
+        if(sortTabContent[i] == NULL){
             return 0;
         }else{
-            cpTarInOutsideTar(archive, tabContent[i], destination);
+            cpTarInOutsideTar(archive, sortTabContent[i], destination);
         }
     }
     free(tabContent);
