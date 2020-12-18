@@ -1,0 +1,12 @@
+Reunion du 16/10 : 
+
+Cette semaine, on a modifié le PWD pour qu'on utilise juste la variable globale PWD plutôt que d'en créer une nouvelle. (après quelques tests du pwd de base, il semble ne pas modifier le comportement de base du pwd mais il faudra peut être le modifier)
+
+On a aussi une fonction qui permet de savoir si un path entre dans un tar (juste une recherche de l'extention .tar)
+
+Enfin on a fait une fonction qui print le contenu d'un fichier à partir de son nom. Malheureusement, la fonction est faite en un bloc et donc il s'occupera pour le prochain sprint de la redivisé en plusieurs fonctions auxiliaires pour que l'on puisse aussi profité de ces fonctions.
+PS : il faut pas le dire mais on s'est BEAUCOUP inspiré du TP1 c'est pour ça xD
+
+Il faut aussi que pour le prochain sprint on remplisse un peu l'Architecture.md pour le premier rendu. On va aussi essayer s'occuper de faire le cd (facultatif)
+
+Pour le prochain sprint tu peux continuer à faire ta fonction, on va ajouter des tâches si jamais tu finis avant mais ces tâches sont facultatif, la priorité est la tâche que tu as déja.
