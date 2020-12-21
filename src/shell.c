@@ -30,6 +30,7 @@
 
 
 char buffer [LIMIT];
+int saveStdOut;
 
 /* Get the user input, clean the buffer every time a new input is entered */
 void userInput (){
@@ -169,12 +170,102 @@ char **  deleteOption (char ** argv){
     return newArgv;
 }
 
+/*count the number of ">" and "<" */
+int numberOfRedirection (char * userInput){
+    int cmp = 0;
+    for(int i=0; i<LIMIT; i++)
+        if(buffer[i] == '>' || buffer[i] == '<')
+            cmp++;
+    return cmp;
+}
+
+/*cut the userInput in 2 string separate with '>', and put them in a (char **)
+if the direction is 1 then we have ">" so the redirection[0] output will be write to redirection[1]
+if the direction is 2 then we have "<" so the redirection[1] output will be write to redirection[0]*/
+char ** inputCutterRedirection (char * userInput){
+    char ** redirection = malloc (sizeof(char *) * 2);
+    int direction = 0;
+    for (int i = 0; i < strlen(userInput); i++){
+        if(userInput[i] == '>'){
+            userInput[i] = '\0';
+            direction = 1;
+        }
+        if(userInput[i] == '<'){
+            userInput[i] = '\0';
+            direction = 2;
+        }      
+    }
+    if(direction == 1){
+        redirection[0] = userInput;
+        redirection[1] = userInput + strlen(userInput) + 1;
+        /*redirection[1] = redirection[1] + jumpSpace(redirection[1]);
+        replaceSpace(redirection[1]);
+        redirection[1] = pathTreated (redirection[1]);*/
+    }
+    else if (direction == 2){
+        redirection[0] = userInput + strlen(userInput) + 1;
+        /*redirection[0] = redirection[0] + jumpSpace(redirection[0]);
+        replaceSpace(redirection[0]);
+        redirection[0] = pathTreated (redirection[0]);*/
+        redirection[1] = userInput;
+    }
+    print(redirection[0]);
+    print("\n");
+    print(redirection[1]);
+    return redirection;
+}
+
+/*return 0 if there is 1 '>', -2 if there is 2 or more '>' 
+and return -1 if there is no '>' */
+int checkRedirection (char * userInput){
+    if (numberOfRedirection (userInput) == 1)
+        return 0;
+    if (numberOfRedirection (userInput) > 1){
+        return -2;
+    }
+    return -1;
+}
+
+void restoreStdOut (){
+    dup2(saveStdOut, STDOUT_FILENO);
+}
+
 /*main function that executes the shell 
 */
 void shell(){
     while(TRUE){
         userInput ();
-        char ** argv = getArgument(buffer);
+        char ** argv;
+        // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        char * fileRedirection;
+        char * trash;
+        int fdRedirection = -1;
+        int checkRedi = checkRedirection(buffer);
+        if (checkRedi == -2){
+            print("trop d'argument pour les redirections");
+            continue;
+        }
+
+        if(checkRedi == 0){
+            char ** tmp = inputCutterRedirection(buffer);
+            argv = getArgument(tmp[0]);
+            fileRedirection = pathTreated (tmp[1] + jumpSpace(tmp[1]));
+            replaceSpace (fileRedirection);
+            if(isInTar(fileRedirection) == 0){
+                char ** pathTmp = dividePathWithTar (fileRedirection);
+                trash = malloc (sizeof (char) * (strlen(pathTmp[0]) + 10));
+                memset (trash, '\0' , strlen(pathTmp[0]) + 10);
+                sprintf(trash, "%s%s", getRepertoryRepertory (pathTmp[0]), "trash");
+                fdRedirection = open (trash, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);  
+            }else{
+                fdRedirection = open (fileRedirection, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);       
+            }
+            dup2 (fdRedirection, STDOUT_FILENO);
+
+        }else{
+            argv = getArgument(buffer);
+        }
+        // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         if (getArgc(argv) == 0)
             continue;
 
@@ -232,6 +323,30 @@ void shell(){
             executeCommandExterne(argv);
             
         }
+        //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        if(checkRedi == 0){
+            if(isInTar(fileRedirection) == 0){
+                char ** pathTmp = dividePathWithTar (fileRedirection);
+                struct posix_header * h = malloc(BLOCKSIZE);
+                int fdArchive = openArchive(pathTmp[0], O_RDWR);
+
+                if(fdArchive < 0){
+                    unlink(trash);
+                    restoreStdOut();
+                    continue;
+                }
+
+                if(searchFile(fdArchive, h, pathTmp[1]) == 0){
+                    close(fdArchive);
+                    rmInTar(pathTmp[0], pathTmp[1]);
+                }
+
+                cpOutsideTarInTar(pathTmp[0], trash, pathTmp[1]);
+                unlink(trash);              
+            }
+            restoreStdOut();   
+        }
+        //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
     }
 }
 
@@ -240,6 +355,7 @@ void shell(){
 
 /*execute the shell*/
 int main (){
+    saveStdOut = dup(STDOUT_FILENO);
     cwd = malloc (SIZE);
     getcwd(cwd,SIZE);
     shell();
