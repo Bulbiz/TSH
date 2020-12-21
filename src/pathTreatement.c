@@ -10,7 +10,7 @@ char * cwd;
 
 /*print the char * message in the shell*/
 void print (char * message){
-    if (write (STDIN_FILENO,message,strlen(message)) == -1)
+    if (write (STDOUT_FILENO,message,strlen(message)) == -1)
         perror("Print");
 }
 
