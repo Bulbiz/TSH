@@ -62,7 +62,7 @@ int rmdirInTar(char * archive, char * path){
         close(fd);
         return 0;
     }else{
-        print("impossible de supprimer le répertoire");
+        print("impossible de supprimer le répertoire\n");
         return -1;
     }
 }
@@ -77,7 +77,7 @@ int myRmdir_aux (char * path){
 /* Execute the command rmdir */
 void myRmdir (char ** argv){
     if (getArgc(argv) < 2){
-        print("Not enough argument");
+        print("Not enough argument\n");
         return;
     }
     if(isInTar(argv[1]) == 0)
