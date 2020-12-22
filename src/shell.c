@@ -45,28 +45,31 @@ void userInput (){
 }
 
 /*count the number of command separe by '|' */
-int numberOfCommand (){
+int numberOfCommand (char * input){
     int cmp = 0;
     for(int i=0; i<LIMIT; i++)
-        if(buffer[i] == '|')
+        if(input[i] == '|')
             cmp++;
     return cmp + 1;
 }
 
-/* cut the buffer with '|' */
-char ** inputCutter (int * size) {
-    *size = numberOfCommand();
-    char ** command = (char **) malloc (sizeof(char *) * (*size));
+/* cut the input with '|' */
+char ** inputCutter (char * input) {
+    int size = numberOfCommand(input);
+    char ** command = (char **) malloc (sizeof(char *) * (size + 5));
     int pointer = 1;
+    for (int i=0; i<size + 5; i++){
+        command[i] = NULL;
+    }
 
     for(int i=0; i<LIMIT; i++){
-        if(buffer[i] == '|'){
-            command[pointer++] = (buffer + i + 1);
-            buffer[i] = '\0';
+        if(input[i] == '|'){
+            command[pointer++] = (input + i + 1);
+            input[i] = '\0';
         }
     }
     
-    command[0] = buffer;
+    command[0] = input;
     return command;
 }
 
@@ -230,12 +233,72 @@ void restoreStdOut (){
     dup2(saveStdOut, STDOUT_FILENO);
 }
 
+void executeCommand (char ** argv){
+    if (getArgc(argv) == 0)
+        return;
+
+    if(strcmp (argv[0],"cd") == 0){
+        argv = transformPathOfArgv(argv);
+        cd(argv);
+
+    }else if(strcmp (argv[0],"pwd") == 0){
+        argv = transformPathOfArgv(argv);
+        pwd();
+
+    }else if(strcmp (argv[0],"mkdir") == 0){
+        argv = transformPathOfArgv(argv);
+        myMkdir (argv);
+
+    }else if(strcmp (argv[0],"rmdir") == 0){
+        argv = transformPathOfArgv(argv);
+        myRmdir (argv);
+
+    }else if(strcmp (argv[0],"mv") == 0){
+        argv = transformPathOfArgv(argv);
+        mv(argv);
+
+    }else if(strcmp (argv[0],"cp") == 0){
+        argv = transformPathOfArgv(argv);
+        if (hasOption ("-r", argv) == 0)
+            cpR(deleteOption(argv));
+        else
+            cp(argv);
+
+    }else if(strcmp (argv[0],"rm") == 0){
+        argv = transformPathOfArgv(argv);
+        if (hasOption ("-r", argv) == 0)
+            rmR(deleteOption(argv));           
+        else
+            rm (argv);
+
+    }else if(strcmp (argv[0],"ls") == 0){
+        argv = transformPathOfArgv(argv);
+        if (hasOption ("-l", argv) == 0)
+            lsL(deleteOption(argv));
+        else
+            ls(argv);
+
+    }else if(strcmp (argv[0],"cat") == 0){
+        argv = transformPathOfArgv(argv);
+        cat (argv);
+
+    }else if(strcmp (argv[0],"exit") == 0){
+
+        exit(0);
+
+    }else{
+
+        executeCommandExterne(argv);
+            
+    }
+}
+
 /*main function that executes the shell 
 */
 void shell(){
     while(TRUE){
         userInput ();
-        char ** argv;
+        char ** command;
         // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         char * fileRedirection;
         char * trash;
@@ -248,81 +311,31 @@ void shell(){
 
         if(checkRedi == 0){
             char ** tmp = inputCutterRedirection(buffer);
-            argv = getArgument(tmp[0]);
+            command = getArgument(tmp[0]);
             fileRedirection = pathTreated (tmp[1] + jumpSpace(tmp[1]));
             replaceSpace (fileRedirection);
+
             if(isInTar(fileRedirection) == 0){
+                
                 char ** pathTmp = dividePathWithTar (fileRedirection);
                 trash = malloc (sizeof (char) * (strlen(pathTmp[0]) + 10));
                 memset (trash, '\0' , strlen(pathTmp[0]) + 10);
                 sprintf(trash, "%s%s", getRepertoryRepertory (pathTmp[0]), "trash");
-                fdRedirection = open (trash, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);  
+                fdRedirection = open (trash, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR); 
+
             }else{
+
                 fdRedirection = open (fileRedirection, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);       
             }
             dup2 (fdRedirection, STDOUT_FILENO);
 
         }else{
-            argv = getArgument(buffer);
+
+            command = getArgument(buffer);
+
         }
         // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-        if (getArgc(argv) == 0)
-            continue;
-
-        if(strcmp (argv[0],"cd") == 0){
-            argv = transformPathOfArgv(argv);
-            cd(argv);
-
-        }else if(strcmp (argv[0],"pwd") == 0){
-            argv = transformPathOfArgv(argv);
-            pwd();
-
-        }else if(strcmp (argv[0],"mkdir") == 0){
-            argv = transformPathOfArgv(argv);
-            myMkdir (argv);
-
-        }else if(strcmp (argv[0],"rmdir") == 0){
-            argv = transformPathOfArgv(argv);
-            myRmdir (argv);
-
-        }else if(strcmp (argv[0],"mv") == 0){
-            argv = transformPathOfArgv(argv);
-            mv(argv);
-
-        }else if(strcmp (argv[0],"cp") == 0){
-            argv = transformPathOfArgv(argv);
-            if (hasOption ("-r", argv) == 0)
-                cpR(deleteOption(argv));
-            else
-                cp(argv);
-
-        }else if(strcmp (argv[0],"rm") == 0){
-            argv = transformPathOfArgv(argv);
-            if (hasOption ("-r", argv) == 0)
-                rmR(deleteOption(argv));           
-            else
-                rm (argv);
-
-        }else if(strcmp (argv[0],"ls") == 0){
-            argv = transformPathOfArgv(argv);
-            if (hasOption ("-l", argv) == 0)
-                lsL(deleteOption(argv));
-            else
-                ls(argv);
-
-        }else if(strcmp (argv[0],"cat") == 0){
-            argv = transformPathOfArgv(argv);
-            cat (argv);
-
-        }else if(strcmp (argv[0],"exit") == 0){
-
-            exit(0);
-
-        }else{
-
-            executeCommandExterne(argv);
-            
-        }
+        executeCommand(command);
         //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         if(checkRedi == 0){
             if(isInTar(fileRedirection) == 0){
