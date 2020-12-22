@@ -201,20 +201,11 @@ char ** inputCutterRedirection (char * userInput){
     if(direction == 1){
         redirection[0] = userInput;
         redirection[1] = userInput + strlen(userInput) + 1;
-        /*redirection[1] = redirection[1] + jumpSpace(redirection[1]);
-        replaceSpace(redirection[1]);
-        redirection[1] = pathTreated (redirection[1]);*/
     }
     else if (direction == 2){
         redirection[0] = userInput + strlen(userInput) + 1;
-        /*redirection[0] = redirection[0] + jumpSpace(redirection[0]);
-        replaceSpace(redirection[0]);
-        redirection[0] = pathTreated (redirection[0]);*/
         redirection[1] = userInput;
     }
-    print(redirection[0]);
-    print("\n");
-    print(redirection[1]);
     return redirection;
 }
 
