@@ -57,11 +57,11 @@ int numberOfCommand (char * input){
 char ** inputCutter (char * input) {
     int size = numberOfCommand(input);
     char ** command = (char **) malloc (sizeof(char *) * (size + 5));
-    int pointer = 1;
     for (int i=0; i<size + 5; i++){
         command[i] = NULL;
     }
 
+    int pointer = 1;
     for(int i=0; i<LIMIT; i++){
         if(input[i] == '|'){
             command[pointer++] = (input + i + 1);
@@ -283,6 +283,13 @@ void executeCommand (char ** argv){
             
     }
 }
+
+void executeMultipleCommand (char ** command){
+    for (int i=0; command[i] != NULL ; i++){
+        executeCommand(getArgument(command[i]));
+    }
+}
+
 char * getTrashName (char * fileRedirection) {
     char ** pathTmp = dividePathWithTar (duplicate(fileRedirection));
     char * trash = malloc (sizeof (char) * (strlen(pathTmp[0]) + 10));
@@ -343,12 +350,12 @@ void shell(){
                 continue;
             }
             dup2 (fdRedirection, STDOUT_FILENO);
-            command = getArgument(tmp[0]);
+            command = inputCutter(tmp[0]);
         }else{
-            command = getArgument(buffer);
+            command = inputCutter(buffer);
         }
         
-        executeCommand(command);
+        executeMultipleCommand(command);
         
         if(checkRedi == 0 && isInTar(fileRedirection) == 0){
             transfertTrash (fileRedirection);           
