@@ -328,7 +328,6 @@ void shell(){
     while(TRUE){
         userInput ();
         char ** command;
-        // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         char * fileRedirection;
         int fdRedirection = -1;
         int checkRedi = checkRedirection(buffer);
@@ -338,8 +337,8 @@ void shell(){
         }
 
         if(checkRedi == 0){
+            /* A Redirection have to be done */
             char ** tmp = inputCutterRedirection(buffer);
-
             fileRedirection = pathTreated (tmp[1]);
             fdRedirection =  openRedirection (fileRedirection);
             if (fdRedirection == -1){
@@ -347,23 +346,17 @@ void shell(){
                 continue;
             }
             dup2 (fdRedirection, STDOUT_FILENO);
-
             command = getArgument(tmp[0]);
         }else{
-
             command = getArgument(buffer);
-
         }
-        // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         executeCommand(command);
-        //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-        if(checkRedi == 0){
-            if(isInTar(fileRedirection) == 0){
-                transfertTrash (fileRedirection);           
-            }
-            restoreStdOut();   
+        
+        if(checkRedi == 0 && isInTar(fileRedirection) == 0){
+            transfertTrash (fileRedirection);           
         }
-        //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        restoreStdOut();
+
     }
 }
 
