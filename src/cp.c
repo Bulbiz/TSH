@@ -60,7 +60,7 @@ int cpTarInTar(char * archivePath, char * archiveDestination, char * path, char 
         write(fdPath, copyHeader, BLOCKSIZE);
         write(fdPath, copyContent, filesize);
     }else{
-        read (fdDestination, copyContent, filesize);
+        read (fdPath, copyContent, filesize);
         passArchive(fdDestination);
 
         write(fdDestination, copyHeader, BLOCKSIZE);
