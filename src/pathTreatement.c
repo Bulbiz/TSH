@@ -50,7 +50,7 @@ char ** dividePathWithTar (char * path){
     char * separateur = strstr (pathcpy,".tar");
 
     if (separateur == NULL){
-        print("Erreur Path without tar !!!");
+        print("Erreur Path without tar !!!\n");
         return NULL;
     }
     * (separateur + 4)  = '\0';

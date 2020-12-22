@@ -33,6 +33,11 @@ int myMkdir_aux (char * path){
 
 /* Execute mkdir */
 int myMkdir (char ** argv) {
+    if (getArgc(argv) < 2){
+        print("Not enough argument\n");
+        return -1;
+    }
+
     argv[1] = addSlash (argv[1]);
 
     if (!isArchiveRacine (getRepertoryRepertory(argv[1])) == 0 && fileExist(getRepertoryRepertory(argv[1])) != 0){

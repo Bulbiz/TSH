@@ -76,6 +76,10 @@ int myRmdir_aux (char * path){
 
 /* Execute the command rmdir */
 void myRmdir (char ** argv){
+    if (getArgc(argv) < 2){
+        print("Not enough argument");
+        return;
+    }
     if(isInTar(argv[1]) == 0)
         myRmdir_aux (argv[1]);
     else

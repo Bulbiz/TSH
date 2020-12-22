@@ -336,7 +336,7 @@ void shell(){
         int fdRedirection = -1;
         int checkRedi = checkRedirection(buffer);
         if (checkRedi == -2){
-            print("trop d'argument pour les redirections");
+            print("trop d'argument pour les redirections\n");
             continue;
         }
 
@@ -346,7 +346,7 @@ void shell(){
             fileRedirection = pathTreated (tmp[1]);
             fdRedirection =  openRedirection (fileRedirection);
             if (fdRedirection == -1){
-                print("Erreur sur la redirection !");
+                print("Erreur sur la redirection !\n");
                 continue;
             }
             dup2 (fdRedirection, STDOUT_FILENO);

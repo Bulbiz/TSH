@@ -142,7 +142,7 @@ int cp3 (char * path, char * destination){
 
 /* Execute the command cp */
 int cp (char ** argv){
-    if (getArgc(argv) > 3 && getArgc(argv) < 3){
+    if (getArgc(argv) != 3){
         print("Trop d'arguments ou pas assez d'arguments!\n");
     }
 
@@ -428,7 +428,7 @@ int cp3R (char * path, char * destination){
 
 /* Execute the command cp -r*/
 int cpR (char ** argv){
-    if (getArgc(argv) > 3 && getArgc(argv) < 3){
+    if (getArgc(argv) != 3){
         print("Trop d'arguments ou pas assez d'arguments!\n");
     }
 
