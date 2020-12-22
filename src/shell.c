@@ -182,9 +182,9 @@ int numberOfRedirection (char * userInput){
     return cmp;
 }
 
-/*cut the userInput in 2 string separate with '>', and put them in a (char **)
-if the direction is 1 then we have ">" so the redirection[0] output will be write to redirection[1]
-if the direction is 2 then we have "<" so the redirection[1] output will be write to redirection[0]*/
+/* cut the userInput in 2 string separate with '>', and put them in a (char **)
+ * redirection[0] is the command, redirection[1] is the redirection.
+ */
 char ** inputCutterRedirection (char * userInput){
     char ** redirection = malloc (sizeof(char *) * 2);
     for (int i = 0; i < strlen(userInput); i++){
@@ -298,7 +298,15 @@ void createTrash (char ** command, char * fileRedirection, char * trash, int fdR
     }
         dup2 (fdRedirection, STDOUT_FILENO);
 }
+char * getTrashName (char * fileRedirection) {
 
+    char ** pathTmp = dividePathWithTar (duplicate(fileRedirection));
+    char * trash = malloc (sizeof (char) * (strlen(pathTmp[0]) + 10));
+    memset (trash, '\0' , strlen(pathTmp[0]) + 10);
+    sprintf(trash, "%s%s", getRepertoryRepertory (pathTmp[0]), "trash");
+    return trash;
+
+}
 /*main function that executes the shell 
 */
 void shell(){
@@ -323,10 +331,11 @@ void shell(){
 
             if(isInTar(fileRedirection) == 0){
                 
-                char ** pathTmp = dividePathWithTar (fileRedirection);
+                trash = getTrashName(fileRedirection);
+                /*char ** pathTmp = dividePathWithTar (fileRedirection);
                 trash = malloc (sizeof (char) * (strlen(pathTmp[0]) + 10));
                 memset (trash, '\0' , strlen(pathTmp[0]) + 10);
-                sprintf(trash, "%s%s", getRepertoryRepertory (pathTmp[0]), "trash");
+                sprintf(trash, "%s%s", getRepertoryRepertory (pathTmp[0]), "trash");*/
                 fdRedirection = open (trash, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR); 
 
             }else{
