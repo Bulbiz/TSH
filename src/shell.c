@@ -292,6 +292,7 @@ char * getTrashName (char * fileRedirection) {
     return trash;
 
 }
+
 int openRedirection (char * fileRedirection){
     if(isInTar(fileRedirection) == 0)
         return open (getTrashName(fileRedirection), O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR); 
@@ -299,6 +300,28 @@ int openRedirection (char * fileRedirection){
         return open (fileRedirection, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);       
     
 }
+
+void transfertTrash (char * fileRedirection){
+    char * trash = getTrashName(fileRedirection);
+    char ** pathTmp = dividePathWithTar (fileRedirection);
+
+    struct posix_header * h = malloc(BLOCKSIZE);
+    int fdArchive = openArchive(pathTmp[0], O_RDWR);
+
+    if(fdArchive < 0){
+        unlink(trash);
+        return;
+    }
+
+    if(searchFile(fdArchive, h, pathTmp[1]) == 0){
+        close(fdArchive);
+        rmInTar(pathTmp[0], pathTmp[1]);
+    }
+
+    cpOutsideTarInTar(pathTmp[0], trash, pathTmp[1]);
+    unlink(trash);  
+}
+
 /*main function that executes the shell 
 */
 void shell(){
@@ -316,7 +339,7 @@ void shell(){
 
         if(checkRedi == 0){
             char ** tmp = inputCutterRedirection(buffer);
-            command = getArgument(tmp[0]);
+
             fileRedirection = pathTreated (tmp[1]);
             fdRedirection =  openRedirection (fileRedirection);
             if (fdRedirection == -1){
@@ -324,7 +347,8 @@ void shell(){
                 continue;
             }
             dup2 (fdRedirection, STDOUT_FILENO);
-            
+
+            command = getArgument(tmp[0]);
         }else{
 
             command = getArgument(buffer);
@@ -335,25 +359,7 @@ void shell(){
         //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         if(checkRedi == 0){
             if(isInTar(fileRedirection) == 0){
-                char * trash = getTrashName(fileRedirection);
-                char ** pathTmp = dividePathWithTar (fileRedirection);
-
-                struct posix_header * h = malloc(BLOCKSIZE);
-                int fdArchive = openArchive(pathTmp[0], O_RDWR);
-
-                if(fdArchive < 0){
-                    unlink(trash);
-                    restoreStdOut();
-                    continue;
-                }
-
-                if(searchFile(fdArchive, h, pathTmp[1]) == 0){
-                    close(fdArchive);
-                    rmInTar(pathTmp[0], pathTmp[1]);
-                }
-
-                cpOutsideTarInTar(pathTmp[0], trash, pathTmp[1]);
-                unlink(trash);              
+                transfertTrash (fileRedirection);           
             }
             restoreStdOut();   
         }
