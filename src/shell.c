@@ -203,6 +203,9 @@ char ** inputCutterRedirection (char * userInput){
         }      
     }
 
+    redirection[1] = redirection[1] + jumpSpace(redirection[1]);
+    replaceSpace (redirection[1]);
+
     return redirection;
 }
 
@@ -280,24 +283,6 @@ void executeCommand (char ** argv){
             
     }
 }
-
-void createTrash (char ** command, char * fileRedirection, char * trash, int fdRedirection){
-    char ** tmp = inputCutterRedirection(buffer);
-    command = getArgument(tmp[0]);
-    fileRedirection = pathTreated (tmp[1] + jumpSpace(tmp[1]));
-    replaceSpace (fileRedirection);
-
-    if(isInTar(fileRedirection) == 0){     
-        char ** pathTmp = dividePathWithTar (fileRedirection);
-        trash = malloc (sizeof (char) * (strlen(pathTmp[0]) + 10));
-        memset (trash, '\0' , strlen(pathTmp[0]) + 10);
-        sprintf(trash, "%s%s", getRepertoryRepertory (pathTmp[0]), "trash");
-        fdRedirection = open (trash, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR); 
-    }else{
-        fdRedirection = open (fileRedirection, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);       
-    }
-        dup2 (fdRedirection, STDOUT_FILENO);
-}
 char * getTrashName (char * fileRedirection) {
 
     char ** pathTmp = dividePathWithTar (duplicate(fileRedirection));
@@ -307,6 +292,13 @@ char * getTrashName (char * fileRedirection) {
     return trash;
 
 }
+int openRedirection (char * fileRedirection){
+    if(isInTar(fileRedirection) == 0)
+        return open (getTrashName(fileRedirection), O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR); 
+    else
+        return open (fileRedirection, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);       
+    
+}
 /*main function that executes the shell 
 */
 void shell(){
@@ -315,7 +307,6 @@ void shell(){
         char ** command;
         // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         char * fileRedirection;
-        char * trash;
         int fdRedirection = -1;
         int checkRedi = checkRedirection(buffer);
         if (checkRedi == -2){
@@ -326,24 +317,14 @@ void shell(){
         if(checkRedi == 0){
             char ** tmp = inputCutterRedirection(buffer);
             command = getArgument(tmp[0]);
-            fileRedirection = pathTreated (tmp[1] + jumpSpace(tmp[1]));
-            replaceSpace (fileRedirection);
-
-            if(isInTar(fileRedirection) == 0){
-                
-                trash = getTrashName(fileRedirection);
-                /*char ** pathTmp = dividePathWithTar (fileRedirection);
-                trash = malloc (sizeof (char) * (strlen(pathTmp[0]) + 10));
-                memset (trash, '\0' , strlen(pathTmp[0]) + 10);
-                sprintf(trash, "%s%s", getRepertoryRepertory (pathTmp[0]), "trash");*/
-                fdRedirection = open (trash, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR); 
-
-            }else{
-
-                fdRedirection = open (fileRedirection, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);       
+            fileRedirection = pathTreated (tmp[1]);
+            fdRedirection =  openRedirection (fileRedirection);
+            if (fdRedirection == -1){
+                print("Erreur sur la redirection !");
+                continue;
             }
             dup2 (fdRedirection, STDOUT_FILENO);
-
+            
         }else{
 
             command = getArgument(buffer);
@@ -354,7 +335,9 @@ void shell(){
         //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
         if(checkRedi == 0){
             if(isInTar(fileRedirection) == 0){
+                char * trash = getTrashName(fileRedirection);
                 char ** pathTmp = dividePathWithTar (fileRedirection);
+
                 struct posix_header * h = malloc(BLOCKSIZE);
                 int fdArchive = openArchive(pathTmp[0], O_RDWR);
 
