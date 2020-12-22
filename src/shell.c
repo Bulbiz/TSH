@@ -284,13 +284,11 @@ void executeCommand (char ** argv){
     }
 }
 char * getTrashName (char * fileRedirection) {
-
     char ** pathTmp = dividePathWithTar (duplicate(fileRedirection));
     char * trash = malloc (sizeof (char) * (strlen(pathTmp[0]) + 10));
     memset (trash, '\0' , strlen(pathTmp[0]) + 10);
     sprintf(trash, "%s%s", getRepertoryRepertory (pathTmp[0]), "trash");
     return trash;
-
 }
 
 int openRedirection (char * fileRedirection){
@@ -322,8 +320,7 @@ void transfertTrash (char * fileRedirection){
     unlink(trash);  
 }
 
-/*main function that executes the shell 
-*/
+/* main function that executes the shell */
 void shell(){
     while(TRUE){
         userInput ();
@@ -350,6 +347,7 @@ void shell(){
         }else{
             command = getArgument(buffer);
         }
+        
         executeCommand(command);
         
         if(checkRedi == 0 && isInTar(fileRedirection) == 0){
