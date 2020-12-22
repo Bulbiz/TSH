@@ -187,25 +187,22 @@ if the direction is 1 then we have ">" so the redirection[0] output will be writ
 if the direction is 2 then we have "<" so the redirection[1] output will be write to redirection[0]*/
 char ** inputCutterRedirection (char * userInput){
     char ** redirection = malloc (sizeof(char *) * 2);
-    int direction = 0;
     for (int i = 0; i < strlen(userInput); i++){
         if(userInput[i] == '>'){
+
             userInput[i] = '\0';
-            direction = 1;
-        }
-        if(userInput[i] == '<'){
+            redirection[0] = userInput;
+            redirection[1] = userInput + strlen(userInput) + 1;
+
+        } else if(userInput[i] == '<'){
+
             userInput[i] = '\0';
-            direction = 2;
+            redirection[0] = userInput + strlen(userInput) + 1;
+            redirection[1] = userInput;
+            
         }      
     }
-    if(direction == 1){
-        redirection[0] = userInput;
-        redirection[1] = userInput + strlen(userInput) + 1;
-    }
-    else if (direction == 2){
-        redirection[0] = userInput + strlen(userInput) + 1;
-        redirection[1] = userInput;
-    }
+
     return redirection;
 }
 
@@ -282,6 +279,24 @@ void executeCommand (char ** argv){
         executeCommandExterne(argv);
             
     }
+}
+
+void createTrash (char ** command, char * fileRedirection, char * trash, int fdRedirection){
+    char ** tmp = inputCutterRedirection(buffer);
+    command = getArgument(tmp[0]);
+    fileRedirection = pathTreated (tmp[1] + jumpSpace(tmp[1]));
+    replaceSpace (fileRedirection);
+
+    if(isInTar(fileRedirection) == 0){     
+        char ** pathTmp = dividePathWithTar (fileRedirection);
+        trash = malloc (sizeof (char) * (strlen(pathTmp[0]) + 10));
+        memset (trash, '\0' , strlen(pathTmp[0]) + 10);
+        sprintf(trash, "%s%s", getRepertoryRepertory (pathTmp[0]), "trash");
+        fdRedirection = open (trash, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR); 
+    }else{
+        fdRedirection = open (fileRedirection, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);       
+    }
+        dup2 (fdRedirection, STDOUT_FILENO);
 }
 
 /*main function that executes the shell 
