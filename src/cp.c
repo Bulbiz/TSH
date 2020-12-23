@@ -95,8 +95,7 @@ int cpTarInOutsideTar(char * archive, char * path, char * destination){
     read (fd, copyContent, filesize);
 
     int fdFile = open(destination, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
-
-    if(write(fdFile, copyContent, strlen(copyContent))<0){
+    if(write(fdFile, copyContent, strlen(copyContent)) == -1){
         perror("cpTarInOutsideTar");
         return -1;
     }
@@ -271,7 +270,6 @@ char ** sortTabWithDirectoryFirst(char ** tab, int sizeArchive){
 
 /* Execute the command cp with the option -r if the source and destination is in the tar */
 int cpTarInTarOptionR(char * archivePath, char * archiveDestination, char * path, char * destination){
-    printTar(openArchive(archivePath,O_RDONLY));
     int fd = openArchive (archivePath, O_RDWR);
     int archiveSize = numberFileInArchive(fd);
     char ** tabContent = nameOfAllFileInDirectory(fd, path, archiveSize);
@@ -301,7 +299,7 @@ int cpTarInOutsideTarOptionR(char * archive, char * path, char * destination){
         }else{
             char * buf = malloc (sizeof(char) * (strlen(sortTabContent[i]) + strlen(destination) + 10));
             sprintf(buf,"%s%s",addSlash(destination),sortTabContent[i]);
-            if (isARepertory(sortTabContent[i]) == 0){
+            if (isARepertory(combineArchiveAndPath(archive,sortTabContent[i])) == 0){ 
                 mkdir(buf, S_IRWXU | S_IRWXO| S_IRWXG);
             }else{
                 cpTarInOutsideTar(archive, sortTabContent[i], buf);
@@ -350,7 +348,8 @@ void getAllFileNameFromFolderAux (DIR * dirp, char * path, int * index, char ** 
         if(strcmp(entity -> d_name, ".") != 0 && strcmp(entity -> d_name, "..") != 0){
             char * newPath = malloc (sizeof(char) * (strlen(path) + strlen(entity -> d_name) + 2));
             memset(newPath, '\0', strlen(path) + strlen(entity -> d_name) + 1);
-            sprintf(newPath, "%s/%s", path, entity -> d_name);
+            path = addSlash(path);
+            sprintf(newPath, "%s%s", path, entity -> d_name);
             allEntityName[*index] = newPath;
             (*index) ++;
 
@@ -394,7 +393,7 @@ int cpOutsideTarInTarOptionR(char * archive, char * path, char * destination){
             if (strlen(destination) == 0){
                 sprintf(buf, "%s",allEntityName[i] + fileName(path) + 1);
             }else
-                sprintf(buf, "%s%s", destination, allEntityName[i] + fileName(path));
+                sprintf(buf, "%s%s", destination, allEntityName[i] + fileName(path) + 1);
 
             if (isARepertory (allEntityName[i]) == 0){
                 mkdirInTar(archive,buf);
@@ -431,6 +430,9 @@ int cpR (char ** argv){
     if (getArgc(argv) != 3){
         print("Trop d'arguments ou pas assez d'arguments!\n");
     }
+
+    argv[1] = addSlash(argv[1]);
+    argv[2] = addSlash(argv[2]);
 
     if (isARepertory(argv[1]) == -1){
          print("action impossible, la source n'est pas un dossier, utilisez cp sans option\n");

@@ -129,6 +129,7 @@ int rmReccursiveInTar (char * archive, char * path){
 
 /* Execute the command rm -r inside a tar */
 void rmR_aux (char * path){
+    path = addSlash(path);
     char ** pathInTar = (char **) dividePathWithTar (path);
     rmReccursiveInTar (pathInTar[0], pathInTar[1]);
 }

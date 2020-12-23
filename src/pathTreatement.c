@@ -149,3 +149,11 @@ char * getRepertoryRepertory (char * path){
     path[i + 1] = '\0';
     return path;
 }
+
+char * combineArchiveAndPath (char * archive, char * path){
+    int size = strlen(archive) + strlen(path) + 10;
+    char * res = malloc (sizeof (char) * size);
+    memset(res,'\0',size);
+    sprintf(res,"%s%s",addSlash(archive),path);
+    return res;
+}

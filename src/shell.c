@@ -31,10 +31,15 @@
 
 char buffer [LIMIT];
 int saveStdOut;
+int saveStdIn;
+
+int pipe1 [2];
+int pipe2 [2];
 
 /* Get the user input, clean the buffer every time a new input is entered */
 void userInput (){
-    print("Votre commande $");
+    print(getPWD());
+    print("$ ");
     memset(buffer,'\0',LIMIT); 
     int size = read(STDIN_FILENO, buffer, LIMIT);
     if(size < 0){
@@ -224,6 +229,10 @@ void restoreStdOut (){
     dup2(saveStdOut, STDOUT_FILENO);
 }
 
+void restoreStdIn (){
+    dup2(saveStdIn, STDIN_FILENO);
+}
+
 void executeCommand (char ** argv){
     if (getArgc(argv) == 0)
         return;
@@ -284,10 +293,56 @@ void executeCommand (char ** argv){
     }
 }
 
-void executeMultipleCommand (char ** command){
-    for (int i=0; command[i] != NULL ; i++){
-        executeCommand(getArgument(command[i]));
+void redirectPipe (int i){
+    if (i == 0){
+        pipe(pipe2);
+        dup2(pipe2[1],STDOUT_FILENO);
+    }else if(i % 2 == 0){
+        pipe(pipe2);
+        dup2(pipe1[0],STDIN_FILENO);
+        dup2(pipe2[1],STDOUT_FILENO);
+    }else{
+        pipe(pipe1);
+        dup2(pipe2[0],STDIN_FILENO);
+        dup2(pipe1[1],STDOUT_FILENO);
     }
+}
+
+void closePipe (int i){
+    if (i == 0){
+        close(pipe2[1]);
+    }else if(i % 2 == 0){
+        close(pipe1[0]);
+        close(pipe2[1]);
+    }else{
+        close(pipe2[0]);
+        close(pipe1[1]);
+    }
+}
+
+void closeFinalPipe (int i){
+    if (i % 2 == 0)
+        close(pipe2[0]);
+    else
+        close(pipe1[0]);
+    
+    restoreStdOut();
+    restoreStdIn();
+}
+
+void executeMultipleCommand (char ** command, int fdRedirection){
+    int i;
+    for (i = 0; command[i] != NULL ; i++){
+        redirectPipe(i);
+        if(command[i+1] == NULL){
+            /* Last command */
+            restoreStdOut();
+            dup2 (fdRedirection, STDOUT_FILENO);
+        }
+        executeCommand(getArgument(command[i]));
+        closePipe(i);
+    }
+    closeFinalPipe (i);
 }
 
 char * getTrashName (char * fileRedirection) {
@@ -333,7 +388,7 @@ void shell(){
         userInput ();
         char ** command;
         char * fileRedirection;
-        int fdRedirection = -1;
+        int fdRedirection = dup(STDOUT_FILENO);
         int checkRedi = checkRedirection(buffer);
         if (checkRedi == -2){
             print("trop d'argument pour les redirections\n");
@@ -349,13 +404,12 @@ void shell(){
                 print("Erreur sur la redirection !\n");
                 continue;
             }
-            dup2 (fdRedirection, STDOUT_FILENO);
             command = inputCutter(tmp[0]);
         }else{
             command = inputCutter(buffer);
         }
         
-        executeMultipleCommand(command);
+        executeMultipleCommand(command,fdRedirection);
         
         if(checkRedi == 0 && isInTar(fileRedirection) == 0){
             transfertTrash (fileRedirection);           
@@ -371,6 +425,8 @@ void shell(){
 /*execute the shell*/
 int main (){
     saveStdOut = dup(STDOUT_FILENO);
+    saveStdIn = dup(STDIN_FILENO);
+
     cwd = malloc (SIZE);
     getcwd(cwd,SIZE);
     shell();
