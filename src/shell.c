@@ -329,12 +329,13 @@ void closeFinalPipe (int i){
     restoreStdIn();
 }
 
-void executeMultipleCommand (char ** command){
+void executeMultipleCommand (char ** command, int fdRedirection){
     int i;
     for (i = 0; command[i] != NULL ; i++){
         redirectPipe(i);
         if(command[i+1] == NULL){
             restoreStdOut();
+            dup2 (fdRedirection, STDOUT_FILENO);
         }
         executeCommand(getArgument(command[i]));
         closePipe(i);
@@ -385,7 +386,7 @@ void shell(){
         userInput ();
         char ** command;
         char * fileRedirection;
-        int fdRedirection = -1;
+        int fdRedirection = dup(STDOUT_FILENO);
         int checkRedi = checkRedirection(buffer);
         if (checkRedi == -2){
             print("trop d'argument pour les redirections\n");
@@ -401,13 +402,12 @@ void shell(){
                 print("Erreur sur la redirection !\n");
                 continue;
             }
-            dup2 (fdRedirection, STDOUT_FILENO);
             command = inputCutter(tmp[0]);
         }else{
             command = inputCutter(buffer);
         }
         
-        executeMultipleCommand(command);
+        executeMultipleCommand(command,fdRedirection);
         
         if(checkRedi == 0 && isInTar(fileRedirection) == 0){
             transfertTrash (fileRedirection);           
