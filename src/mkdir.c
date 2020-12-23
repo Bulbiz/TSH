@@ -15,12 +15,22 @@
 
 /* Execute the command mkdir inside a tarball */
 int mkdirInTar(char * archive, char * path){
-    path = addSlash (path);
     int fd = openArchive(archive, O_RDWR);
+    struct posix_header * buf = malloc (BLOCKSIZE);
+    
+    if(searchFile(fd,buf,path) == 0){
+        free(buf);
+        close(fd);
+        print("Mkdir : Dossier existe !");
+        return -1;
+    }
+
+    replaceCurseurToStart(fd);
     passArchive(fd);
     struct posix_header * headerFolder = createHeaderFolder (path);
     write(fd, headerFolder, BLOCKSIZE);
     
+    free(buf);
     free(headerFolder);
     close(fd);
     return 0;

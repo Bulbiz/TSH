@@ -38,7 +38,8 @@ int pipe2 [2];
 
 /* Get the user input, clean the buffer every time a new input is entered */
 void userInput (){
-    print("Votre commande $");
+    print(getPWD());
+    print("$ ");
     memset(buffer,'\0',LIMIT); 
     int size = read(STDIN_FILENO, buffer, LIMIT);
     if(size < 0){
@@ -334,6 +335,7 @@ void executeMultipleCommand (char ** command, int fdRedirection){
     for (i = 0; command[i] != NULL ; i++){
         redirectPipe(i);
         if(command[i+1] == NULL){
+            /* Last command */
             restoreStdOut();
             dup2 (fdRedirection, STDOUT_FILENO);
         }
