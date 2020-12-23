@@ -31,6 +31,10 @@
 
 char buffer [LIMIT];
 int saveStdOut;
+int saveStdIn;
+
+int pipe1 [2];
+int pipe2 [2];
 
 /* Get the user input, clean the buffer every time a new input is entered */
 void userInput (){
@@ -224,6 +228,10 @@ void restoreStdOut (){
     dup2(saveStdOut, STDOUT_FILENO);
 }
 
+void restoreStdIn (){
+    dup2(saveStdIn, STDIN_FILENO);
+}
+
 void executeCommand (char ** argv){
     if (getArgc(argv) == 0)
         return;
@@ -284,10 +292,54 @@ void executeCommand (char ** argv){
     }
 }
 
-void executeMultipleCommand (char ** command){
-    for (int i=0; command[i] != NULL ; i++){
-        executeCommand(getArgument(command[i]));
+void redirectPipe (int i){
+    if (i == 0){
+        pipe(pipe2);
+        dup2(pipe2[1],STDOUT_FILENO);
+    }else if(i % 2 == 0){
+        pipe(pipe2);
+        dup2(pipe1[0],STDIN_FILENO);
+        dup2(pipe2[1],STDOUT_FILENO);
+    }else{
+        pipe(pipe1);
+        dup2(pipe2[0],STDIN_FILENO);
+        dup2(pipe1[1],STDOUT_FILENO);
     }
+}
+
+void closePipe (int i){
+    if (i == 0){
+        close(pipe2[1]);
+    }else if(i % 2 == 0){
+        close(pipe1[0]);
+        close(pipe2[1]);
+    }else{
+        close(pipe2[0]);
+        close(pipe1[1]);
+    }
+}
+
+void closeFinalPipe (int i){
+    if (i % 2 == 0)
+        close(pipe2[0]);
+    else
+        close(pipe1[0]);
+    
+    restoreStdOut();
+    restoreStdIn();
+}
+
+void executeMultipleCommand (char ** command){
+    int i;
+    for (i = 0; command[i] != NULL ; i++){
+        redirectPipe(i);
+        if(command[i+1] == NULL){
+            restoreStdOut();
+        }
+        executeCommand(getArgument(command[i]));
+        closePipe(i);
+    }
+    closeFinalPipe (i);
 }
 
 char * getTrashName (char * fileRedirection) {
@@ -371,6 +423,8 @@ void shell(){
 /*execute the shell*/
 int main (){
     saveStdOut = dup(STDOUT_FILENO);
+    saveStdIn = dup(STDIN_FILENO);
+
     cwd = malloc (SIZE);
     getcwd(cwd,SIZE);
     shell();
