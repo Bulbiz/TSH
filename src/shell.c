@@ -31,10 +31,15 @@
 
 char buffer [LIMIT];
 int saveStdOut;
+int saveStdIn;
+
+int pipe1 [2];
+int pipe2 [2];
 
 /* Get the user input, clean the buffer every time a new input is entered */
 void userInput (){
-    print("Votre commande $");
+    print(getPWD());
+    print("$ ");
     memset(buffer,'\0',LIMIT); 
     int size = read(STDIN_FILENO, buffer, LIMIT);
     if(size < 0){
@@ -45,28 +50,31 @@ void userInput (){
 }
 
 /*count the number of command separe by '|' */
-int numberOfCommand (){
+int numberOfCommand (char * input){
     int cmp = 0;
     for(int i=0; i<LIMIT; i++)
-        if(buffer[i] == '|')
+        if(input[i] == '|')
             cmp++;
     return cmp + 1;
 }
 
-/* cut the buffer with '|' */
-char ** inputCutter (int * size) {
-    *size = numberOfCommand();
-    char ** command = (char **) malloc (sizeof(char *) * (*size));
-    int pointer = 1;
+/* cut the input with '|' */
+char ** inputCutter (char * input) {
+    int size = numberOfCommand(input);
+    char ** command = (char **) malloc (sizeof(char *) * (size + 5));
+    for (int i=0; i<size + 5; i++){
+        command[i] = NULL;
+    }
 
+    int pointer = 1;
     for(int i=0; i<LIMIT; i++){
-        if(buffer[i] == '|'){
-            command[pointer++] = (buffer + i + 1);
-            buffer[i] = '\0';
+        if(input[i] == '|'){
+            command[pointer++] = (input + i + 1);
+            input[i] = '\0';
         }
     }
     
-    command[0] = buffer;
+    command[0] = input;
     return command;
 }
 
@@ -179,39 +187,30 @@ int numberOfRedirection (char * userInput){
     return cmp;
 }
 
-/*cut the userInput in 2 string separate with '>', and put them in a (char **)
-if the direction is 1 then we have ">" so the redirection[0] output will be write to redirection[1]
-if the direction is 2 then we have "<" so the redirection[1] output will be write to redirection[0]*/
+/* cut the userInput in 2 string separate with '>', and put them in a (char **)
+ * redirection[0] is the command, redirection[1] is the redirection.
+ */
 char ** inputCutterRedirection (char * userInput){
     char ** redirection = malloc (sizeof(char *) * 2);
-    int direction = 0;
     for (int i = 0; i < strlen(userInput); i++){
         if(userInput[i] == '>'){
+
             userInput[i] = '\0';
-            direction = 1;
-        }
-        if(userInput[i] == '<'){
+            redirection[0] = userInput;
+            redirection[1] = userInput + strlen(userInput) + 1;
+
+        } else if(userInput[i] == '<'){
+
             userInput[i] = '\0';
-            direction = 2;
+            redirection[0] = userInput + strlen(userInput) + 1;
+            redirection[1] = userInput;
+            
         }      
     }
-    if(direction == 1){
-        redirection[0] = userInput;
-        redirection[1] = userInput + strlen(userInput) + 1;
-        /*redirection[1] = redirection[1] + jumpSpace(redirection[1]);
-        replaceSpace(redirection[1]);
-        redirection[1] = pathTreated (redirection[1]);*/
-    }
-    else if (direction == 2){
-        redirection[0] = userInput + strlen(userInput) + 1;
-        /*redirection[0] = redirection[0] + jumpSpace(redirection[0]);
-        replaceSpace(redirection[0]);
-        redirection[0] = pathTreated (redirection[0]);*/
-        redirection[1] = userInput;
-    }
-    print(redirection[0]);
-    print("\n");
-    print(redirection[1]);
+
+    redirection[1] = redirection[1] + jumpSpace(redirection[1]);
+    replaceSpace (redirection[1]);
+
     return redirection;
 }
 
@@ -230,123 +229,193 @@ void restoreStdOut (){
     dup2(saveStdOut, STDOUT_FILENO);
 }
 
-/*main function that executes the shell 
-*/
+void restoreStdIn (){
+    dup2(saveStdIn, STDIN_FILENO);
+}
+
+void executeCommand (char ** argv){
+    if (getArgc(argv) == 0)
+        return;
+
+    if(strcmp (argv[0],"cd") == 0){
+        argv = transformPathOfArgv(argv);
+        cd(argv);
+
+    }else if(strcmp (argv[0],"pwd") == 0){
+        argv = transformPathOfArgv(argv);
+        pwd();
+
+    }else if(strcmp (argv[0],"mkdir") == 0){
+        argv = transformPathOfArgv(argv);
+        myMkdir (argv);
+
+    }else if(strcmp (argv[0],"rmdir") == 0){
+        argv = transformPathOfArgv(argv);
+        myRmdir (argv);
+
+    }else if(strcmp (argv[0],"mv") == 0){
+        argv = transformPathOfArgv(argv);
+        mv(argv);
+
+    }else if(strcmp (argv[0],"cp") == 0){
+        argv = transformPathOfArgv(argv);
+        if (hasOption ("-r", argv) == 0)
+            cpR(deleteOption(argv));
+        else
+            cp(argv);
+
+    }else if(strcmp (argv[0],"rm") == 0){
+        argv = transformPathOfArgv(argv);
+        if (hasOption ("-r", argv) == 0)
+            rmR(deleteOption(argv));           
+        else
+            rm (argv);
+
+    }else if(strcmp (argv[0],"ls") == 0){
+        argv = transformPathOfArgv(argv);
+        if (hasOption ("-l", argv) == 0)
+            lsL(deleteOption(argv));
+        else
+            ls(argv);
+
+    }else if(strcmp (argv[0],"cat") == 0){
+        argv = transformPathOfArgv(argv);
+        cat (argv);
+
+    }else if(strcmp (argv[0],"exit") == 0){
+
+        exit(0);
+
+    }else{
+
+        executeCommandExterne(argv);
+            
+    }
+}
+
+void redirectPipe (int i){
+    if (i == 0){
+        pipe(pipe2);
+        dup2(pipe2[1],STDOUT_FILENO);
+    }else if(i % 2 == 0){
+        pipe(pipe2);
+        dup2(pipe1[0],STDIN_FILENO);
+        dup2(pipe2[1],STDOUT_FILENO);
+    }else{
+        pipe(pipe1);
+        dup2(pipe2[0],STDIN_FILENO);
+        dup2(pipe1[1],STDOUT_FILENO);
+    }
+}
+
+void closePipe (int i){
+    if (i == 0){
+        close(pipe2[1]);
+    }else if(i % 2 == 0){
+        close(pipe1[0]);
+        close(pipe2[1]);
+    }else{
+        close(pipe2[0]);
+        close(pipe1[1]);
+    }
+}
+
+void closeFinalPipe (int i){
+    if (i % 2 == 0)
+        close(pipe2[0]);
+    else
+        close(pipe1[0]);
+    
+    restoreStdOut();
+    restoreStdIn();
+}
+
+void executeMultipleCommand (char ** command, int fdRedirection){
+    int i;
+    for (i = 0; command[i] != NULL ; i++){
+        redirectPipe(i);
+        if(command[i+1] == NULL){
+            /* Last command */
+            restoreStdOut();
+            dup2 (fdRedirection, STDOUT_FILENO);
+        }
+        executeCommand(getArgument(command[i]));
+        closePipe(i);
+    }
+    closeFinalPipe (i);
+}
+
+char * getTrashName (char * fileRedirection) {
+    char ** pathTmp = dividePathWithTar (duplicate(fileRedirection));
+    char * trash = malloc (sizeof (char) * (strlen(pathTmp[0]) + 10));
+    memset (trash, '\0' , strlen(pathTmp[0]) + 10);
+    sprintf(trash, "%s%s", getRepertoryRepertory (pathTmp[0]), "trash");
+    return trash;
+}
+
+int openRedirection (char * fileRedirection){
+    if(isInTar(fileRedirection) == 0)
+        return open (getTrashName(fileRedirection), O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR); 
+    else
+        return open (fileRedirection, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);       
+    
+}
+
+void transfertTrash (char * fileRedirection){
+    char * trash = getTrashName(fileRedirection);
+    char ** pathTmp = dividePathWithTar (fileRedirection);
+
+    struct posix_header * h = malloc(BLOCKSIZE);
+    int fdArchive = openArchive(pathTmp[0], O_RDWR);
+
+    if(fdArchive < 0){
+        unlink(trash);
+        return;
+    }
+
+    if(searchFile(fdArchive, h, pathTmp[1]) == 0){
+        close(fdArchive);
+        rmInTar(pathTmp[0], pathTmp[1]);
+    }
+
+    cpOutsideTarInTar(pathTmp[0], trash, pathTmp[1]);
+    unlink(trash);  
+}
+
+/* main function that executes the shell */
 void shell(){
     while(TRUE){
         userInput ();
-        char ** argv;
-        // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+        char ** command;
         char * fileRedirection;
-        char * trash;
-        int fdRedirection = -1;
+        int fdRedirection = dup(STDOUT_FILENO);
         int checkRedi = checkRedirection(buffer);
         if (checkRedi == -2){
-            print("trop d'argument pour les redirections");
+            print("trop d'argument pour les redirections\n");
             continue;
         }
 
         if(checkRedi == 0){
+            /* A Redirection have to be done */
             char ** tmp = inputCutterRedirection(buffer);
-            argv = getArgument(tmp[0]);
-            fileRedirection = pathTreated (tmp[1] + jumpSpace(tmp[1]));
-            replaceSpace (fileRedirection);
-            if(isInTar(fileRedirection) == 0){
-                char ** pathTmp = dividePathWithTar (fileRedirection);
-                trash = malloc (sizeof (char) * (strlen(pathTmp[0]) + 10));
-                memset (trash, '\0' , strlen(pathTmp[0]) + 10);
-                sprintf(trash, "%s%s", getRepertoryRepertory (pathTmp[0]), "trash");
-                fdRedirection = open (trash, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);  
-            }else{
-                fdRedirection = open (fileRedirection, O_WRONLY | O_CREAT , S_IRUSR | S_IWUSR);       
+            fileRedirection = pathTreated (tmp[1]);
+            fdRedirection =  openRedirection (fileRedirection);
+            if (fdRedirection == -1){
+                print("Erreur sur la redirection !\n");
+                continue;
             }
-            dup2 (fdRedirection, STDOUT_FILENO);
-
+            command = inputCutter(tmp[0]);
         }else{
-            argv = getArgument(buffer);
+            command = inputCutter(buffer);
         }
-        // aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-        if (getArgc(argv) == 0)
-            continue;
-
-        if(strcmp (argv[0],"cd") == 0){
-            argv = transformPathOfArgv(argv);
-            cd(argv);
-
-        }else if(strcmp (argv[0],"pwd") == 0){
-            argv = transformPathOfArgv(argv);
-            pwd();
-
-        }else if(strcmp (argv[0],"mkdir") == 0){
-            argv = transformPathOfArgv(argv);
-            myMkdir (argv);
-
-        }else if(strcmp (argv[0],"rmdir") == 0){
-            argv = transformPathOfArgv(argv);
-            myRmdir (argv);
-
-        }else if(strcmp (argv[0],"mv") == 0){
-            argv = transformPathOfArgv(argv);
-            mv(argv);
-
-        }else if(strcmp (argv[0],"cp") == 0){
-            argv = transformPathOfArgv(argv);
-            if (hasOption ("-r", argv) == 0)
-                cpR(deleteOption(argv));
-            else
-                cp(argv);
-
-        }else if(strcmp (argv[0],"rm") == 0){
-            argv = transformPathOfArgv(argv);
-            if (hasOption ("-r", argv) == 0)
-                rmR(deleteOption(argv));           
-            else
-                rm (argv);
-
-        }else if(strcmp (argv[0],"ls") == 0){
-            argv = transformPathOfArgv(argv);
-            if (hasOption ("-l", argv) == 0)
-                lsL(deleteOption(argv));
-            else
-                ls(argv);
-
-        }else if(strcmp (argv[0],"cat") == 0){
-            argv = transformPathOfArgv(argv);
-            cat (argv);
-
-        }else if(strcmp (argv[0],"exit") == 0){
-
-            exit(0);
-
-        }else{
-
-            executeCommandExterne(argv);
-            
+        
+        executeMultipleCommand(command,fdRedirection);
+        
+        if(checkRedi == 0 && isInTar(fileRedirection) == 0){
+            transfertTrash (fileRedirection);           
         }
-        //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-        if(checkRedi == 0){
-            if(isInTar(fileRedirection) == 0){
-                char ** pathTmp = dividePathWithTar (fileRedirection);
-                struct posix_header * h = malloc(BLOCKSIZE);
-                int fdArchive = openArchive(pathTmp[0], O_RDWR);
+        restoreStdOut();
 
-                if(fdArchive < 0){
-                    unlink(trash);
-                    restoreStdOut();
-                    continue;
-                }
-
-                if(searchFile(fdArchive, h, pathTmp[1]) == 0){
-                    close(fdArchive);
-                    rmInTar(pathTmp[0], pathTmp[1]);
-                }
-
-                cpOutsideTarInTar(pathTmp[0], trash, pathTmp[1]);
-                unlink(trash);              
-            }
-            restoreStdOut();   
-        }
-        //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
     }
 }
 
@@ -356,6 +425,8 @@ void shell(){
 /*execute the shell*/
 int main (){
     saveStdOut = dup(STDOUT_FILENO);
+    saveStdIn = dup(STDIN_FILENO);
+
     cwd = malloc (SIZE);
     getcwd(cwd,SIZE);
     shell();

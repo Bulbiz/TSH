@@ -20,5 +20,6 @@ char * pathTreated (char * path);
 char * addSlash (char * path);
 char * getFileRepertory (char * path);
 char * getRepertoryRepertory (char * path);
+char * combineArchiveAndPath (char * archive, char * path);
 
 #endif
