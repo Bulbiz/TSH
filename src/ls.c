@@ -20,52 +20,56 @@ void printLongFormat (int repertoryLength,struct posix_header * header){
     char regular = (header -> typeflag == '5')? 'd' : '-';
 
     /******* Calculate the string representation for the permission ************/
-    char strpermission [10];
-    memset(strpermission,'\0',10);
+    char * strpermission = malloc (sizeof(char) * 40);
+    memset(strpermission,'\0',40);
     char * permission [] = {"---","--x","-w-","-wx","r--","r-x","rw-","rwx"};
-    int userPerm = (header -> mode)[4] - '0';
-    int groupPerm= (header -> mode)[5] - '0';
-    int otherPerm = (header -> mode)[6] - '0';
+    int userPerm = (header -> mode)[3] - '0';
+    int groupPerm= (header -> mode)[4] - '0';
+    int otherPerm = (header -> mode)[5] - '0';
     sprintf(strpermission,"%s%s%s",permission[userPerm],permission[groupPerm],permission[otherPerm]);
 
     /********** Calculate the user name (if not found, just place the id) *******/
-    char struser [50];
-    memset(struser,'\0',50);
+    char * struser = malloc (sizeof(char) * 100);
+    memset(struser,'\0',100);
     if(getpwuid(atoi(header -> uid)) != NULL)
         strcat(struser, getpwuid(atoi(header -> uid)) -> pw_name);
     else
         strcat(struser,header -> uid);
 
     /********** Calculate the group name (if not found, just place the id) *******/
-    char strgrp [50];
-    memset(strgrp,'\0',50);
+    char * strgrp = malloc(sizeof(char) * 100);
+    memset(strgrp,'\0',100);
     if(getgrgid(atoi(header -> gid)) != NULL)
         strcat(strgrp,getgrgid(atoi(header -> gid)) -> gr_name );
     else
         strcat(strgrp,header -> gid);
 
     /********** Calculate the string representation for the modified time *******/
-    char time [20];
+    char * time = malloc (sizeof(char) * 100);
+    memset(time,'\0',100);
     time_t modifiedtime = atoi(header -> mtime);
     strftime(time, sizeof(time), " %b. %d %H:%M ", localtime(&modifiedtime));
 
-    char format [1000];
+    char * format = malloc (sizeof(char) * 1000);
+    memset(format,'\0',1000);
     sprintf(format, "%c%s %s %s %s %s %s\n",regular,strpermission,struser,strgrp,header -> size,time, header -> name + repertoryLength);
     print(format);
+
+    free(strpermission);
+    free(struser);
+    free(strgrp);
+    free(time);
+    free(format);
 }
 
-/* FIXME : pour l'instant on va le faire que sur un argument, il faudra modifier pour plusieur argument */
 void lsLong (char * path) {
-    
+    path = addSlash (path);
     char ** division = dividePathWithTar (path);
     int fdArchive = openArchive(division[0],O_RDONLY);
     struct posix_header * buf = malloc (BLOCKSIZE);
         
     char repertoire [sizeof(char) * (strlen(division[1]) + 1)];
     strcpy (repertoire,division[1]);
-
-    if (strlen(division[1]) > 0)
-        strcat (repertoire,"/");
 
     replaceCurseurToStart (fdArchive);
     while(getHeader(fdArchive,buf) == 0 ){

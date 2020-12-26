@@ -37,6 +37,10 @@ int catInTar(char * archive, char * path){
 
 /* Convert the path for the execution of the command */
 void cat_aux (char * path){
+    if (fileExist(path) != 0){
+        print("fichier introuvable\n");
+        return;
+    }
     char ** pathInTar = (char **) dividePathWithTar (path);
     catInTar(pathInTar[0], pathInTar[1]);
 }

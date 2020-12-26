@@ -10,7 +10,7 @@ char * cwd;
 
 /*print the char * message in the shell*/
 void print (char * message){
-    if (write (STDIN_FILENO,message,strlen(message)) == -1)
+    if (write (STDOUT_FILENO,message,strlen(message)) == -1)
         perror("Print");
 }
 
@@ -50,7 +50,7 @@ char ** dividePathWithTar (char * path){
     char * separateur = strstr (pathcpy,".tar");
 
     if (separateur == NULL){
-        print("Erreur Path without tar !!!");
+        print("Erreur Path without tar !!!\n");
         return NULL;
     }
     * (separateur + 4)  = '\0';
@@ -148,4 +148,12 @@ char * getRepertoryRepertory (char * path){
         i--;
     path[i + 1] = '\0';
     return path;
+}
+
+char * combineArchiveAndPath (char * archive, char * path){
+    int size = strlen(archive) + strlen(path) + 10;
+    char * res = malloc (sizeof (char) * size);
+    memset(res,'\0',size);
+    sprintf(res,"%s%s",addSlash(archive),path);
+    return res;
 }

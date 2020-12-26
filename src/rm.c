@@ -93,7 +93,7 @@ int rmInTar(char * archive, char * path){
         close(fd);
         return 0;
     }else{
-        print("impossible de supprimer, ce n'est pas un fichier");
+        print("impossible de supprimer, ce n'est pas un fichier\n");
         return -1;
     }
 
@@ -129,6 +129,7 @@ int rmReccursiveInTar (char * archive, char * path){
 
 /* Execute the command rm -r inside a tar */
 void rmR_aux (char * path){
+    path = addSlash(path);
     char ** pathInTar = (char **) dividePathWithTar (path);
     rmReccursiveInTar (pathInTar[0], pathInTar[1]);
 }
@@ -151,6 +152,10 @@ void rm_aux (char * path){
 
 /* Execute the command rm */
 void rm (char ** argv){
+    if (getArgc(argv) < 2){
+        print("Not enough argument\n");
+        return;
+    }
     if(isInTar(argv[1]) == 0)
         rm_aux (argv[1]);
     else
