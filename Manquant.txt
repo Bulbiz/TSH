@@ -1,0 +1,5 @@
+Pour ce projet, nous avons réussi à réaliser toutes les commandes demandées par le sujet.
+Nous n'avons cependant pas pu tester autant que nous le voulions,
+il se peut donc qu'il y ait encore quelques bugs cachés.
+Nous nous excusons le cas échéant.
+
